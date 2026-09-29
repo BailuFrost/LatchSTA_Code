@@ -1,0 +1,27 @@
+benchmark/s832.blif.out
+GLPK Simplex Optimizer 5.0
+126 rows, 31 columns, 342 non-zeros
+      0: obj =   0.000000000e+00 inf =   4.292e+02 (36)
+     69: obj =   1.622773933e+01 inf =   0.000e+00 (0)
+OPTIMAL LP SOLUTION FOUND
+GLPK Simplex Optimizer 5.0
+108 rows, 8 columns, 324 non-zeros
+      0: obj =   0.000000000e+00 inf =   8.584e+02 (72)
+     37: obj =   1.622773933e+01 inf =   0.000e+00 (0)
+OPTIMAL LP SOLUTION FOUND
+=====================SUMMARY====================
+Input file is benchmark/s832.blif.out
+Initial T is 16.2277 ns
+LatchTiming defaults: Tsu=Thd=Tcq=Tdq=0 (not in benchmark).
+MCR uses clock skew s_k with s_IO=0 and 0 <= s_k < T; ELL unchanged.
+MCR:
+	#vertices = 30, #edges = 130
+	T_Howard's = 16.2277 ns, time is 0.21403 ms, status = Optimal, cycle_len = 2, max_violation = 0, iters = 3
+	|T_Howard - T_LP_MCR| = 0 ns
+	T_YTO's = 16.2277 ns, time is 0.262386 ms, status = Optimal, cycle_len = 2, max_violation = 0, iters = 2
+	|T_YTO - T_LP_MCR| = 0 ns
+	T_LP_MCR = 16.2277 ns, time is 0.553822 ms
+ELL:
+	#vertices = 6, #edges = 108
+	T_ELL = 16.2277 ns, W_ELL = 0 ns, time is 0.538682 ms
+	T_LP_ELL = 16.2277 ns, W_LP_ELL = 0 ns, time is 0.1931 ms

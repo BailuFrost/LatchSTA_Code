@@ -1,0 +1,94 @@
+benchmark/s713.blif.out
+GLPK Simplex Optimizer 5.0
+488 rows, 101 columns, 1344 non-zeros
+      0: obj =   0.000000000e+00 inf =   2.115e+03 (154)
+    247: obj =   3.058501053e+01 inf =   0.000e+00 (0) 1
+OPTIMAL LP SOLUTION FOUND
+GLPK Simplex Optimizer 5.0
+462 rows, 22 columns, 1444 non-zeros
+      0: obj =   0.000000000e+00 inf =   4.230e+03 (308)
+    132: obj =   3.058501053e+01 inf =   0.000e+00 (0) 1
+OPTIMAL LP SOLUTION FOUND
+=====================SUMMARY====================
+Input file is benchmark/s713.blif.out
+Initial T is 30.585 ns
+LatchTiming defaults: Tsu=Thd=Tcq=Tdq=0 (not in benchmark).
+MCR uses clock skew s_k with s_IO=0 and 0 <= s_k < T; ELL unchanged.
+MCR:
+	#vertices = 100, #edges = 506
+	T_Howard's = 30.585 ns, time is 1.06997 ms, status = Optimal, cycle_len = 2, max_violation = 0, iters = 4
+	|T_Howard - T_LP_MCR| = 0 ns
+	T_YTO's = 30.585 ns, time is 1.34957 ms, status = Optimal, cycle_len = 2, max_violation = 0, iters = 2
+	|T_YTO - T_LP_MCR| = 0 ns
+	T_LP_MCR = 30.585 ns, time is 3.81719 ms
+Use T_LP_MCR with the LP skew schedule to retarget the circuit.
+Skew schedule s_k from LP (index 0 = IO, unit ns):
+	n_latch = 20
+	s[0] = 0  (IO)
+	s[1] = 1.13353
+	s[2] = 0
+	s[3] = 0
+	s[4] = 0
+	s[5] = 0
+	s[6] = 0
+	s[7] = 0
+	s[8] = 2.96367
+	s[9] = 2.75115
+	s[10] = 1.84701
+	s[11] = 1.84701
+	s[12] = 1.84701
+	s[13] = 0
+	s[14] = 0
+	s[15] = 0
+	s[16] = 0
+	s[17] = 0
+	s[18] = 0
+	s[19] = 0
+Skew schedule s_k from Howard (index 0 = IO, unit ns):
+	n_latch = 20
+	s[0] = 0  (IO)
+	s[1] = 1.84701
+	s[2] = 2.9512
+	s[3] = 1.50689
+	s[4] = 3.48939
+	s[5] = 1.19762
+	s[6] = 4.58087
+	s[7] = 4.6854
+	s[8] = 3.90393
+	s[9] = 4.74297
+	s[10] = 1.84701
+	s[11] = 1.84701
+	s[12] = 1.84701
+	s[13] = 2.2079
+	s[14] = 1.50689
+	s[15] = 1.78801
+	s[16] = 1.19762
+	s[17] = 4.18922
+	s[18] = 4.42985
+	s[19] = 5.01102
+Skew schedule s_k from YTO (index 0 = IO, unit ns):
+	n_latch = 20
+	s[0] = 0  (IO)
+	s[1] = 1.84701
+	s[2] = 2.9512
+	s[3] = 1.50689
+	s[4] = 3.48939
+	s[5] = 1.19762
+	s[6] = 4.58087
+	s[7] = 4.6854
+	s[8] = 3.90393
+	s[9] = 4.74297
+	s[10] = 1.84701
+	s[11] = 1.84701
+	s[12] = 1.84701
+	s[13] = 2.2079
+	s[14] = 1.50689
+	s[15] = 1.78801
+	s[16] = 1.19762
+	s[17] = 4.18922
+	s[18] = 4.42985
+	s[19] = 5.01102
+ELL:
+	#vertices = 20, #edges = 462
+	T_ELL = 30.585 ns, W_ELL = 0 ns, time is 0.350023 ms
+	T_LP_ELL = 30.585 ns, W_LP_ELL = 0 ns, time is 1.77158 ms

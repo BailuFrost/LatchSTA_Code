@@ -1,0 +1,102 @@
+benchmark/s400.blif.out
+GLPK Simplex Optimizer 5.0
+544 rows, 111 columns, 1500 non-zeros
+      0: obj =   0.000000000e+00 inf =   1.232e+03 (169)
+    249: obj =   1.186310025e+01 inf =   2.966e-16 (0) 1
+*   270: obj =   9.896340251e+00 inf =   0.000e+00 (0) 1
+OPTIMAL LP SOLUTION FOUND
+GLPK Simplex Optimizer 5.0
+519 rows, 24 columns, 1640 non-zeros
+      0: obj =   0.000000000e+00 inf =   2.463e+03 (338)
+    119: obj =   1.459519005e+01 inf =   0.000e+00 (0) 1
+*   132: obj =   9.896340251e+00 inf =   0.000e+00 (0)
+OPTIMAL LP SOLUTION FOUND
+=====================SUMMARY====================
+Input file is benchmark/s400.blif.out
+Initial T is 14.5952 ns
+LatchTiming defaults: Tsu=Thd=Tcq=Tdq=0 (not in benchmark).
+MCR uses clock skew s_k with s_IO=0 and 0 <= s_k < T; ELL unchanged.
+MCR:
+	#vertices = 110, #edges = 564
+	T_Howard's = 9.89634 ns, time is 2.521 ms, status = Optimal, cycle_len = 7, max_violation = 0, iters = 8
+	|T_Howard - T_LP_MCR| = 0 ns
+	T_YTO's = 9.89634 ns, time is 7.60843 ms, status = Optimal, cycle_len = 7, max_violation = 0, iters = 36
+	|T_YTO - T_LP_MCR| = 0 ns
+	T_LP_MCR = 9.89634 ns, time is 5.00999 ms
+Use T_LP_MCR with the LP skew schedule to retarget the circuit.
+Skew schedule s_k from LP (index 0 = IO, unit ns):
+	n_latch = 22
+	s[0] = 0  (IO)
+	s[1] = 0
+	s[2] = 0
+	s[3] = 0
+	s[4] = 3.43354
+	s[5] = 1.84783
+	s[6] = 0
+	s[7] = 0
+	s[8] = 0
+	s[9] = 0
+	s[10] = 0.61307
+	s[11] = 3.17084
+	s[12] = 2.84384
+	s[13] = 1.05114
+	s[14] = 0.51962
+	s[15] = 0.19861
+	s[16] = 0.19861
+	s[17] = 0.19861
+	s[18] = 0
+	s[19] = 0
+	s[20] = 0
+	s[21] = 0
+Skew schedule s_k from Howard (index 0 = IO, unit ns):
+	n_latch = 22
+	s[0] = 0  (IO)
+	s[1] = 4.57267
+	s[2] = 2.11088
+	s[3] = 5.06912
+	s[4] = 3.43354
+	s[5] = 3.43354
+	s[6] = 4.99653
+	s[7] = 5.22667
+	s[8] = 4.97116
+	s[9] = 6.6211
+	s[10] = 4.64923
+	s[11] = 5.59825
+	s[12] = 5.86095
+	s[13] = 5.86095
+	s[14] = 4.64923
+	s[15] = 3.72449
+	s[16] = 4.64923
+	s[17] = 4.64923
+	s[18] = 3.72464
+	s[19] = 1.00776
+	s[20] = 0.84273
+	s[21] = 0
+Skew schedule s_k from YTO (index 0 = IO, unit ns):
+	n_latch = 22
+	s[0] = 0  (IO)
+	s[1] = 4.57267
+	s[2] = 2.11088
+	s[3] = 5.06912
+	s[4] = 3.43354
+	s[5] = 3.43354
+	s[6] = 4.99653
+	s[7] = 5.22667
+	s[8] = 4.97116
+	s[9] = 6.6211
+	s[10] = 4.64923
+	s[11] = 5.59825
+	s[12] = 5.86095
+	s[13] = 5.86095
+	s[14] = 4.64923
+	s[15] = 3.72449
+	s[16] = 4.64923
+	s[17] = 4.64923
+	s[18] = 3.72464
+	s[19] = 1.00776
+	s[20] = 0.84273
+	s[21] = 0
+ELL:
+	#vertices = 22, #edges = 519
+	T_ELL = 9.89646 ns, W_ELL = 0.00019351 ns, time is 16.4923 ms
+	T_LP_ELL = 9.89634 ns, W_LP_ELL = 0 ns, time is 2.04647 ms

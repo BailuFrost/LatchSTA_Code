@@ -1,0 +1,66 @@
+benchmark/s349.blif.out
+GLPK Simplex Optimizer 5.0
+374 rows, 81 columns, 1026 non-zeros
+      0: obj =   0.000000000e+00 inf =   9.525e+02 (115)
+    182: obj =   1.383329971e+01 inf =   0.000e+00 (0) 1
+*   205: obj =   1.072165966e+01 inf =   0.000e+00 (0)
+OPTIMAL LP SOLUTION FOUND
+GLPK Simplex Optimizer 5.0
+345 rows, 18 columns, 1060 non-zeros
+      0: obj =   0.000000000e+00 inf =   1.905e+03 (230)
+     69: obj =   1.589406967e+01 inf =   0.000e+00 (0)
+*    82: obj =   1.351169473e+01 inf =   0.000e+00 (0)
+OPTIMAL LP SOLUTION FOUND
+=====================SUMMARY====================
+Input file is benchmark/s349.blif.out
+Initial T is 15.8941 ns
+LatchTiming defaults: Tsu=Thd=Tcq=Tdq=0 (not in benchmark).
+MCR uses clock skew s_k with s_IO=0 and 0 <= s_k < T; ELL unchanged.
+MCR:
+	#vertices = 80, #edges = 388
+	T_Howard's = nan ns, time is 969.054 ms, status = IterationLimit, cycle_len = 0, max_violation = inf, iters = 10000
+	Howard did not return Optimal; T_Howard is not used as the clock period.
+	T_YTO's = 10.7217 ns, time is 8.79773 ms, status = Optimal, cycle_len = 2, max_violation = 0, iters = 54
+	|T_YTO - T_LP_MCR| = 0 ns
+	T_LP_MCR = 10.7217 ns, time is 2.71758 ms
+Use T_LP_MCR with the LP skew schedule to retarget the circuit.
+Skew schedule s_k from LP (index 0 = IO, unit ns):
+	n_latch = 16
+	s[0] = 0  (IO)
+	s[1] = 0
+	s[2] = 0
+	s[3] = 0
+	s[4] = 8.0509
+	s[5] = 8.0509
+	s[6] = 6.22395
+	s[7] = 4.0198
+	s[8] = 2.87849
+	s[9] = 2.87849
+	s[10] = 2.87849
+	s[11] = 3.55058
+	s[12] = 0
+	s[13] = 0
+	s[14] = 0
+	s[15] = 0
+Skew schedule s_k from YTO (index 0 = IO, unit ns):
+	n_latch = 16
+	s[0] = 0  (IO)
+	s[1] = 2.92216
+	s[2] = 1.3023
+	s[3] = 2.39592
+	s[4] = 9.71684
+	s[5] = 9.71684
+	s[6] = 8.55155
+	s[7] = 7.97637
+	s[8] = 5.46465
+	s[9] = 7.95858
+	s[10] = 7.95858
+	s[11] = 7.95858
+	s[12] = 5.26055
+	s[13] = 5.26055
+	s[14] = 5.26055
+	s[15] = 5.26055
+ELL:
+	#vertices = 16, #edges = 345
+	T_ELL = 13.512 ns, W_ELL = 0.000210733 ns, time is 9.14935 ms
+	T_LP_ELL = 13.5117 ns, W_LP_ELL = 0 ns, time is 0.953469 ms

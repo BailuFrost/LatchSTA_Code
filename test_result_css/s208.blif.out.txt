@@ -1,0 +1,62 @@
+benchmark/s208.blif.out
+GLPK Simplex Optimizer 5.0
+187 rows, 46 columns, 507 non-zeros
+      0: obj =   0.000000000e+00 inf =   3.141e+02 (53)
+    106: obj =   9.914569855e+00 inf =   0.000e+00 (0)
+OPTIMAL LP SOLUTION FOUND
+GLPK Simplex Optimizer 5.0
+159 rows, 11 columns, 476 non-zeros
+      0: obj =   0.000000000e+00 inf =   6.282e+02 (106)
+     51: obj =   1.084899998e+01 inf =   0.000e+00 (0)
+*    54: obj =   9.914569855e+00 inf =   0.000e+00 (0)
+OPTIMAL LP SOLUTION FOUND
+=====================SUMMARY====================
+Input file is benchmark/s208.blif.out
+Initial T is 10.849 ns
+LatchTiming defaults: Tsu=Thd=Tcq=Tdq=0 (not in benchmark).
+MCR uses clock skew s_k with s_IO=0 and 0 <= s_k < T; ELL unchanged.
+MCR:
+	#vertices = 45, #edges = 194
+	T_Howard's = 9.91457 ns, time is 0.450264 ms, status = Optimal, cycle_len = 2, max_violation = 0, iters = 3
+	|T_Howard - T_LP_MCR| = 0 ns
+	T_YTO's = 9.91457 ns, time is 1.09859 ms, status = Optimal, cycle_len = 2, max_violation = 0, iters = 9
+	|T_YTO - T_LP_MCR| = 0 ns
+	T_LP_MCR = 9.91457 ns, time is 1.10837 ms
+Use T_LP_MCR with the LP skew schedule to retarget the circuit.
+Skew schedule s_k from LP (index 0 = IO, unit ns):
+	n_latch = 9
+	s[0] = 0  (IO)
+	s[1] = 0
+	s[2] = 0
+	s[3] = 0
+	s[4] = 0
+	s[5] = 0.94153
+	s[6] = 0
+	s[7] = 0
+	s[8] = 0
+Skew schedule s_k from Howard (index 0 = IO, unit ns):
+	n_latch = 9
+	s[0] = 0  (IO)
+	s[1] = 0.96323
+	s[2] = 0.28072
+	s[3] = 0
+	s[4] = 1.17283
+	s[5] = 0.96323
+	s[6] = 0.28072
+	s[7] = 0.437181
+	s[8] = 1.96074
+Skew schedule s_k from YTO (index 0 = IO, unit ns):
+	n_latch = 9
+	s[0] = 0  (IO)
+	s[1] = 0.96323
+	s[2] = 0.28072
+	s[3] = 0
+	s[4] = 1.17283
+	s[5] = 0.96323
+	s[6] = 0.28072
+	s[7] = 0.437181
+	s[8] = 1.96074
+ELL:
+	#vertices = 9, #edges = 159
+	T_ELL = 9.91463 ns, W_ELL = 0.00753818 ns, time is 1.51052 ms
+	T_LP_ELL = 9.91457 ns, W_LP_ELL = 0 ns, time is 0.338625 ms

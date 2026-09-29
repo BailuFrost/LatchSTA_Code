@@ -1,0 +1,31 @@
+benchmark/s13207.blif.out
+GLPK Simplex Optimizer 5.0
+10782 rows, 2351 columns, 29526 non-zeros
+      0: obj =   0.000000000e+00 inf =   4.252e+04 (3246)
+Perturbing LP to avoid stalling [199]...
+   4126: obj =   5.463984010e+01 inf =   0.000e+00 (0) 31
+Removing LP perturbation [4142]...
+*  4142: obj =   5.463984010e+01 inf =   0.000e+00 (0)
+OPTIMAL LP SOLUTION FOUND
+GLPK Simplex Optimizer 5.0
+9828 rows, 472 columns, 31026 non-zeros
+      0: obj =   0.000000000e+00 inf =   8.504e+04 (6492)
+   1734: obj =   5.735752869e+01 inf =   0.000e+00 (0) 17
+*  1750: obj =   5.336833000e+01 inf =   0.000e+00 (0)
+OPTIMAL LP SOLUTION FOUND
+=====================SUMMARY====================
+Input file is benchmark/s13207.blif.out
+Initial T is 57.3575 ns
+LatchTiming defaults: Tsu=Thd=Tcq=Tdq=0 (not in benchmark).
+MCR uses clock skew s_k with s_IO=0 and 0 <= s_k < T; ELL unchanged.
+MCR:
+	#vertices = 2350, #edges = 11250
+	T_Howard's = 54.6398 ns, time is 48.8873 ms, status = Optimal, cycle_len = 6, max_violation = 0, iters = 11
+	|T_Howard - T_LP_MCR| = 0 ns
+	T_YTO's = 54.6398 ns, time is 113.18 ms, status = Optimal, cycle_len = 6, max_violation = 0, iters = 24
+	|T_YTO - T_LP_MCR| = 0 ns
+	T_LP_MCR = 54.6398 ns, time is 885.658 ms
+ELL:
+	#vertices = 470, #edges = 9828
+	T_ELL = 57.3575 ns, W_ELL = 0 ns, time is 6.83333 ms
+	T_LP_ELL = 53.3683 ns, W_LP_ELL = 0 ns, time is 373.3 ms
