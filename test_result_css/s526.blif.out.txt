@@ -1,31 +1,75 @@
 benchmark/s526.blif.out
 GLPK Simplex Optimizer 5.0
-528 rows, 111 columns, 1452 non-zeros
-      0: obj =   0.000000000e+00 inf =   1.076e+03 (159)
-    251: obj =   1.122326970e+01 inf =   0.000e+00 (0) 1
-*   252: obj =   1.122326970e+01 inf =   0.000e+00 (0)
+527 rows, 111 columns, 1450 non-zeros
+      0: obj =   0.000000000e+00 inf =   1.076e+03 (180)
+    244: obj =   1.122327000e+01 inf =   9.326e-15 (0) 1
+*   245: obj =   1.122327000e+01 inf =   4.041e-14 (0)
 OPTIMAL LP SOLUTION FOUND
 GLPK Simplex Optimizer 5.0
 495 rows, 24 columns, 1524 non-zeros
       0: obj =   0.000000000e+00 inf =   2.153e+03 (318)
-    143: obj =   1.348449039e+01 inf =   0.000e+00 (0) 1
-*   150: obj =   1.122326970e+01 inf =   0.000e+00 (0)
+    143: obj =   1.348449000e+01 inf =   0.000e+00 (0) 1
+*   150: obj =   1.122327000e+01 inf =   0.000e+00 (0)
 OPTIMAL LP SOLUTION FOUND
 =====================SUMMARY====================
 Input file is benchmark/s526.blif.out
-Initial T is 13.4845 ns
-LatchTiming defaults: Tsu=Thd=Tcq=Tdq=0 (not in benchmark).
-MCR uses clock skew s_k with s_IO=0 and 0 <= s_k < T; ELL unchanged.
-MCR:
-	#vertices = 110, #edges = 548
-	T_Howard's = 11.2233 ns, time is 2.94822 ms, status = Optimal, cycle_len = 5, max_violation = 0, iters = 15
-	|T_Howard - T_LP_MCR| = 0 ns
-	T_YTO's = 11.2233 ns, time is 7.27815 ms, status = Optimal, cycle_len = 5, max_violation = 0, iters = 29
-	|T_YTO - T_LP_MCR| = 0 ns
-	T_LP_MCR = 11.2233 ns, time is 4.44989 ms
-Use T_LP_MCR with the LP skew schedule to retarget the circuit.
-Skew schedule s_k from LP (index 0 = IO, unit ns):
-	n_latch = 22
+Initial T is 13.484489999999999 ns
+Legacy compressed input uses zero LatchTiming; IO is a boundary placeholder.
+MCR: s_IO=0, W=T/2, s_k <= T - 1e-08 ns; feasibility tolerance = 9.9999999999999995e-08 ns.
+	#vertices = 110, #edges = 549
+	T_Howard = 11.223269999999999 ns, time is 8.2858929999999997 ms, status = Optimal, cycle_len = 5, max_violation = 1.7763568394002505e-15, iters = 10
+Skew schedule s_k from Howard (index 0 = IO, unit ns):
+	n_latch = 21
+	s[0] = 0  (IO)
+	s[1] = 1.7662800000000001
+	s[2] = 2.2612199999999998
+	s[3] = 1.5029399999999988
+	s[4] = 2.0527899999999999
+	s[5] = 2.2364699999999988
+	s[6] = 2.7765599999999999
+	s[7] = 3.2433800000000002
+	s[8] = 3.2433800000000002
+	s[9] = 2.9393799999999999
+	s[10] = 3.2433800000000002
+	s[11] = 1.9907599999999981
+	s[12] = 3.0039499999999997
+	s[13] = 2.5457799999999988
+	s[14] = 2.7840500000000006
+	s[15] = 2.7840500000000006
+	s[16] = 0
+	s[17] = 2.4149100000000008
+	s[18] = 0.35535999999999923
+	s[19] = 1.9641099999999998
+	s[20] = 0.73892000000000024
+	s[21] = 0.58323000000000036
+	T_YTO = 11.223269999999999 ns, time is 24.508617000000001 ms, status = Optimal, cycle_len = 5, max_violation = 1.7763568394002505e-15, iters = 27
+Skew schedule s_k from YTO (index 0 = IO, unit ns):
+	n_latch = 21
+	s[0] = 0  (IO)
+	s[1] = 1.7662800000000001
+	s[2] = 2.2612199999999998
+	s[3] = 1.5029399999999988
+	s[4] = 2.0527899999999999
+	s[5] = 2.2364699999999988
+	s[6] = 2.7765599999999999
+	s[7] = 3.2433800000000002
+	s[8] = 3.2433800000000002
+	s[9] = 2.9393799999999999
+	s[10] = 3.2433800000000002
+	s[11] = 1.9907599999999981
+	s[12] = 3.0039499999999997
+	s[13] = 2.5457799999999988
+	s[14] = 2.7840500000000006
+	s[15] = 2.7840500000000006
+	s[16] = 0
+	s[17] = 2.4149100000000008
+	s[18] = 0.35535999999999923
+	s[19] = 1.9641099999999998
+	s[20] = 0.73892000000000024
+	s[21] = 0.58323000000000036
+	T_LP_MCR = 11.223270000000003 ns, time is 9.7997230000000002 ms, status = Optimal, cycle_len = 0, max_violation = 7.1054273576010019e-15, iters = 245
+Skew schedule s_k from LP_MCR (index 0 = IO, unit ns):
+	n_latch = 21
 	s[0] = 0  (IO)
 	s[1] = 0
 	s[2] = 0
@@ -43,60 +87,40 @@ Skew schedule s_k from LP (index 0 = IO, unit ns):
 	s[14] = 0
 	s[15] = 0
 	s[16] = 0
-	s[17] = 0.568661
+	s[17] = 0.56865999999999417
 	s[18] = 0
-	s[19] = 0.36485
+	s[19] = 0.36484999999999701
 	s[20] = 0
 	s[21] = 0
-Skew schedule s_k from Howard (index 0 = IO, unit ns):
-	n_latch = 22
+	|T_Howard - T_LP_MCR| = 3.5527136788005009e-15 ns
+	|T_YTO - T_LP_MCR| = 3.5527136788005009e-15 ns
+Selected MCR solver: Howard, period = 11.223269999999999 ns
+Skew schedule s_k from selected Howard (index 0 = IO, unit ns):
+	n_latch = 21
 	s[0] = 0  (IO)
-	s[1] = 1.76628
-	s[2] = 2.26122
-	s[3] = 1.50294
-	s[4] = 2.05279
-	s[5] = 2.23647
-	s[6] = 2.77656
-	s[7] = 3.24338
-	s[8] = 3.24338
-	s[9] = 2.93938
-	s[10] = 3.24338
-	s[11] = 1.99076
-	s[12] = 3.00395
-	s[13] = 2.54578
-	s[14] = 2.78405
-	s[15] = 2.78405
+	s[1] = 1.7662800000000001
+	s[2] = 2.2612199999999998
+	s[3] = 1.5029399999999988
+	s[4] = 2.0527899999999999
+	s[5] = 2.2364699999999988
+	s[6] = 2.7765599999999999
+	s[7] = 3.2433800000000002
+	s[8] = 3.2433800000000002
+	s[9] = 2.9393799999999999
+	s[10] = 3.2433800000000002
+	s[11] = 1.9907599999999981
+	s[12] = 3.0039499999999997
+	s[13] = 2.5457799999999988
+	s[14] = 2.7840500000000006
+	s[15] = 2.7840500000000006
 	s[16] = 0
-	s[17] = 2.41491
-	s[18] = 0.35536
-	s[19] = 1.96411
-	s[20] = 0.73892
-	s[21] = 0.58323
-Skew schedule s_k from YTO (index 0 = IO, unit ns):
-	n_latch = 22
-	s[0] = 0  (IO)
-	s[1] = 1.76628
-	s[2] = 2.26122
-	s[3] = 1.50294
-	s[4] = 2.05279
-	s[5] = 2.23647
-	s[6] = 2.77656
-	s[7] = 3.24338
-	s[8] = 3.24338
-	s[9] = 2.93938
-	s[10] = 3.24338
-	s[11] = 1.99076
-	s[12] = 3.00395
-	s[13] = 2.54578
-	s[14] = 2.78405
-	s[15] = 2.78405
-	s[16] = 0
-	s[17] = 2.41491
-	s[18] = 0.35536
-	s[19] = 1.96411
-	s[20] = 0.73892
-	s[21] = 0.58323
-ELL:
+	s[17] = 2.4149100000000008
+	s[18] = 0.35535999999999923
+	s[19] = 1.9641099999999998
+	s[20] = 0.73892000000000024
+	s[21] = 0.58323000000000036
+Feasible optimum skew schedules can differ at the same period.
+ELL (independent legacy model):
 	#vertices = 22, #edges = 495
-	T_ELL = 11.278 ns, W_ELL = 0.00308357 ns, time is 4.35339 ms
-	T_LP_ELL = 11.2233 ns, W_LP_ELL = 0 ns, time is 2.05047 ms
+	T_ELL = 11.277837059021815 ns, W_ELL = 0.0031235602036014803 ns, time is 18.834796999999998 ms
+	T_LP_ELL = 11.223269999999999 ns, W_LP_ELL = 0 ns, time is 7.1745939999999999 ms

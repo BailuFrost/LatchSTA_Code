@@ -98,7 +98,7 @@ bool YTO::hasReducedCostViolation() const
         if (!sameActiveScc(u, v))
             continue;
         const double rc = reducedCost(*ei);
-        if (std::isfinite(rc) && rc < -slack)
+        if (!std::isfinite(rc) || rc < -slack)
             return true;
     }
     return false;
@@ -116,7 +116,7 @@ double YTO::computeMaxViolation() const
             continue;
         const double rc = reducedCost(*ei);
         if (!std::isfinite(rc))
-            continue;
+            return std::numeric_limits<double>::infinity();
         if (-rc > maxViolation)
             maxViolation = -rc;
     }
@@ -222,6 +222,7 @@ bool YTO::extractCycle(size_t u, size_t v, const Edge &closing, std::vector<Edge
             return false;
         }
     }
+    std::reverse(cycle.begin(), cycle.end());
     cycle.push_back(closing);
     return !cycle.empty();
 }
@@ -272,11 +273,12 @@ bool YTO::bellmanFord(double lambda, std::vector<char> &predValid, std::vector<E
             if (!sameActiveScc(i, j))
                 continue;
             const double c = _g[*ei].weight - lambda * _g[*ei].delay;
-            if (!std::isfinite(c) || !std::isfinite(dist[i]))
-                continue;
-            if (dist[j] > dist[i] + c + slack)
+            const double candidate = dist[i] + c;
+            if (!std::isfinite(candidate) || !std::isfinite(c))
+                return false;
+            if (dist[j] > candidate + slack)
             {
-                dist[j] = dist[i] + c;
+                dist[j] = candidate;
                 pred[j] = *ei;
                 predValid[j] = 1;
                 updated = true;
@@ -293,7 +295,10 @@ bool YTO::bellmanFord(double lambda, std::vector<char> &predValid, std::vector<E
         if (!sameActiveScc(i, j))
             continue;
         const double c = _g[*ei].weight - lambda * _g[*ei].delay;
-        if (std::isfinite(dist[i]) && dist[j] > dist[i] + c + slack)
+        const double candidate = dist[i] + c;
+        if (!std::isfinite(candidate) || !std::isfinite(c))
+            return false;
+        if (dist[j] > candidate + slack)
         {
             pred[j] = *ei;
             predValid[j] = 1;
@@ -395,23 +400,15 @@ McrStatus YTO::buildFeasibleTree()
         double ratio = 0.0;
         double wsum = 0.0;
         double tsum = 0.0;
-        if (!cycleRatio(negCycle, ratio, wsum, tsum))
-        {
-            if (std::fabs(tsum) <= _transitEps && wsum < -_eps)
-                return McrStatus::NonPositiveTransit;
-            if (negCycle.empty())
-                return McrStatus::NumericalError;
-            // Zero-transit non-negative cycle: skip by a tiny move.
-            if (std::isfinite(hi) && std::isfinite(lo) && hi >= lo)
-                _r = 0.5 * (lo + hi);
-            else if (std::isfinite(hi))
-                _r = hi;
-            else if (std::isfinite(lo))
-                _r = lo;
-            else
-                return McrStatus::NonPositiveTransit;
-            continue;
-        }
+        // Initialization needs signed cycle transit; cycleRatio() accepts positive cycles only.
+        cycleRatio(negCycle, ratio, wsum, tsum);
+        if (negCycle.empty() || !std::isfinite(wsum) || !std::isfinite(tsum))
+            return McrStatus::NumericalError;
+        if (std::fabs(tsum) <= _transitEps)
+            return wsum < -_eps ? McrStatus::Infeasible : McrStatus::NumericalError;
+        ratio = wsum / tsum;
+        if (!std::isfinite(ratio))
+            return McrStatus::NumericalError;
 
         if (tsum > _transitEps)
             hi = std::min(hi, ratio);
@@ -419,7 +416,7 @@ McrStatus YTO::buildFeasibleTree()
             lo = std::max(lo, ratio);
 
         if (std::isfinite(lo) && std::isfinite(hi) && lo > hi + _eps * (1.0 + std::fabs(hi)))
-            return McrStatus::NumericalError;
+            return McrStatus::Infeasible;
 
         if (std::isfinite(lo) && std::isfinite(hi))
             _r = 0.5 * (lo + hi);
@@ -572,7 +569,12 @@ McrResult YTO::runOnActiveScc()
                 return local;
             }
             if (std::fabs(ratio - _r) > std::max(_eps, 1e-12) * (1.0 + std::fabs(ratio)))
-                _r = ratio;
+            {
+                local.status = McrStatus::NumericalError;
+                local.ratio = _r;
+                local.period = _t0 - 2.0 * _r;
+                return local;
+            }
             local.status = McrStatus::Optimal;
             local.ratio = _r;
             local.period = _t0 - 2.0 * _r;
@@ -607,15 +609,22 @@ McrResult YTO::runOnActiveScc()
 void YTO::setResult(McrResult result)
 {
     _result = std::move(result);
+    finalizeMcrResult(_g, _t0, _eps, _result);
     _r = _result.ratio;
     _minRatioCycle = _result.criticalCycle;
-    if (_result.status == McrStatus::Optimal)
-        fillMcrSkew(_g, _result.ratio, _result.period, _eps, _result.skew);
 }
 
 void YTO::run()
 {
     _minRatioCycle.clear();
+    if (_n != num_vertices(_g) || !validMcrGraph(_g) || !std::isfinite(_t0) || _t0 < 0.0 ||
+        !std::isfinite(_eps) || _eps <= 0.0)
+    {
+        McrResult invalid;
+        invalid.status = McrStatus::InvalidInput;
+        setResult(std::move(invalid));
+        return;
+    }
     markCyclicSccs();
 
     std::set<int> cyclicSccs;

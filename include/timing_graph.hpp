@@ -1,14 +1,40 @@
 #pragma once
 #include <boost/graph/adjacency_list.hpp>
+#include <cstddef>
 #include <map>
 #include <string>
+#include <vector>
 #include "strOperation.hpp"
 
 using namespace std;
+struct LatchTiming
+{
+    double tsu = 0.0;
+    double thd = 0.0;
+    double tdqMin = 0.0;
+    double tdqMax = 0.0;
+    double tcqMin = 0.0;
+    double tcqMax = 0.0;
+};
+
 struct NodeIdx
 {
     size_t idx;
+    LatchTiming timing;
 };
+
+constexpr size_t kIoNodeIdx = 0;
+enum McrVariable : size_t { kMcrA, kMcrLatestA, kMcrD, kMcrLatestD, kMcrSkew, kMcrVarsPerNode };
+// shortcut: s_k < T uses a fixed ns margin, revisit when timing scales approach that margin.
+constexpr double kMcrSkewMargin = 1e-8;
+constexpr double kMcrFeasibilityEps = 1e-7;
+constexpr double kMcrPeriodEps = 1e-4;
+static_assert(kMcrVarsPerNode == 5 && kMcrSkewMargin > 0.0, "Invalid MCR layout or phase margin");
+
+inline size_t mcrIndex(size_t node, McrVariable variable)
+{
+    return kMcrVarsPerNode * node + variable;
+}
 struct EdgeDelay
 {
     double maxDelay;
@@ -70,6 +96,9 @@ bool getDelayGraph(const string &fileName, DelayGraph &dg, double &tInitial);
  * @return false 
  */
 bool getRsltDelayGraph(const string &fileName, DelayGraph &dg, double &tInitial);
+bool readDelayGraph(const string &fileName, DelayGraph &dg, double &tInitial);
+bool validDelayGraph(const DelayGraph &dg, double tInitial);
+bool validMcrGraph(const Graph &g);
 /**
  * @brief Generate constraint graph for MCR
  * 
@@ -77,6 +106,12 @@ bool getRsltDelayGraph(const string &fileName, DelayGraph &dg, double &tInitial)
  * @param tInitial 
  */
 void getMcrGraph(const string &fileName, Graph &g, double &tInitial);
+void getMcrGraph(const DelayGraph &dg, Graph &g, double tInitial);
+// Potentials use x[v] - x[u] <= weight - ratio * transit on u -> v.
+double mcrPotentialViolation(const Graph &g, double ratio, const vector<double> &potential);
+double mcrScheduleViolation(const DelayGraph &dg, double period, const vector<double> &potential);
+bool fillMcrSkew(const Graph &g, double ratio, double period, double eps,
+                 vector<double> &skew, vector<double> &potential);
 /**
  * @brief Generate constraint graph for ellipsoid
  * 

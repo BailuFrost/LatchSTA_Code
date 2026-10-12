@@ -341,8 +341,10 @@ double Howard::computeMaxViolation() const
         if (!sameActiveScc(i, j))
             continue;
         if (!std::isfinite(_dist[i]) || !std::isfinite(_dist[j]))
-            continue;
+            return std::numeric_limits<double>::infinity();
         const double viol = _dist[i] - _dist[j] - _g[*ei].weight + _r * _g[*ei].delay;
+        if (!std::isfinite(viol))
+            return std::numeric_limits<double>::infinity();
         if (viol > maxViolation)
             maxViolation = viol;
     }
@@ -352,10 +354,9 @@ double Howard::computeMaxViolation() const
 void Howard::setResult(McrResult result)
 {
     _result = std::move(result);
+    finalizeMcrResult(_g, _t0, _eps, _result);
     _r = _result.ratio;
     _minRatioCycle = _result.criticalCycle;
-    if (_result.status == McrStatus::Optimal)
-        fillMcrSkew(_g, _result.ratio, _result.period, _eps, _result.skew);
 }
 
 McrResult Howard::runOnActiveScc()
@@ -445,6 +446,14 @@ McrResult Howard::runOnActiveScc()
 void Howard::run()
 {
     _minRatioCycle.clear();
+    if (_n != num_vertices(_g) || !validMcrGraph(_g) || !std::isfinite(_t0) || _t0 < 0.0 ||
+        !std::isfinite(_eps) || _eps <= 0.0)
+    {
+        McrResult invalid;
+        invalid.status = McrStatus::InvalidInput;
+        setResult(std::move(invalid));
+        return;
+    }
     markCyclicSccs();
 
     std::set<int> cyclicSccs;

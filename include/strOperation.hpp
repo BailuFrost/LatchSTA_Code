@@ -52,7 +52,7 @@ inline void splitString(const string &str, const string &seps, vector<string> &w
 {
     words.clear();
     size_t i = 0;
-    while (isCharIn(str[i], seps))
+    while (i < str.size() && isCharIn(str[i], seps))
         ++i;
     size_t beginIndex;
     bool isSepBefore = false;
@@ -72,7 +72,7 @@ inline void splitString(const string &str, const string &seps, vector<string> &w
         else
             isSepBefore = false;
     }
-    if (!str.empty() && !isSepBefore)
+    if (beginIndex < str.size() && !isSepBefore)
         words.push_back(str.substr(beginIndex, i - beginIndex));
 }
 
@@ -85,5 +85,5 @@ inline void splitString(const string &str, const string &seps, vector<string> &w
 inline string extension(const string &filename){
     vector<string> words;
     splitString(filename, ".", words);
-    return words.back();
+    return words.empty() ? string{} : words.back();
 }

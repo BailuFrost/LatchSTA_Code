@@ -12,6 +12,9 @@ enum class McrStatus
     InvalidPolicy,
     InvalidVertexIndex,
     NonPositiveTransit,
+    InvalidInput,
+    Infeasible,
+    SolverError,
     NumericalError,
     IterationLimit
 };
@@ -30,6 +33,12 @@ inline const char *mcrStatusToString(McrStatus status)
         return "InvalidVertexIndex";
     case McrStatus::NonPositiveTransit:
         return "NonPositiveTransit";
+    case McrStatus::InvalidInput:
+        return "InvalidInput";
+    case McrStatus::Infeasible:
+        return "Infeasible";
+    case McrStatus::SolverError:
+        return "SolverError";
     case McrStatus::NumericalError:
         return "NumericalError";
     case McrStatus::IterationLimit:
@@ -48,4 +57,9 @@ struct McrResult
     std::size_t iterations = 0;
     /** Clock arrival s_k for DelayGraph node k; s[0] is IO (pinned to 0). */
     std::vector<double> skew;
+    /** Full, IO-normalized a/A/d/D/s solution; Optimal maxViolation covers the complete graph. */
+    std::vector<double> potential;
 };
+
+// Graph solvers require both a critical-cycle certificate and a feasible full-graph schedule.
+void finalizeMcrResult(const Graph &g, double tInitial, double eps, McrResult &result);

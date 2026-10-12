@@ -2,15 +2,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <chrono>
-#include "timing_graph.hpp"
+#include "mcr_result.hpp"
 
 using namespace chrono;
 /**
  * @brief Linear programing for mcr using GLPK
  * 
- * @param fileName 
+ * @param dg Shared delay graph, including per-node latch timing.
+ * @param tInitial Coordinate-transform reference period.
+ * @param result Validated primal solution or explicit failure status.
  */
-nanoseconds mcrLP(const string &fileName,double &tlp);
+nanoseconds mcrLP(const DelayGraph &dg, double tInitial, McrResult &result);
 /**
  * @brief Linear programing for ell using GLPK
  * 
