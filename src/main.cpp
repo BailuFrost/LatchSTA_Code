@@ -91,6 +91,21 @@ int main(int argc, char *const argv[])
         double tInitial = 0.0;
         if (!readDelayGraph(filename, dg, tInitial))
             return 1;
+
+        LatchTiming timing;
+        timing.tsu    = 0.1948711;
+        timing.thd    = -0.0260762;
+        timing.tdqMin = 0.1956779;
+        timing.tdqMax = 0.2897848;
+        timing.tcqMin = 0.2408861;
+        timing.tcqMax = 0.2727443;
+
+        for (size_t k = 0; k < boost::num_vertices(dg); ++k)
+        {
+            if (k != kIoNodeIdx)
+                dg[k].timing = timing;
+        }
+            
         Graph g_mcr, g_ell;
         getMcrGraph(dg, g_mcr, tInitial);
         double tInitialEll = 0.0;
