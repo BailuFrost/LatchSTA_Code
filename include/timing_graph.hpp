@@ -2,6 +2,7 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <cstddef>
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 #include "strOperation.hpp"
@@ -21,6 +22,30 @@ struct NodeIdx
 {
     size_t idx;
     LatchTiming timing;
+    string name;
+    struct ClockChecks
+    {
+        bool characterized = false;
+        std::optional<double> minPulseHigh;
+        std::optional<double> minPulseLow;
+    } clockChecks{};
+    enum class Kind { Latch, Input, Output } kind = Kind::Latch;
+};
+
+struct IoConstraints
+{
+    struct StaConditions
+    {
+        string clockName, clockPort;
+        double clockTransition, inputTransition, outputLoad;
+    };
+    bool enabled = false;
+    string inputPort, outputPort;
+    double inputMin = 0.0, inputMax = 0.0;
+    double outputMin = 0.0, outputMax = 0.0;
+    double setupUncertainty = 0.0, holdUncertainty = 0.0;
+    double dutyCycle = 0.5;
+    std::optional<StaConditions> staConditions;
 };
 
 constexpr size_t kIoNodeIdx = 0;
@@ -60,7 +85,7 @@ struct ArcProperties
 using Graph = boost::adjacency_list<boost::multisetS, boost::vecS, boost::bidirectionalS, NodeProperties,
                                     ArcProperties>;
 using DelayGraph = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, NodeIdx,
-                                         EdgeDelay>; // store the delay information (max & min) between two
+                                         EdgeDelay, IoConstraints>; // store the delay information (max & min) between two
                                                      // flip-flops
 using Vertex = boost::graph_traits<Graph>::vertex_descriptor;
 using Edge = boost::graph_traits<Graph>::edge_descriptor;
@@ -97,7 +122,11 @@ bool getDelayGraph(const string &fileName, DelayGraph &dg, double &tInitial);
  */
 bool getRsltDelayGraph(const string &fileName, DelayGraph &dg, double &tInitial);
 bool readDelayGraph(const string &fileName, DelayGraph &dg, double &tInitial);
+// v1: six parameters; v2: pulse checks; v3: separate SDC IO on a same-transaction DAG.
+void readLatchTiming(const string &fileName, DelayGraph &dg);
 bool validDelayGraph(const DelayGraph &dg, double tInitial);
+// Infinity denotes invalid data, duty cycle or an overflowing pulse-width lower bound.
+double mcrPulsePeriodMin(const DelayGraph &dg, double dutyCycle);
 bool validMcrGraph(const Graph &g);
 /**
  * @brief Generate constraint graph for MCR
@@ -105,11 +134,13 @@ bool validMcrGraph(const Graph &g);
  * @param g 
  * @param tInitial 
  */
-void getMcrGraph(const string &fileName, Graph &g, double &tInitial);
-void getMcrGraph(const DelayGraph &dg, Graph &g, double tInitial);
+// dutyCycle is a fixed high-level fraction in (0, 0.5]; the window opens at s+(1-dutyCycle)*T.
+void getMcrGraph(const string &fileName, Graph &g, double &tInitial, double dutyCycle = 0.5);
+void getMcrGraph(const DelayGraph &dg, Graph &g, double tInitial, double dutyCycle = 0.5);
 // Potentials use x[v] - x[u] <= weight - ratio * transit on u -> v.
 double mcrPotentialViolation(const Graph &g, double ratio, const vector<double> &potential);
-double mcrScheduleViolation(const DelayGraph &dg, double period, const vector<double> &potential);
+double mcrScheduleViolation(const DelayGraph &dg, double period, const vector<double> &potential,
+                            double dutyCycle = 0.5);
 bool fillMcrSkew(const Graph &g, double ratio, double period, double eps,
                  vector<double> &skew, vector<double> &potential);
 /**

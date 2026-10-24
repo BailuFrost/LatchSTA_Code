@@ -12,7 +12,7 @@ using namespace chrono;
  * @param tInitial Coordinate-transform reference period.
  * @param result Validated primal solution or explicit failure status.
  */
-nanoseconds mcrLP(const DelayGraph &dg, double tInitial, McrResult &result);
+nanoseconds mcrLP(const DelayGraph &dg, double tInitial, McrResult &result, double dutyCycle = 0.5);
 /**
  * @brief Linear programing for ell using GLPK
  * 

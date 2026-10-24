@@ -11,18 +11,22 @@
 #include <utility>
 #include "LP.hpp"
 
-nanoseconds mcrLP(const DelayGraph &dg, double tInitial, McrResult &result)
+nanoseconds mcrLP(const DelayGraph &dg, double tInitial, McrResult &result, double dutyCycle)
 {
     result = McrResult{};
     result.status = McrStatus::InvalidInput;
     result.ratio = result.period = std::numeric_limits<double>::quiet_NaN();
     const size_t n = boost::num_vertices(dg), m = boost::num_edges(dg);
+    const auto &boundary = dg[boost::graph_bundle];
     const size_t limit = static_cast<size_t>(std::numeric_limits<int>::max() - 1);
-    if (!validDelayGraph(dg, tInitial) || n > (limit - 1) / kMcrVarsPerNode ||
-        n > limit / 9 || m > (limit - (9 * n - 1)) / 2)
+    if (!validDelayGraph(dg, tInitial) || !std::isfinite(dutyCycle) ||
+        dutyCycle <= 0.0 || dutyCycle > 0.5 || n > (limit - 1) / kMcrVarsPerNode ||
+        n > limit / 14 || m > (limit - 14 * n) / 4)
+        return nanoseconds{0};
+    const double pulseMinimum = mcrPulsePeriodMin(dg, dutyCycle);
+    if (!std::isfinite(pulseMinimum))
         return nanoseconds{0};
     const int columns = static_cast<int>(1 + kMcrVarsPerNode * n);
-    const int rows = static_cast<int>(9 * n - 1 + 2 * m);
     std::unique_ptr<glp_prob, decltype(&glp_delete_prob)> owner(glp_create_prob(), &glp_delete_prob);
     glp_prob *lp = owner.get();
     result.status = McrStatus::SolverError;
@@ -30,9 +34,8 @@ nanoseconds mcrLP(const DelayGraph &dg, double tInitial, McrResult &result)
         return nanoseconds{0};
     glp_set_prob_name(lp, "MCR_with_clock_skew");
     glp_set_obj_dir(lp, GLP_MIN);
-    glp_add_rows(lp, rows);
     glp_add_cols(lp, columns);
-    glp_set_col_bnds(lp, 1, GLP_LO, 0.0, 0.0);
+    glp_set_col_bnds(lp, 1, GLP_LO, pulseMinimum, 0.0);
     glp_set_obj_coef(lp, 1, 1.0);
     const auto column = [](size_t node, McrVariable variable) {
         return static_cast<int>(2 + mcrIndex(node, variable));
@@ -40,10 +43,15 @@ nanoseconds mcrLP(const DelayGraph &dg, double tInitial, McrResult &result)
     for (int c = 2; c <= columns; ++c)
         glp_set_col_bnds(lp, c, GLP_FR, 0.0, 0.0);
     for (size_t k = 0; k < n; ++k)
-        glp_set_col_bnds(lp, column(k, kMcrSkew), k == kIoNodeIdx ? GLP_FX : GLP_LO, 0.0, 0.0);
-    int row = 1;
-    const auto constraint = [&](double upper, std::initializer_list<std::pair<int, double>> coefficients) {
-        if (coefficients.size() > 3 || row > rows)
+    {
+        const bool fixed = k == kIoNodeIdx || (boundary.enabled && dg[k].kind != NodeIdx::Kind::Latch);
+        glp_set_col_bnds(lp, column(k, kMcrSkew), fixed ? GLP_FX : GLP_LO, 0.0, 0.0);
+        if (boundary.enabled && k == kIoNodeIdx)
+            for (const auto variable : {kMcrA, kMcrLatestA, kMcrD, kMcrLatestD})
+                glp_set_col_bnds(lp, column(k, variable), GLP_FX, 0.0, 0.0);
+    }
+    const auto constraint = [&](double upper, std::initializer_list<std::pair<int, double>> coefficients, bool equality = false) {
+        if (coefficients.size() > 3 || !std::isfinite(upper))
             throw std::logic_error("Invalid MCR LP row layout");
         std::array<int, 4> indices{};
         std::array<double, 4> values{};
@@ -53,8 +61,9 @@ nanoseconds mcrLP(const DelayGraph &dg, double tInitial, McrResult &result)
             indices[++count] = coefficient.first;
             values[count] = coefficient.second;
         }
-        glp_set_row_bnds(lp, row, GLP_UP, 0.0, upper);
-        glp_set_mat_row(lp, row++, count, indices.data(), values.data());
+        const int row = glp_add_rows(lp, 1);
+        glp_set_row_bnds(lp, row, equality ? GLP_FX : GLP_UP, equality ? upper : 0.0, upper);
+        glp_set_mat_row(lp, row, count, indices.data(), values.data());
     };
     // Independent primal formulation of PDF MCR constraints (4)-(12).
     for (size_t k = 0; k < n; ++k)
@@ -62,25 +71,55 @@ nanoseconds mcrLP(const DelayGraph &dg, double tInitial, McrResult &result)
         const int a = column(k, kMcrA), A = column(k, kMcrLatestA);
         const int d = column(k, kMcrD), D = column(k, kMcrLatestD), s = column(k, kMcrSkew);
         const auto &t = dg[k].timing;
+        if (boundary.enabled && (k == kIoNodeIdx || dg[k].kind != NodeIdx::Kind::Latch))
+        {
+            if (k == kIoNodeIdx)
+                continue;
+            if (dg[k].kind == NodeIdx::Kind::Input)
+            {
+                constraint(boundary.inputMin, {{a, 1.0}, {1, -(1.0 - dutyCycle)}}, true);
+                constraint(boundary.inputMin, {{d, 1.0}, {1, -(1.0 - dutyCycle)}}, true);
+                constraint(boundary.inputMax, {{A, 1.0}, {1, -(1.0 - dutyCycle)}}, true);
+                constraint(boundary.inputMax, {{D, 1.0}, {1, -(1.0 - dutyCycle)}}, true);
+            }
+            else
+            {
+                constraint(0.0, {{d, 1.0}, {a, -1.0}}, true);
+                constraint(0.0, {{D, 1.0}, {A, -1.0}}, true);
+                constraint(0.0, {{a, 1.0}, {A, -1.0}});
+                constraint(boundary.outputMin - boundary.holdUncertainty, {{1, 1.0 - dutyCycle}, {a, -1.0}});
+                constraint(-boundary.outputMax - boundary.setupUncertainty, {{A, 1.0}, {1, -(2.0 - dutyCycle)}});
+            }
+            continue;
+        }
         if (k != kIoNodeIdx)
             constraint(-kMcrSkewMargin, {{s, 1.0}, {1, -1.0}});
-        constraint(-t.thd, {{s, 1.0}, {a, -1.0}});
-        constraint(-t.tsu, {{A, 1.0}, {s, -1.0}, {1, -1.0}});
+        constraint(-t.thd - boundary.holdUncertainty, {{s, 1.0}, {a, -1.0}});
+        constraint(-t.tsu - boundary.setupUncertainty, {{A, 1.0}, {s, -1.0}, {1, -1.0}});
         constraint(0.0, {{a, 1.0}, {A, -1.0}});
         constraint(0.0, {{d, 1.0}, {D, -1.0}});
         constraint(-t.tdqMin, {{a, 1.0}, {d, -1.0}});
         constraint(-t.tdqMax, {{A, 1.0}, {D, -1.0}});
-        constraint(-t.tcqMin, {{s, 1.0}, {1, 0.5}, {d, -1.0}});
-        constraint(-t.tcqMax, {{s, 1.0}, {1, 0.5}, {D, -1.0}});
+        constraint(-t.tcqMin, {{s, 1.0}, {1, 1.0 - dutyCycle}, {d, -1.0}});
+        constraint(-t.tcqMax, {{s, 1.0}, {1, 1.0 - dutyCycle}, {D, -1.0}});
     }
     auto range = boost::edges(dg);
     for (auto e = range.first; e != range.second; ++e)
     {
         const size_t i = dg[boost::source(*e, dg)].idx, j = dg[boost::target(*e, dg)].idx;
-        constraint(dg[*e].minDelay, {{1, 1.0}, {column(j, kMcrA), 1.0}, {column(i, kMcrD), -1.0}});
-        constraint(-dg[*e].maxDelay, {{1, -1.0}, {column(i, kMcrLatestD), 1.0}, {column(j, kMcrLatestA), -1.0}});
+        const double shift = boundary.enabled ? 0.0 : 1.0;
+        constraint(dg[*e].minDelay, {{1, shift}, {column(j, kMcrA), 1.0}, {column(i, kMcrD), -1.0}});
+        constraint(-dg[*e].maxDelay, {{1, -shift}, {column(i, kMcrLatestD), 1.0}, {column(j, kMcrLatestA), -1.0}});
+        if (boundary.enabled && dg[i].kind == NodeIdx::Kind::Latch)
+        {
+            const double earliest = std::min(dg[i].timing.tcqMin, dg[i].timing.tdqMin) + dg[*e].minDelay;
+            if (dg[j].kind == NodeIdx::Kind::Output)
+                constraint(earliest + boundary.outputMin - boundary.holdUncertainty, {{column(i, kMcrSkew), -1.0}});
+            else
+                constraint(earliest - dg[j].timing.thd - boundary.holdUncertainty,
+                           {{column(j, kMcrSkew), 1.0}, {column(i, kMcrSkew), -1.0}, {1, -(1.0 - dutyCycle)}});
+        }
     }
-    assert(row == rows + 1);
     glp_smcp parameters;
     glp_init_smcp(&parameters);
     parameters.tol_bnd = 1e-9;
@@ -98,7 +137,7 @@ nanoseconds mcrLP(const DelayGraph &dg, double tInitial, McrResult &result)
         std::vector<double> potential(kMcrVarsPerNode * n);
         for (size_t i = 0; i < potential.size(); ++i)
             potential[i] = glp_get_col_prim(lp, static_cast<int>(i + 2));
-        result.maxViolation = mcrScheduleViolation(dg, period, potential);
+        result.maxViolation = mcrScheduleViolation(dg, period, potential, dutyCycle);
         if (!std::isfinite(result.maxViolation) || result.maxViolation > kMcrFeasibilityEps)
             result.status = McrStatus::NumericalError;
         else
