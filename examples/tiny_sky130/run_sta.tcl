@@ -1,4 +1,18 @@
 # Fixed TT, ideal clock, no SPEF: cell loads include connected input capacitance.
+set case_dir [file dirname [file normalize [info script]]]
+set sdc_path [file join $case_dir tiny.sdc]
+set report_dir [file join $case_dir reports]
+if {[info exists ::env(MCR_SDC)] || [info exists ::env(MCR_REPORT_DIR)]} {
+    if {![info exists ::env(MCR_SDC)] || ![info exists ::env(MCR_REPORT_DIR)] ||
+        $::env(MCR_SDC) eq "" || $::env(MCR_REPORT_DIR) eq ""} {
+        error "Candidate validation requires MCR_SDC and MCR_REPORT_DIR"
+    }
+    set sdc_path [file normalize $::env(MCR_SDC)]
+    set report_dir [file normalize $::env(MCR_REPORT_DIR)]
+    if {![file isfile $sdc_path] || $sdc_path eq [file join $case_dir tiny.sdc] || [file exists $report_dir]} {
+        error "Use an existing candidate SDC and a new report directory; baseline and previous reports are protected"
+    }
+}
 cd [file dirname [file normalize [info script]]]
 set liberty ../../sky130_pdk/sky130_fd_sc_hd__tt_025C_1v80.lib
 if {![file isfile $liberty] || ![file isfile tiny_mapped.v]} {
@@ -25,45 +39,45 @@ foreach pin {L1/D L1/GATE L1/Q L2/D L2/GATE L2/Q L3/D L3/GATE L3/Q} {
     }
 }
 
-read_sdc tiny.sdc
-file mkdir reports
-file copy -force tiny.sdc reports/constraints.sdc
-log_begin reports/units.rpt
+read_sdc $sdc_path
+file mkdir $report_dir
+file copy -force $sdc_path [file join $report_dir constraints.sdc]
+log_begin ${report_dir}/units.rpt
 report_units
 log_end
-log_begin reports/clocks.rpt
+log_begin ${report_dir}/clocks.rpt
 report_clock_properties [get_clocks clk]
 log_end
-check_setup -verbose > reports/check_setup.rpt
+check_setup -verbose > ${report_dir}/check_setup.rpt
 
 report_checks -path_delay max -format full_clock_expanded \
     -fields {slew capacitance input_pin net} \
     -group_path_count 100 -endpoint_path_count 100 -digits 6 \
-    > reports/setup.rpt
+    > ${report_dir}/setup.rpt
 report_checks -path_delay min -format full_clock_expanded \
     -fields {slew capacitance input_pin net} \
     -group_path_count 100 -endpoint_path_count 100 -digits 6 \
-    > reports/hold.rpt
-report_check_types -min_pulse_width -digits 6 > reports/pulse_width.rpt
+    > ${report_dir}/hold.rpt
+report_check_types -min_pulse_width -digits 6 > ${report_dir}/pulse_width.rpt
 
 foreach latch {L1 L2 L3} {
-    report_instance $latch > reports/${latch}_instance.rpt
-    log_begin reports/${latch}_arrival.rpt
+    report_instance $latch > ${report_dir}/${latch}_instance.rpt
+    log_begin ${report_dir}/${latch}_arrival.rpt
     report_arrival -digits 6 [get_pins $latch/D]
     log_end
     report_net -digits 6 [get_full_name [get_nets -of_objects [get_pins $latch/Q]]] \
-        > reports/${latch}_load.rpt
-    log_begin reports/${latch}_dq_min.rpt
+        > ${report_dir}/${latch}_load.rpt
+    log_begin ${report_dir}/${latch}_dq_min.rpt
     report_dcalc -from [get_pins $latch/D] -to [get_pins $latch/Q] -min -digits 6
     log_end
-    log_begin reports/${latch}_dq_max.rpt
+    log_begin ${report_dir}/${latch}_dq_max.rpt
     report_dcalc -from [get_pins $latch/D] -to [get_pins $latch/Q] -max -digits 6
     log_end
-    log_begin reports/${latch}_cq_min.rpt
+    log_begin ${report_dir}/${latch}_cq_min.rpt
     report_dcalc -from [get_pins $latch/GATE] -to [get_pins $latch/Q] -min -digits 6
     log_end
-    log_begin reports/${latch}_cq_max.rpt
+    log_begin ${report_dir}/${latch}_cq_max.rpt
     report_dcalc -from [get_pins $latch/GATE] -to [get_pins $latch/Q] -max -digits 6
     log_end
 }
-puts "Reports written to [file normalize reports]; inspect setup, hold, clock edge mapping and pulse width"
+puts "Reports written to $report_dir; inspect setup, hold, clock edge mapping and pulse width"

@@ -13,6 +13,7 @@
 #include "howard.hpp"
 #include "YTO.hpp"
 #include "LP.hpp"
+#include "sdc_export.hpp"
 
 using namespace std;
 using namespace chrono;
@@ -82,15 +83,23 @@ int main(int argc, char *const argv[])
     try
     {
         vector<string> positional;
+        string sdcOutput;
         double dutyCycle = 0.5;
         bool dutySpecified = false;
         for (int i = 1; i < argc; ++i)
         {
             const string argument = argv[i];
-            if (argument == "--duty-cycle")
+            if (argument == "--duty-cycle" || argument == "--export-sdc")
             {
                 if (++i == argc || string(argv[i]).rfind("--", 0) == 0)
                     throw invalid_argument("Missing value for " + argument);
+                if (argument == "--export-sdc")
+                {
+                    if (!sdcOutput.empty() || string(argv[i]).empty())
+                        throw invalid_argument("Specify one nonempty --export-sdc path");
+                    sdcOutput = argv[i];
+                }
+                else
                 {
                     size_t consumed = 0;
                     dutyCycle = stod(argv[i], &consumed);
@@ -106,7 +115,7 @@ int main(int argc, char *const argv[])
                 positional.push_back(argument);
         }
         if (positional.size() != 3 && positional.size() != 4)
-            throw invalid_argument("Usage: main <input.out|input.rslt> <positive iterations> <positive ellipsoid radius> [latch_timing.json] [--duty-cycle fraction]");
+            throw invalid_argument("Usage: main <input.out|input.rslt> <positive iterations> <positive ellipsoid radius> [latch_timing.json] [--duty-cycle fraction] [--export-sdc new_file.sdc]");
         const string filename = positional[0];
         size_t used = 0;
         const int iter = stoi(positional[1], &used);
@@ -132,6 +141,8 @@ int main(int argc, char *const argv[])
                     dg[k].timing = timing;
         }
         const auto &io = dg[boost::graph_bundle];
+        if (!sdcOutput.empty() && (!io.enabled || !io.staConditions))
+            throw invalid_argument("--export-sdc requires v3 JSON with sta_conditions; regenerate the timing JSON");
         if (io.enabled && !dutySpecified)
             dutyCycle = io.dutyCycle;
         Graph g_mcr, g_ell;
@@ -257,6 +268,11 @@ int main(int argc, char *const argv[])
         }
         else
             cout << "ELL skipped: the independent legacy model has no SDC IO constraints." << endl;
+        if (!sdcOutput.empty())
+        {
+            exportHowardSdc(sdcOutput, dg, tInitial, dutyCycle, how_last, lp_last);
+            cout << "Exported Howard candidate SDC: " << sdcOutput << "; independent OpenSTA validation is pending." << endl;
+        }
         return selected ? 0 : 2;
     }
     catch (const exception &error)
