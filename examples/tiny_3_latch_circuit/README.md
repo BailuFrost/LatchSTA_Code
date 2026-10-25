@@ -39,7 +39,7 @@ sky130_fd_sc_hd__dlxtp_1 L1 (
 
 ```bash
 # 从克隆后的仓库根目录执行
-cd examples/tiny_sky130
+cd examples/tiny_3_latch_circuit
 command -v yosys
 command -v sta
 yosys -V
@@ -117,7 +117,10 @@ Q→D 组合路径、最短/最长路径引脚映射以及原文件 SHA-256。se
 
 该文件是当前 TT、slew/load 下的基线证据。后文转换器可生成 MCR 输入和
 逐实例六参数 JSON，当前入口已支持显式加载这些实例参数；未提供 JSON 时
-使用统一常量。v3 已接入下文限定的真实 IO 和周期关系；完整引脚图仍待完成，候选 STA 报告的复核结论见后文。
+使用统一常量。v3 已接入下文限定的真实 IO 和周期关系；新增完整引脚图与边界映射
+的导出流程见文末。本日已有两轮真实导出归档于仓库根目录 `run_tiny_02/`，
+图极值与见证已独立复核；结果范围和后续缺口见 `docs/progress/2026-10-25.md`。
+候选调度的既有复核见下文。
 
 技能 formatter 可解析文件；实例数量、最终输出连接及理想布尔抽象已检查。
 完整严格门禁在加载外部接口时触发工具自身的 `NameError`，未通过验收。
@@ -136,7 +139,7 @@ Description/testbench 路径来自技能格式模板，当前不存在对应 PDF
 在项目根目录执行（Python 3.9+，仅使用标准库）：
 
 ```bash
-python examples/tiny_sky130/convert_opensta_reports.py
+python examples/tiny_3_latch_circuit/convert_opensta_reports.py
 ```
 
 默认读取脚本旁的 `reports/`，生成脚本旁的 `tiny.blif.out` 和
@@ -144,10 +147,10 @@ python examples/tiny_sky130/convert_opensta_reports.py
 也可以指定输入和输出位置；输出建议放在报告输入目录之外：
 
 ```bash
-python examples/tiny_sky130/convert_opensta_reports.py \
-    --reports examples/tiny_sky130/reports \
-    --output examples/tiny_sky130/tiny.blif.out \
-    --json-output examples/tiny_sky130/latch_timing.json
+python examples/tiny_3_latch_circuit/convert_opensta_reports.py \
+    --reports examples/tiny_3_latch_circuit/reports \
+    --output examples/tiny_3_latch_circuit/tiny.blif.out \
+    --json-output examples/tiny_3_latch_circuit/latch_timing.json
 ```
 
 本案例转换结果为：
@@ -197,13 +200,13 @@ MCR 将 `T >= max(high/duty, low/(1-duty))` 同时用于图、LP 和结果验证
 通过可选的第四个参数显式加载逐实例 JSON。v3 会拆分 INPUT/OUTPUT；v1/v2 保留旧占位模型：
 
 ```bash
-./main examples/tiny_sky130/tiny.blif.out 1 100 examples/tiny_sky130/latch_timing.json
+./main examples/tiny_3_latch_circuit/tiny.blif.out 1 100 examples/tiny_3_latch_circuit/latch_timing.json
 ```
 
 本例 SDC 高电平占空比为 0.5。可在命令末尾指定 (0, 0.5] 内的值，例如：
 
 ```bash
-./main examples/tiny_sky130/tiny.blif.out 1 100 examples/tiny_sky130/latch_timing.json --duty-cycle 0.4
+./main examples/tiny_3_latch_circuit/tiny.blif.out 1 100 examples/tiny_3_latch_circuit/latch_timing.json --duty-cycle 0.4
 ```
 
 每次求解固定该占空比，透明窗口为 `[s_k+(1-duty)*T, s_k+T]`。
@@ -259,14 +262,14 @@ cycle shift=0，输入发射为本周期上升沿，输出 setup/hold 捕获为�
 本仓库根目录直接对应原工作区的 `code` 目录。同步源码到虚拟机后，从仓库的 `build/` 执行：
 
 ```bash
-python3 ../examples/tiny_sky130/convert_opensta_reports.py
+python3 ../examples/tiny_3_latch_circuit/convert_opensta_reports.py
 cmake ..
 cmake --build . -j2
-./main ../examples/tiny_sky130/tiny.blif.out 1 100 \
-  ../examples/tiny_sky130/latch_timing.json \
-  --export-sdc ../examples/tiny_sky130/candidate_howard_repro.sdc
+./main ../examples/tiny_3_latch_circuit/tiny.blif.out 1 100 \
+  ../examples/tiny_3_latch_circuit/latch_timing.json \
+  --export-sdc ../examples/tiny_3_latch_circuit/candidate_howard_repro.sdc
 
-cd ../examples/tiny_sky130
+cd ../examples/tiny_3_latch_circuit
 MCR_SDC="$PWD/candidate_howard_repro.sdc" \
 MCR_REPORT_DIR="$PWD/reports_howard_repro_01" \
 sta -no_init -no_splash -exit run_sta.tcl
@@ -299,5 +302,153 @@ Howard 和 LP 必须均为有效 Optimal，图约束及原式残差不超过 `1e
 文件保护。运行：
 
 ```bash
-python -m unittest discover -s examples/tiny_sky130 -p 'test_convert_opensta_reports.py' -v
+python -m unittest discover -s examples/tiny_3_latch_circuit -p 'test_convert_opensta_reports.py' -v
+```
+
+## 完整引脚图、弧数据和边界映射导出
+
+`run_sta.tcl` 在原有 27 份报告全部输出后，加载同目录的
+`export_pin_graph.tcl`，显式执行 `sta::find_delays`，直接遍历 OpenSTA 的网络引脚、
+全部图顶点、连线边和单元时序弧。它不读取 `report_checks` 的有限路径列表来构图。
+复制工程时须同时复制这两个 Tcl 文件；仓库外层 `examples/` 与 `code/examples/`
+各保留一份相同的脚本。
+
+导出目录为本轮报告目录下的 `pin_graph/`，已有目录会拒绝覆盖。
+所有文件为 UTF-8、带表头、双引号转义的 TSV，可用 Python 标准库
+`csv.DictReader(stream, delimiter="\t")` 读取。时间统一为 ns。
+
+| 文件 | 内容 |
+|---|---|
+| `pins.tsv` | 所有顶层端口和叶单元信号引脚，包括未连接引脚；记录实例、库单元、库、引脚方向、网络名及 Latch/IO 边界角色 |
+| `vertices.tsv` | OpenSTA 图顶点与引脚 ID 的映射；双向引脚的 load/driver 顶点分别保存；无图顶点的网络引脚仍保留在 pins 表 |
+| `edges.tsv` | 全部图边，含 net/cell 类型、时序角色、条件、mode 和禁用原因；latch 内部弧、时钟和检查弧也保留 |
+| `arc_delays.tsv` | 每条 rise/fall 时序弧在当前 mode 下所有 `sta::scenes` 的 min/max 存储延迟，以及源/目标顶点 slew |
+| `slews.tsv` | 每个顶点、scene、min/max、rise/fall 的存储 slew |
+| `boundary_paths.tsv` | 相邻 Latch/数据 IO 边界之间按 scene、min/max、起终翻转方向区分的极值路径，以及顶点/边/弧 ID 序列 |
+| `boundary_edges.tsv` | 每个边界对、每个 scene 的 Dmin/Dmax 包络，分别指向最短和最长路径 ID |
+| `manifest.tsv` | 格式版本、单位、分析语义和图规模 |
+
+ID 根据引脚名、顶点类型和时序边属性排序生成，不保存易变的 SWIG 指针。
+同一份图导出的多个文件使用一致的 ID；不同拓扑之间不保证 ID 不变。
+一个 pin 可以对应多个 vertex，或者没有 vertex，不能把两张表直接等同。
+
+`arc_delays.tsv` 的 `status` 为 `calculated`、`disabled` 或 `not_applicable`。
+禁用弧及 setup/min、hold/max 不适用项保留结构并留空延迟，不填伪造的零值。
+非有限数值、缺失接口、无法区分的平行边或没有时序弧的边会报错。
+`from_vertex_slew_ns`、`to_vertex_slew_ns` 是图中该顶点的 GBA slew，
+不是每条输入弧单独计算的输出 slew，不能当作逐路径重新表征结果。
+
+边界提取从顶层数据输入或 latch Q 开始，到遇到的第一个 latch D 或顶层数据输出
+为止。时钟源端口不作为数据输入，且只沿 `wire`、`combinational` 活动弧传播。
+因此 DQ/CQ、setup/hold 检查、时钟 latency、外部 IO delay 都不会加进组合延迟。
+起点 arrival 置零，使用图中已经计算的弧延迟求和。
+rise/fall 在反相、非单调弧和分支重汇合处分别维护；最短与最长见证独立保存。
+压缩后可以出现 latch 反馈边，但纯组合环会明确报错，不能靠 STA 的断环边静默消失。
+
+这里得到的是**当前工况下固定 GBA 弧权重的结构极值**，没有做逐路径 slew/load
+重新计算或布尔可敏化分析；条件与禁用信息保存在图中。当前 runner 仍限定本例的
+单时钟、扁平 D/GATE/Q latch 和无 SPEF 工况；顶层双向端口和 FF 边界会拒绝。
+输出先写临时目录，全部完成后才发布为 `pin_graph/`；失败可能留下
+`.pin_graph_*` 临时目录，不能将其当作成功结果。
+这些新文件暂不替换原报告转换器生成的 JSON 或现有求解器输入。
+
+使用已有 Howard 候选运行一轮，并为本轮指定尚不存在的报告目录：
+
+```bash
+cd examples/tiny_3_latch_circuit
+MCR_SDC="$PWD/candidate_howard.sdc" \
+MCR_REPORT_DIR="$PWD/reports_graph_01" \
+sta -no_init -no_splash -exit run_sta.tcl > opensta_graph_01.log 2>&1
+```
+
+检查日志中同时出现 `Complete pin graph written to` 和最后的
+`Reports written to`。当前电路应有 `i_din→L1`、`L1→L2`、`L2→L3`、
+`L3→o_dout` 四组边界连接；仍需用真实执行输出核对延迟和见证。
+原有基线和候选报告没有因新增脚本而被重写。
+
+接口依据为 OpenSTA 3.1 的官方
+[Graph.i](https://github.com/The-OpenROAD-Project/OpenSTA/blob/150bc0dbd103cbc97c0f85f63c4c8338826121fd/graph/Graph.i)、
+[DelayCalc.i](https://github.com/The-OpenROAD-Project/OpenSTA/blob/150bc0dbd103cbc97c0f85f63c4c8338826121fd/dcalc/DelayCalc.i)
+及相关网络/Liberty SWIG 接口；其他版本缺少所需接口时会报错。
+
+## 一次执行 Yosys、STA、优化与候选验证
+
+配置好 Linux/WSL 中的 Yosys、当前 exporter 所需的 OpenSTA、Python 3.9+，
+并构建支持 `--export-sdc` 的 `main` 后，在仓库根目录执行：
+
+```sh
+sh examples/tiny_3_latch_circuit/run_flow.sh ./build/main ./run_tiny_01
+```
+
+第二个参数必须是尚不存在的目录，且其父目录已经存在。相对路径从调用目录解析。
+脚本不需要可执行位；再次运行请指定新目录名。求解器须先构建，脚本不自动配置 Conda 或编译依赖。
+
+脚本复制本轮需要的源网表、初始 SDC、Yosys/Tcl/Python 脚本、完整 Liberty 和库表，
+在新目录内依次执行：Yosys 检查与网表导出 → OpenSTA 基线报告与引脚图 →
+报告转换和检查 → Howard/LP 求解及候选 SDC 导出 → 新 OpenSTA 进程验证候选。
+继承的 `MCR_SDC`/`MCR_REPORT_DIR` 不影响本轮基线。原案例及历史报告不会被覆盖。
+
+运行目录保存 `tool_versions.txt`、源码 Git 状态（可用时）、求解器路径/参数/哈希、
+执行脚本与输入副本及 `inputs.sha256`；末尾再检查输入和求解器哈希。
+五阶段日志位于 `logs/` 及案例的 `reports/`。案例路径为运行目录中的
+`examples/tiny_3_latch_circuit/`，其中包含基线 `reports/`、生成的 `tiny.blif.out`、
+`latch_timing.json`、`candidate_howard.sdc` 和候选 `reports_candidate/`。
+两轮报告各包含本轮的 `pin_graph/` 导出。
+
+`baseline_check.json` 和 `candidate_check.json` 记录已报告的路径数、最差 setup/hold slack、
+已列出的脉宽数量和引脚。退出码非零表示本轮未完成或未通过，保留中间产物供排查。
+检查器拒绝工具日志错误/警告、未完成输出、非空 `check_setup`、缺失图文件、
+缺失/违例路径、边界对覆盖变化及缺失/违例脉宽；不能仅以 `sta` 退出码零判定通过。
+
+成功状态 `reported_checks_passed` 仅表示所报告检查通过。最坏脉宽摘要可能只列一个实例，
+固定数量的路径报告也不是任意电路的完整签核；仍需核对时钟沿、latency、周期映射和模型范围。
+此入口继续使用已有报告转换器生成求解器输入，新增完整引脚图另行归档，尚未取代转换器。
+当前 Yosys 脚本适用于显式实例化标准单元的 tiny，未提供任意行为级 RTL 的综合映射流程。
+
+检查器测试仅使用归档报告与明确标记的 mock 图/日志，不执行 STA：
+
+```sh
+python3 -m unittest discover -s tests -p test_flow_reports.py -v
+```
+
+## 将引脚图渲染为 PNG / SVG
+
+`render_pin_graph.py` 使用 Matplotlib 和 NetworkX，直接读取完整图导出的 TSV，
+不修改原始数据，也不重新进行时序分析。首次使用缺少依赖时安装：
+
+```sh
+python3 -m pip install matplotlib networkx
+```
+
+在仓库根目录，以本轮候选结果为例：
+
+```sh
+python3 examples/tiny_3_latch_circuit/render_pin_graph.py \
+  run_tiny_02/examples/tiny_sky130/reports_candidate/pin_graph
+```
+
+默认在同轮 `reports_candidate/figures/` 新建目录，输出：
+
+- `pin_graph.png`、`pin_graph.svg`：完整引脚结构图，按单元实例分组，区分连线、
+  组合弧、Latch DQ、时钟/CQ 和检查弧，保留孤立内部引脚及没有图顶点的网络引脚。
+- `boundary_graph.png`、`boundary_graph.svg`：压缩的 Latch/IO 边界图，标注 scene、
+  Dmin/Dmax（ns）和边 ID；数值直接来自 `boundary_edges.tsv`。
+
+基线图将输入改为 `reports/pin_graph` 即可。已有输出目录会拒绝覆盖；重新渲染可指定新目录：
+
+```sh
+python3 examples/tiny_3_latch_circuit/render_pin_graph.py \
+  run_tiny_02/examples/tiny_sky130/reports_candidate/pin_graph \
+  --output-dir run_tiny_02/figures_candidate_v2
+```
+
+图片用于检查图结构和已导出的组合延迟，不表示 setup/hold 已通过，也不将边界 Dmax
+当作全路径 slack。完整图的 setup/hold/width 边是检查关系，不是数据传播连接。
+脚本读取 schema 1 / ns 的图，适合当前小电路；大规模网表应分块查看或采用交互工具。
+无需 Graphviz、OpenSTA 或求解器即可渲染已有 TSV。
+
+渲染与输入校验测试：
+
+```sh
+python3 -m unittest discover -s tests -p test_render_pin_graph.py -v
 ```

@@ -13,10 +13,14 @@ if {[info exists ::env(MCR_SDC)] || [info exists ::env(MCR_REPORT_DIR)]} {
         error "Use an existing candidate SDC and a new report directory; baseline and previous reports are protected"
     }
 }
+if {[file exists [file join $report_dir pin_graph]]} {
+    error "Use a new report directory; existing pin graph and reports are protected"
+}
 cd [file dirname [file normalize [info script]]]
 set liberty ../../sky130_pdk/sky130_fd_sc_hd__tt_025C_1v80.lib
-if {![file isfile $liberty] || ![file isfile tiny_mapped.v]} {
-    error "Missing Liberty or tiny_mapped.v; run Yosys export.ys first"
+set graph_exporter [file join $case_dir export_pin_graph.tcl]
+if {![file isfile $liberty] || ![file isfile tiny_mapped.v] || ![file isfile $graph_exporter]} {
+    error "Missing Liberty, tiny_mapped.v or export_pin_graph.tcl; copy the exporter and run Yosys export.ys first"
 }
 
 read_liberty $liberty
@@ -80,4 +84,6 @@ foreach latch {L1 L2 L3} {
     report_dcalc -from [get_pins $latch/GATE] -to [get_pins $latch/Q] -max -digits 6
     log_end
 }
+source $graph_exporter
+pin_graph::export $report_dir
 puts "Reports written to $report_dir; inspect setup, hold, clock edge mapping and pulse width"

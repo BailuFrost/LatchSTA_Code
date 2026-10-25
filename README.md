@@ -91,7 +91,7 @@ Howard 和 LP 均须为 Optimal、通过图及原式检查，并在周期容差�
 输出必须是尚不存在的 `.sdc` 文件，父目录须已存在。导出保留 IO、工况和 uncertainty，
 以各 latch GATE 引脚的理想 network latency 表达偏移；注释记录周期、占空比和透明窗口。
 仅支持扁平简单实例名及 D/GATE/Q 接口，尚不表示实际时钟树实现或 OpenSTA 验证通过。
-新增源文件后需重新运行 CMake 配置，再构建。案例完整命令见 `examples/tiny_sky130/README.md`。
+新增源文件后需重新运行 CMake 配置，再构建。案例完整命令见 `examples/tiny_3_latch_circuit/README.md`。
 
 运行示例：
 ```bash
@@ -106,3 +106,10 @@ benchmark/: 存放标准测试数据集。
 benchmark_rslt/: 存放参考测试结果数据。
 CSTIC/:专门用于对基于寄存器的时序报告进行解析，重点分析在锁存器依赖环境下FPGA 设计能够达到的时序提升空间。
 cmake/: 包含 CMake 构建系统的相关配置文件。
+
+## 2026-10-25 进展与案例
+
+- [当日推进记录与验证边界](docs/progress/2026-10-25.md)。
+- [三锁存器全流程、完整引脚图与绘图](examples/tiny_3_latch_circuit/README.md)，真实运行归档见 [run_tiny_02](run_tiny_02/)。
+- [主从 latch 计数器综合与 STA](examples/counter/README.md)：已有真实失败记录，平行时序边导出问题待修复；当前不支持该计数器优化。
+- [回归测试说明](tests/README.md)。

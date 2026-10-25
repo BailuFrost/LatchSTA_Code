@@ -8,8 +8,8 @@ Keep assertions enabled (do not pass `-DNDEBUG`).
 g++ -std=c++17 -Wall -Wextra -Iinclude -I"$CONDA_PREFIX/include" \
     tests/test_read_latch_timing.cpp src/timing_graph.cpp \
     -o test_read_latch_timing
-./test_read_latch_timing examples/tiny_sky130/tiny.blif.out \
-    examples/tiny_sky130/latch_timing.json tmp/latch_timing_checks
+./test_read_latch_timing examples/tiny_3_latch_circuit/tiny.blif.out \
+    examples/tiny_3_latch_circuit/latch_timing.json tmp/latch_timing_checks
 ```
 
 Checks all six parameters for L1/L2/L3, zero IO timing, MCR edge coefficients,
@@ -29,8 +29,8 @@ g++ -std=c++17 -Wall -Wextra -Iinclude -I"$CONDA_PREFIX/include" \
     tests/test_mcr_duty_cycle.cpp src/timing_graph.cpp \
     src/howard.cpp src/LP.cpp -L"$CONDA_PREFIX/lib" -lglpk \
     -o test_mcr_duty_cycle
-./test_mcr_duty_cycle examples/tiny_sky130/tiny.blif.out \
-    examples/tiny_sky130/latch_timing.json
+./test_mcr_duty_cycle examples/tiny_3_latch_circuit/tiny.blif.out \
+    examples/tiny_3_latch_circuit/latch_timing.json
 ```
 
 The kernel test explicitly removes v3 IO metadata before loading. It checks the 0.4620274367 ns pulse-limited
@@ -52,8 +52,8 @@ The following graph/Howard check needs Boost and C++17, without GLPK/LEDA/xtenso
 g++ -std=c++17 -Wall -Wextra -Iinclude -I"$CONDA_PREFIX/include" \
     tests/test_real_io.cpp src/timing_graph.cpp src/howard.cpp \
     -o test_real_io
-./test_real_io examples/tiny_sky130/tiny.blif.out \
-    examples/tiny_sky130/latch_timing.json tmp/real_io_checks
+./test_real_io examples/tiny_3_latch_circuit/tiny.blif.out \
+    examples/tiny_3_latch_circuit/latch_timing.json tmp/real_io_checks
 ```
 
 It checks separate ports, reference isolation, the hand-derived 3.541155 ns
@@ -67,8 +67,8 @@ For an independent GLPK/Howard comparison on v3 data:
 g++ -std=c++17 -Wall -Wextra -Iinclude -I"$CONDA_PREFIX/include" \
     tests/test_real_io_lp.cpp src/timing_graph.cpp src/howard.cpp \
     src/LP.cpp -L"$CONDA_PREFIX/lib" -lglpk -o test_real_io_lp
-./test_real_io_lp examples/tiny_sky130/tiny.blif.out \
-    examples/tiny_sky130/latch_timing.json
+./test_real_io_lp examples/tiny_3_latch_circuit/tiny.blif.out \
+    examples/tiny_3_latch_circuit/latch_timing.json
 ```
 
 Keep assertions enabled for all checks. Python converter tests also cover
@@ -82,12 +82,12 @@ Build with the same Boost/GLPK dependencies, keeping assertions enabled:
 g++ -std=c++17 -Wall -Wextra -Iinclude -I"$CONDA_PREFIX/include" \
     tests/test_sdc_export.cpp src/sdc_export.cpp src/timing_graph.cpp \
     src/howard.cpp src/LP.cpp -L"$CONDA_PREFIX/lib" -lglpk -o test_sdc_export
-./test_sdc_export examples/tiny_sky130/tiny.blif.out \
-    examples/tiny_sky130/latch_timing.json tmp/sdc_export_checks
+./test_sdc_export examples/tiny_3_latch_circuit/tiny.blif.out \
+    examples/tiny_3_latch_circuit/latch_timing.json tmp/sdc_export_checks
 tclsh tests/test_sdc_export.tcl tmp/sdc_export_checks/candidate_howard.sdc \
-    examples/tiny_sky130/run_sta.tcl tmp/mock_sta50
+    examples/tiny_3_latch_circuit/run_sta.tcl tmp/mock_sta50
 tclsh tests/test_sdc_export.tcl tmp/sdc_export_checks/candidate_duty40.sdc \
-    examples/tiny_sky130/run_sta.tcl tmp/mock_sta40
+    examples/tiny_3_latch_circuit/run_sta.tcl tmp/mock_sta40
 ```
 
 The C++ test solves Howard and GLPK at 50%/40%, exports their real candidate,
@@ -100,3 +100,46 @@ and protection of baseline/existing reports. Mock report files are explicitly
 marked as such and must never be treated as timing evidence. Supply new mock
 report directory names for repeated runs. These tests do not run OpenSTA or
 validate physical clock implementation.
+
+## Counter synthesis/STA flow
+
+```sh
+python3 -m unittest discover -s tests -p test_counter_flow.py -v
+```
+
+The counter tests run Tcl control-flow fixtures for both latch polarities, reset
+arcs, invalid pins/cells and output protection. With POSIX sh available, shell
+tests use explicitly labeled mock Yosys/STA executables and real SHA-256 hashing
+to check staging, paths with spaces, reported violations, missing graph/reset
+checks, tool failure, input mutation and preservation of earlier runs. Set
+`COUNTER_TEST_SH` if sh is not on PATH, and `TCLSH` if needed. No real synthesis,
+STA, functional simulation or optimizer validation is performed by these tests.
+The counter flow intentionally records optimization as unsupported by MCR v3.
+
+## Complete pin graph export
+
+From the repository root, with Python 3.9+ and Tcl 8.6+ on PATH:
+
+```bash
+python3 -m unittest discover -s tests -p 'test_pin_graph.py' -v
+```
+
+Set `TCLSH` to the Tcl interpreter path if it is not on PATH. The test uses a
+synthetic SWIG-shaped fixture in `pin_graph_mock.tcl`, checks every compressed
+extremum against exhaustive transition-compatible path enumeration, and validates
+all witness vertex/edge/arc IDs and delay sums. It covers reconvergence, inversion,
+multiple scenes, nonzero wire delay, disabled arcs, latch feedback, unconnected
+pins, user-unit conversion, deterministic IDs, pure combinational cycles and
+nonfinite delay/slew rejection. Fixtures are written in a temporary directory
+under the repository and removed after each test.
+
+The existing `test_sdc_export.tcl` runner check also executes the graph export
+using this fixture, while retaining the SDC/IO/protection and 27-report checks.
+All fixture timing is synthetic; these tests do not run OpenSTA. Actual OpenSTA
+3.1 export and comparison with the baseline reports remain an integration check
+to run in the STA environment. See the example README for files and commands.
+
+The 2026-10-25 real three-latch archive is in `run_tiny_02/`; its two graph
+exports and reported checks have been independently rechecked. This archive does
+not turn mock tests into STA execution. Rendering tests also require Matplotlib,
+NetworkX and Pillow; see the example README for the plotting environment.

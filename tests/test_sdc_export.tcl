@@ -61,10 +61,12 @@ proc get_full_name {value} {return $value}
 set original_baseline [contents [file join [file dirname $runner] tiny.sdc]]
 set ::env(MCR_SDC) $candidate
 set ::env(MCR_REPORT_DIR) $destination
+source [file join [file dirname [info script]] pin_graph_mock.tcl]
 source $runner
 assert {$::loaded_sdc eq $candidate}
 assert {[contents [file join $destination constraints.sdc]] eq [contents $candidate]}
 assert {[llength [glob -directory $destination *.rpt]] == 27}
+assert {[file isfile [file join $destination pin_graph boundary_edges.tsv]]}
 assert {![info exists ::logging]}
 set period [lindex $::clock_args [expr {[lsearch -exact $::clock_args -period] + 1}]]
 set wave [lindex $::clock_args [expr {[lsearch -exact $::clock_args -waveform] + 1}]]
