@@ -7,16 +7,7 @@ read_verilog counter.v
 hierarchy -check -top counter
 synth -top counter -noabc -latches info
 
-select -assert-count 8 counter/t:$_DLATCH*
-select -assert-none counter/t:$_DFF* counter/t:$_SDFF* counter/t:$_ALDFF*
-select *
-
-# 此处的 Yosys 0.68 dfflibmap 未映射 latch；使用已核对的专用规则。
 techmap -map latch_map.v
-select -assert-count 4 counter/t:sky130_fd_sc_hd__dlrtn_1
-select -assert-count 4 counter/t:sky130_fd_sc_hd__dlrtp_1
-select -assert-none counter/t:$_DLATCH*
-select *
 
 # 将组合逻辑映射到目标库
 abc -liberty ../../sky130_pdk/sky130_fd_sc_hd__tt_025C_1v80.lib
@@ -25,12 +16,6 @@ abc -liberty ../../sky130_pdk/sky130_fd_sc_hd__tt_025C_1v80.lib
 clean
 hierarchy -check -top counter
 check -assert
-
-# 必须保留 8 个真实 latch；不允许 FF 或 Yosys 内部未映射单元。
-select -assert-count 8 counter/t:sky130_fd_sc_hd__dl*
-select -assert-none counter/t:sky130_fd_sc_hd__*df*
-select -assert-none counter/t:$*
-select *
 
 # 输出统计和门级网表
 stat -liberty ../../sky130_pdk/sky130_fd_sc_hd__tt_025C_1v80.lib

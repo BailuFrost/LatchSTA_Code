@@ -13,16 +13,12 @@ wire [3:0] next_count;
 assign next_count = en ? (slave + 4'd1) : slave;
 
 always @(*) begin
-    if (!rst_n)
-        master <= 4'b0000;
-    else if (!clk)
-        master <= next_count;
+    if(!clk)
+        master <= next_count & {4{rst_n}};
 end
 
 always @(*) begin
-    if (!rst_n)
-        slave <= 4'b0000;
-    else if (clk)
+    if(clk)
         slave <= master;
 end
 

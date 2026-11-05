@@ -74,7 +74,7 @@ static void printMcrResult(const string &tag, const McrResult &result, nanosecon
          << elapsed.count() / (1e6 * iterations) << " ms, status = " << mcrStatusToString(result.status)
          << ", cycle_len = " << result.criticalCycle.size() << ", max_violation = "
          << result.maxViolation << ", iters = " << result.iterations << endl;
-    if (result.status == McrStatus::Optimal)
+    if (result.status == McrStatus::Optimal && dg[boost::graph_bundle].optimizeSkew)
         printSkewSchedule(tag, result.skew, dg);
 }
 
@@ -86,10 +86,16 @@ int main(int argc, char *const argv[])
         string sdcOutput;
         double dutyCycle = 0.5;
         bool dutySpecified = false;
+        bool noSkew = false;
+        bool readOnly = false;
         for (int i = 1; i < argc; ++i)
         {
             const string argument = argv[i];
-            if (argument == "--duty-cycle" || argument == "--export-sdc")
+            if (argument == "--read-only")
+                readOnly = true;
+            else if (argument == "--no-skew")
+                noSkew = true;
+            else if (argument == "--duty-cycle" || argument == "--export-sdc")
             {
                 if (++i == argc || string(argv[i]).rfind("--", 0) == 0)
                     throw invalid_argument("Missing value for " + argument);
@@ -115,7 +121,9 @@ int main(int argc, char *const argv[])
                 positional.push_back(argument);
         }
         if (positional.size() != 3 && positional.size() != 4)
-            throw invalid_argument("Usage: main <input.out|input.rslt> <positive iterations> <positive ellipsoid radius> [latch_timing.json] [--duty-cycle fraction] [--export-sdc new_file.sdc]");
+            throw invalid_argument("Usage: main <input.out|input.rslt> <positive iterations> <positive ellipsoid radius> [latch_timing.json] [--read-only] [--no-skew] [--duty-cycle fraction] [--export-sdc new_file.sdc]");
+        if (readOnly && !sdcOutput.empty())
+            throw invalid_argument("--read-only cannot export a solver SDC");
         const string filename = positional[0];
         size_t used = 0;
         const int iter = stoi(positional[1], &used);
@@ -132,7 +140,9 @@ int main(int argc, char *const argv[])
 
         if (positional.size() == 4)
             readLatchTiming(positional[3], dg);
-        else
+        else if (!dg[boost::graph_bundle].timingModel.empty())
+            throw invalid_argument("Counter timing input requires its accompanying schema-v4 timing JSON");
+        else if (!readOnly)
         {
             const LatchTiming timing{0.1948711, -0.0260762, 0.1956779,
                                      0.2897848, 0.2408861, 0.2727443};
@@ -140,15 +150,34 @@ int main(int argc, char *const argv[])
                 if (k != kIoNodeIdx)
                     dg[k].timing = timing;
         }
-        const auto &io = dg[boost::graph_bundle];
-        if (!sdcOutput.empty() && (!io.enabled || !io.staConditions))
+        auto &io = dg[boost::graph_bundle];
+        if (readOnly)
+        {
+            if (!validDelayGraph(dg, tInitial))
+                throw invalid_argument("Invalid delay graph");
+            size_t latches = 0, inputs = 0, outputs = 0;
+            for (size_t k = 1; k < boost::num_vertices(dg); ++k)
+            {
+                latches += dg[k].kind == NodeIdx::Kind::Latch;
+                inputs += dg[k].kind == NodeIdx::Kind::Input;
+                outputs += dg[k].kind == NodeIdx::Kind::Output;
+            }
+            cout << "Timing graph loaded (read only): vertices=" << boost::num_vertices(dg)
+                 << " (including reference), edges=" << boost::num_edges(dg)
+                 << ", latches=" << latches << ", inputs=" << inputs << ", outputs=" << outputs
+                 << ", maximum combinational delay=" << tInitial << " ns" << endl;
+            return 0;
+        }
+        io.optimizeSkew = !noSkew;
+        const bool counterModel = !io.timingModel.empty();
+        if (!sdcOutput.empty() && !counterModel && (!io.enabled || !io.staConditions))
             throw invalid_argument("--export-sdc requires v3 JSON with sta_conditions; regenerate the timing JSON");
-        if (io.enabled && !dutySpecified)
+        if ((io.enabled || counterModel) && !dutySpecified)
             dutyCycle = io.dutyCycle;
         Graph g_mcr, g_ell;
         getMcrGraph(dg, g_mcr, tInitial, dutyCycle);
         double tInitialEll = 0.0;
-        if (!io.enabled)
+        if (!io.enabled && !noSkew)
             getEllGraph(filename, g_ell, tInitialEll);
         nanoseconds time_howard{0}, time_yto{0}, time_lp_mcr{0}, time_ell{0}, time_lp_ell{0};
         McrResult how_last, yto_last, lp_last;
@@ -164,12 +193,15 @@ int main(int argc, char *const argv[])
             how_last = how.getResult();
             checkMcrResult(dg, g_mcr, how_last, dutyCycle);
 
-            YTO yto(g_mcr, boost::num_vertices(g_mcr), tInitial, solverEps);
-            beginTime = high_resolution_clock::now();
-            yto.run();
-            time_yto += high_resolution_clock::now() - beginTime;
-            yto_last = yto.getResult();
-            checkMcrResult(dg, g_mcr, yto_last, dutyCycle);
+            if (!counterModel)
+            {
+                YTO yto(g_mcr, boost::num_vertices(g_mcr), tInitial, solverEps);
+                beginTime = high_resolution_clock::now();
+                yto.run();
+                time_yto += high_resolution_clock::now() - beginTime;
+                yto_last = yto.getResult();
+                checkMcrResult(dg, g_mcr, yto_last, dutyCycle);
+            }
 
             time_lp_mcr += mcrLP(dg, tInitial, lp_last, dutyCycle);
             checkMcrResult(dg, g_mcr, lp_last, dutyCycle);
@@ -184,7 +216,7 @@ int main(int argc, char *const argv[])
                         invalidateMcrResult(*solver);
                     }
 
-            if (!io.enabled)
+            if (!io.enabled && !noSkew)
             {
                 auto P = timing_oracle<Graph>(g_ell);
                 auto E = ell(alpha, Arr{tInitialEll, 0});
@@ -201,7 +233,11 @@ int main(int argc, char *const argv[])
         cout << "=====================SUMMARY====================" << endl;
         cout << "Input file is " << filename << "\nInitial T is " << tInitial << " ns" << endl;
         cout << "MCR latch timing: " << (positional.size() == 4 ? positional[3] : "legacy uniform constants")
-             << (io.enabled ? " (ns); separate SDC input/output ports, anchor s[0]=0." : " (ns); the merged IO placeholder uses zero timing parameters.") << endl;
+             << (counterModel ? " (ns); counter input/output ports and independent zero reference."
+                 : (io.enabled ? " (ns); separate SDC input/output ports, anchor s[0]=0." : " (ns); the merged IO placeholder uses zero timing parameters.")) << endl;
+        if (counterModel)
+            cout << "Counter v4: opposite-phase feedback, master->slave cycles=0, slave/input->master cycles=1; "
+                 << "independent IO budgets, 50% duty, zero skew; conservative min-delay hold certificate." << endl;
         if (io.enabled)
             cout << "SDC IO: " << io.inputPort << " min/max=" << io.inputMin << "/" << io.inputMax
                  << " ns; " << io.outputPort << " min/max=" << io.outputMin << "/" << io.outputMax
@@ -212,18 +248,22 @@ int main(int argc, char *const argv[])
             if (dg[k].kind == NodeIdx::Kind::Latch)
             {
                 ++latchCount;
-                pulseCovered += dg[k].clockChecks.characterized;
+                pulseCovered += counterModel ? dg[k].reportedPulseWidth.has_value() : dg[k].clockChecks.characterized;
             }
         cout << "MCR pulse-width coverage: " << pulseCovered << "/" << latchCount
-             << " latch instances; period lower bound = " << mcrPulsePeriodMin(dg, dutyCycle) << " ns."
+             << " latch instances" << (counterModel ? " (reported polarity only)" : "")
+             << "; period lower bound = " << mcrPulsePeriodMin(dg, dutyCycle) << " ns."
              << (pulseCovered == latchCount ? "" : " Uncharacterized instances have no pulse-width constraint.") << endl;
         cout << "MCR: duty_cycle=" << dutyCycle << ", W=" << dutyCycle
              << "*T, s_IO=0, s_k <= T - " << kMcrSkewMargin
              << " ns; feasibility tolerance = " << kMcrFeasibilityEps << " ns." << endl;
+        if (noSkew)
+            cout << "Clock skew optimization disabled: all latch offsets are fixed to 0 ns." << endl;
         cout << "\t#vertices = " << boost::num_vertices(g_mcr)
              << ", #edges = " << boost::num_edges(g_mcr) << endl;
         printMcrResult("Howard", how_last, time_howard, iter, dg);
-        printMcrResult("YTO", yto_last, time_yto, iter, dg);
+        if (!counterModel)
+            printMcrResult("YTO", yto_last, time_yto, iter, dg);
         printMcrResult("LP_MCR", lp_last, time_lp_mcr, iter, dg);
         if (lp_last.status == McrStatus::Optimal)
         {
@@ -252,12 +292,20 @@ int main(int argc, char *const argv[])
         if (selected)
         {
             cout << "Selected MCR solver: " << selectedName << ", period = " << selected->period << " ns" << endl;
-            printSkewSchedule("selected " + selectedName, selected->skew, dg);
-            cout << "Feasible optimum skew schedules can differ at the same period." << endl;
+            if (!noSkew)
+            {
+                printSkewSchedule("selected " + selectedName, selected->skew, dg);
+                cout << "Feasible optimum skew schedules can differ at the same period." << endl;
+            }
+            if (selected->period > 0.0)
+                cout << "Model maximum clock frequency = " << 1000.0 / selected->period
+                     << " MHz" << (noSkew ? " (zero skew)." : " (optimized skew).") << endl;
+            else
+                cout << "Model has no positive period bound; no finite maximum frequency is reported." << endl;
         }
         else
             cerr << "No validated MCR result; no clock period or schedule selected." << endl;
-        if (!io.enabled)
+        if (!io.enabled && !noSkew)
         {
             cout << "ELL (independent legacy model):" << endl;
             cout << "\t#vertices = " << boost::num_vertices(g_ell) << ", #edges = " << boost::num_edges(g_ell) << endl;
@@ -266,6 +314,8 @@ int main(int argc, char *const argv[])
             cout << "\tT_LP_ELL = " << t_lp_ell << " ns, W_LP_ELL = " << w_lp_ell << " ns, time is "
                  << time_lp_ell.count() / (1e6 * iter) << " ms" << endl;
         }
+        else if (noSkew)
+            cout << "ELL skipped: its independent legacy model does not enforce zero skew." << endl;
         else
             cout << "ELL skipped: the independent legacy model has no SDC IO constraints." << endl;
         if (!sdcOutput.empty())

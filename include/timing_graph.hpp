@@ -4,6 +4,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 #include "strOperation.hpp"
 
@@ -29,7 +30,11 @@ struct NodeIdx
         std::optional<double> minPulseHigh;
         std::optional<double> minPulseLow;
     } clockChecks{};
-    enum class Kind { Latch, Input, Output } kind = Kind::Latch;
+    enum class Kind { Latch, Input, Output, Unknown } kind = Kind::Latch;
+    enum class Polarity { Positive, Negative } polarity = Polarity::Positive;
+    pair<double, double> windowFraction{0.5, 1.0};
+    // A report supplies only this polarity's pulse check, not complete Liberty coverage.
+    std::optional<double> reportedPulseWidth{};
 };
 
 struct IoConstraints
@@ -46,6 +51,21 @@ struct IoConstraints
     double setupUncertainty = 0.0, holdUncertainty = 0.0;
     double dutyCycle = 0.5;
     std::optional<StaConditions> staConditions;
+    // Physical ports sharing the input node's clock, delay budgets and slew.
+    bool optimizeSkew = true;
+    string timingModel{};
+    struct CounterTiming
+    {
+        struct Port
+        {
+            double minDelay, maxDelay;
+            double transition = 0.0, load = 0.0;
+        };
+        string clockName, clockPort;
+        double period, rise, fall, skew, clockTransition;
+        map<string, Port> inputs, outputs;
+    };
+    std::optional<CounterTiming> counterTiming{};
 };
 
 constexpr size_t kIoNodeIdx = 0;
@@ -122,10 +142,16 @@ bool getDelayGraph(const string &fileName, DelayGraph &dg, double &tInitial);
  */
 bool getRsltDelayGraph(const string &fileName, DelayGraph &dg, double &tInitial);
 bool readDelayGraph(const string &fileName, DelayGraph &dg, double &tInitial);
-// v1: six parameters; v2: pulse checks; v3: separate SDC IO on a same-transaction DAG.
+// Marked counter inputs keep distinct endpoints; readLatchTiming loads their required v4 JSON.
+// v1: six parameters; v2: pulse checks; v3: SDC DAG IO; v4: zero-skew counter.
 void readLatchTiming(const string &fileName, DelayGraph &dg);
+// Counter topology may be valid before JSON loading; counterTiming indicates classified metadata.
 bool validDelayGraph(const DelayGraph &dg, double tInitial);
-// Infinity denotes invalid data, duty cycle or an overflowing pulse-width lower bound.
+// Counter solving requires loaded v4 data, opposite-phase paths, 50% duty and zero skew.
+bool validCounterMcr(const DelayGraph &dg, double dutyCycle);
+// Constant part of the earliest input envelope; requires a validated counter node with incoming paths.
+double counterMinArrival(const DelayGraph &dg, size_t node);
+// Infinity denotes unsupported data/duty cycle or an overflowing pulse bound.
 double mcrPulsePeriodMin(const DelayGraph &dg, double dutyCycle);
 bool validMcrGraph(const Graph &g);
 /**

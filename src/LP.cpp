@@ -18,8 +18,9 @@ nanoseconds mcrLP(const DelayGraph &dg, double tInitial, McrResult &result, doub
     result.ratio = result.period = std::numeric_limits<double>::quiet_NaN();
     const size_t n = boost::num_vertices(dg), m = boost::num_edges(dg);
     const auto &boundary = dg[boost::graph_bundle];
+    const bool counterModel = !boundary.timingModel.empty();
     const size_t limit = static_cast<size_t>(std::numeric_limits<int>::max() - 1);
-    if (!validDelayGraph(dg, tInitial) || !std::isfinite(dutyCycle) ||
+    if ((counterModel && !validCounterMcr(dg, dutyCycle)) || !validDelayGraph(dg, tInitial) || !std::isfinite(dutyCycle) ||
         dutyCycle <= 0.0 || dutyCycle > 0.5 || n > (limit - 1) / kMcrVarsPerNode ||
         n > limit / 14 || m > (limit - 14 * n) / 4)
         return nanoseconds{0};
@@ -32,7 +33,7 @@ nanoseconds mcrLP(const DelayGraph &dg, double tInitial, McrResult &result, doub
     result.status = McrStatus::SolverError;
     if (!lp)
         return nanoseconds{0};
-    glp_set_prob_name(lp, "MCR_with_clock_skew");
+    glp_set_prob_name(lp, boundary.optimizeSkew ? "MCR_with_clock_skew" : "MCR_zero_skew");
     glp_set_obj_dir(lp, GLP_MIN);
     glp_add_cols(lp, columns);
     glp_set_col_bnds(lp, 1, GLP_LO, pulseMinimum, 0.0);
@@ -44,9 +45,10 @@ nanoseconds mcrLP(const DelayGraph &dg, double tInitial, McrResult &result, doub
         glp_set_col_bnds(lp, c, GLP_FR, 0.0, 0.0);
     for (size_t k = 0; k < n; ++k)
     {
-        const bool fixed = k == kIoNodeIdx || (boundary.enabled && dg[k].kind != NodeIdx::Kind::Latch);
+        const bool fixed = counterModel || !boundary.optimizeSkew || k == kIoNodeIdx ||
+                           (boundary.enabled && dg[k].kind != NodeIdx::Kind::Latch);
         glp_set_col_bnds(lp, column(k, kMcrSkew), fixed ? GLP_FX : GLP_LO, 0.0, 0.0);
-        if (boundary.enabled && k == kIoNodeIdx)
+        if ((boundary.enabled || counterModel) && k == kIoNodeIdx)
             for (const auto variable : {kMcrA, kMcrLatestA, kMcrD, kMcrLatestD})
                 glp_set_col_bnds(lp, column(k, variable), GLP_FX, 0.0, 0.0);
     }
@@ -71,6 +73,42 @@ nanoseconds mcrLP(const DelayGraph &dg, double tInitial, McrResult &result, doub
         const int a = column(k, kMcrA), A = column(k, kMcrLatestA);
         const int d = column(k, kMcrD), D = column(k, kMcrLatestD), s = column(k, kMcrSkew);
         const auto &t = dg[k].timing;
+        if (counterModel)
+        {
+            if (k == kIoNodeIdx)
+                continue;
+            if (dg[k].kind == NodeIdx::Kind::Input)
+            {
+                const auto &port = boundary.counterTiming->inputs.at(dg[k].name);
+                constraint(port.minDelay, {{a, 1.0}, {1, -0.5}}, true);
+                constraint(port.minDelay, {{d, 1.0}, {1, -0.5}}, true);
+                constraint(port.maxDelay, {{A, 1.0}, {1, -0.5}}, true);
+                constraint(port.maxDelay, {{D, 1.0}, {1, -0.5}}, true);
+            }
+            else
+            {
+                const bool output = dg[k].kind == NodeIdx::Kind::Output;
+                const double open = dg[k].polarity == NodeIdx::Polarity::Negative ? 0.0 : 0.5;
+                constraint(counterMinArrival(dg, k), {{a, 1.0}, {1, -(output ? 0.5 : open - 0.5)}}, true);
+                if (output)
+                {
+                    constraint(0.0, {{d, 1.0}, {a, -1.0}}, true);
+                    constraint(0.0, {{D, 1.0}, {A, -1.0}}, true);
+                    constraint(-boundary.counterTiming->outputs.at(dg[k].name).maxDelay - boundary.setupUncertainty,
+                               {{A, 1.0}, {1, -1.5}});
+                }
+                else
+                {
+                    constraint(min(t.tcqMin, t.tdqMin), {{d, 1.0}, {1, -open}}, true);
+                    constraint(-t.tsu - boundary.setupUncertainty, {{A, 1.0}, {1, -(open + 0.5)}});
+                    constraint(-t.tdqMax, {{A, 1.0}, {D, -1.0}});
+                    constraint(-t.tcqMax, {{1, open}, {D, -1.0}});
+                }
+                constraint(0.0, {{a, 1.0}, {A, -1.0}});
+                constraint(0.0, {{d, 1.0}, {D, -1.0}});
+            }
+            continue;
+        }
         if (boundary.enabled && (k == kIoNodeIdx || dg[k].kind != NodeIdx::Kind::Latch))
         {
             if (k == kIoNodeIdx)
@@ -107,6 +145,13 @@ nanoseconds mcrLP(const DelayGraph &dg, double tInitial, McrResult &result, doub
     for (auto e = range.first; e != range.second; ++e)
     {
         const size_t i = dg[boost::source(*e, dg)].idx, j = dg[boost::target(*e, dg)].idx;
+        if (counterModel)
+        {
+            const double cycles = dg[j].kind == NodeIdx::Kind::Latch &&
+                dg[j].polarity == NodeIdx::Polarity::Negative ? 1.0 : 0.0;
+            constraint(-dg[*e].maxDelay, {{column(i, kMcrLatestD), 1.0}, {column(j, kMcrLatestA), -1.0}, {1, -cycles}});
+            continue;
+        }
         const double shift = boundary.enabled ? 0.0 : 1.0;
         constraint(dg[*e].minDelay, {{1, shift}, {column(j, kMcrA), 1.0}, {column(i, kMcrD), -1.0}});
         constraint(-dg[*e].maxDelay, {{1, -shift}, {column(i, kMcrLatestD), 1.0}, {column(j, kMcrLatestA), -1.0}});
@@ -161,6 +206,8 @@ nanoseconds ellLP(const string &fileName, double &tlp, double &wlp)
     double tInitial = 0;
     if (!readDelayGraph(fileName, dg, tInitial))
         throw std::runtime_error("Cannot read delay graph: " + fileName);
+    if (!dg[boost::graph_bundle].timingModel.empty())
+        throw std::invalid_argument("ELL LP does not support the counter timing model");
     auto _v = boost::num_vertices(dg);
     auto _c = boost::num_edges(dg);
     int numvar = _v + 2;

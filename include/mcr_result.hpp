@@ -57,7 +57,7 @@ struct McrResult
     std::size_t iterations = 0;
     /** Clock arrival s_k for DelayGraph node k; s[0] is IO (pinned to 0). */
     std::vector<double> skew;
-    /** Full, IO-normalized a/A/d/D/s solution; Optimal maxViolation covers the complete graph. */
+    /** IO-normalized a/A/d/D/s; counter a/d are conservative earliest bounds, A/D are latest envelopes. */
     std::vector<double> potential;
 };
 

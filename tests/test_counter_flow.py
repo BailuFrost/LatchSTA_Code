@@ -44,23 +44,21 @@ reports = Path("reports")
 latches = []
 for i in range(8):
     name = "latch_" + str(i)
-    latches.append([name, "sky130_fd_sc_hd__dlrtn_1" if i < 4 else "sky130_fd_sc_hd__dlrtp_1"])
-    for suffix in ("instance", "arrival", "load", "dq_min", "dq_max", "cq_min", "cq_max", "reset_q_min", "reset_q_max"):
+    latches.append([name, "sky130_fd_sc_hd__dlxtn_1" if i < 4 else "sky130_fd_sc_hd__dlxtp_1"])
+    for suffix in ("instance", "arrival", "load", "dq_min", "dq_max", "cq_min", "cq_max"):
         (reports / (name + "_" + suffix + ".rpt")).write_text("MOCK REPORT; NOT STA EVIDENCE\n")
 with (reports/"latches.tsv").open("w",newline="") as f:
     w=csv.writer(f,delimiter="\t");w.writerow(["instance","cell"]);w.writerows(latches)
-for kind in ("units", "clocks", "check_setup", "setup", "hold", "recovery", "removal", "pulse_width", "checks", "violations"):
+for kind in ("units", "clocks", "check_setup", "setup", "hold", "en_setup", "en_hold", "rst_n_setup", "rst_n_hold", "pulse_width", "checks", "violations"):
     text = "" if kind in {"check_setup", "violations"} else "MOCK REPORT; NOT STA EVIDENCE\n0.100000 slack (MET)\n"
     if mode == "violation" and kind == "hold": text = "MOCK REPORT\n-0.010000 slack (VIOLATED)\n"
-    if mode == "missing_reset_check" and kind == "recovery": text = "MOCK: no checks\n"
+    if mode == "missing_reset_path" and kind == "rst_n_setup": text = "MOCK: no checks\n"
     (reports/(kind+".rpt")).write_text(text)
-graph = reports/"pin_graph";graph.mkdir()
-for name in ("pins", "vertices", "edges", "arc_delays", "slews", "boundary_paths", "boundary_edges", "manifest"):
-    if mode == "missing_graph" and name == "edges": continue
-    (graph/(name+".tsv")).write_text("MOCK GRAPH; NOT STA EVIDENCE\n")
+for name in ("constraints.sdc", "effective.sdc"):
+    if mode != "missing_constraints" or name != "effective.sdc":
+        (reports/name).write_text("# MOCK SDC\n")
 if mode == "mutate_input": Path("counter.sdc").write_text("MOCK MUTATION\n")
 print("MOCK OUTPUT ONLY; NOT STA EVIDENCE")
-print("Complete pin graph written to mock")
 print("Counter reports written to mock")
 '''
 
@@ -101,7 +99,6 @@ class CounterFlowTests(unittest.TestCase):
         case.mkdir(parents=True)
         for name in ("counter.v", "counter.sdc", "export.ys", "latch_map.v", "run_sta.tcl", "run_flow.sh"):
             shutil.copyfile(CASE / name, case / name)
-        shutil.copyfile(ROOT / "examples/tiny_3_latch_circuit/export_pin_graph.tcl", case / "export_pin_graph.tcl")
         pdk = repo / "sky130_pdk"; pdk.mkdir()
         (pdk / "sky130_fd_sc_hd__tt_025C_1v80.lib").write_text("MOCK LIBRARY; NOT REAL STA INPUT\n")
         tools = repo / "tools"; tools.mkdir()
@@ -123,7 +120,7 @@ class CounterFlowTests(unittest.TestCase):
 
     @unittest.skipUnless(SH, "POSIX sh required")
     def test_shell_flow_status_and_failures(self):
-        for scenario in ("normal", "violation", "missing_graph", "missing_reset_check", "tool_failure", "mutate_input"):
+        for scenario in ("normal", "violation", "missing_constraints", "missing_reset_path", "tool_failure", "mutate_input"):
             with self.subTest(scenario=scenario):
                 repo, case, env = self.mock_environment(scenario)
                 output = repo / "new run with spaces"
@@ -131,7 +128,7 @@ class CounterFlowTests(unittest.TestCase):
                                         cwd=repo, env=env, capture_output=True, text=True)
                 self.assertTrue((output / "flow_status.json").exists(), result.stdout + result.stderr)
                 status = json.loads((output / "flow_status.json").read_text())
-                self.assertEqual(status["optimization"]["status"], "unsupported")
+                self.assertEqual(status["optimization"]["status"], "not_run")
                 if scenario == "normal":
                     self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                     self.assertEqual(status["status"], "reported_checks_passed")

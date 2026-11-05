@@ -13,6 +13,8 @@
 
 using namespace std;
 
+static constexpr const char *kCounterTimingModel = "counter_mixed_polarity_feedback_v1";
+
 void generateSimpleGraph(Graph &g)
 {
     g.clear();
@@ -63,7 +65,10 @@ static bool readCompressedDelayGraph(const string &fileName, DelayGraph &dg,
             return found->second;
         const size_t idx = boost::num_vertices(dg);
         indices[name] = idx;
-        boost::add_vertex(NodeIdx{idx, {}, name}, dg);
+        NodeIdx property{idx, {}, name};
+        if (!dg[boost::graph_bundle].timingModel.empty())
+            property.kind = NodeIdx::Kind::Unknown;
+        boost::add_vertex(property, dg);
         return idx;
     };
     string line;
@@ -74,11 +79,24 @@ static bool readCompressedDelayGraph(const string &fileName, DelayGraph &dg,
         splitString(line, " \t\r", words);
         if (words.empty() || words[0][0] == '#')
             continue;
+        if (!rslt && words[0] == "TimingModel")
+        {
+            if (words.size() != 2 || words[1] != kCounterTimingModel ||
+                !dg[boost::graph_bundle].timingModel.empty() || boost::num_vertices(dg) != 1 || boost::num_edges(dg) != 0)
+                return fail("Unsupported, duplicate or misplaced TimingModel");
+            dg[boost::graph_bundle].timingModel = words[1];
+            indices.clear(); // Counter ports must not share the legacy INPUT/OUTPUT placeholder.
+            indices["IO"] = kIoNodeIdx;
+            continue;
+        }
         if (!rslt && (words[0] == "Network" ||
             (words.size() >= 4 && words[2] == "max_delay" && words[3] == "min_delay")))
             continue;
         if (words.size() < 4)
             return fail("Expected source, target and two delays");
+        if (!dg[boost::graph_bundle].timingModel.empty() &&
+            (words.size() != 4 || words[0] == "IO" || words[1] == "IO"))
+            return fail("Counter paths require four fields and distinct physical endpoints");
         double maxDelay, minDelay;
         try
         {
@@ -102,6 +120,8 @@ static bool readCompressedDelayGraph(const string &fileName, DelayGraph &dg,
         auto existing = boost::edge(from, to, dg);
         if (existing.second)
         {
+            if (!dg[boost::graph_bundle].timingModel.empty())
+                return fail("Duplicate counter path");
             dg[existing.first].maxDelay = max(dg[existing.first].maxDelay, maxDelay);
             dg[existing.first].minDelay = min(dg[existing.first].minDelay, minDelay);
         }
@@ -152,7 +172,7 @@ bool validDelayGraph(const DelayGraph &dg, double tInitial)
             return false;
         const auto &t = dg[k].timing;
         const bool boundary = k == kIoNodeIdx || dg[k].kind != NodeIdx::Kind::Latch;
-        if (!io.enabled && dg[k].kind != NodeIdx::Kind::Latch)
+        if (!io.enabled && io.timingModel.empty() && dg[k].kind != NodeIdx::Kind::Latch)
             return false;
         for (double value : {t.tsu, t.thd, t.tdqMin, t.tdqMax, t.tcqMin, t.tcqMax})
             if (!isfinite(value) || (boundary && value != 0.0))
@@ -175,6 +195,73 @@ bool validDelayGraph(const DelayGraph &dg, double tInitial)
         if (!isfinite(d.minDelay) || !isfinite(d.maxDelay) || d.minDelay < 0.0 || d.minDelay > d.maxDelay)
             return false;
     }
+    if (!io.timingModel.empty())
+    {
+        if (io.timingModel != kCounterTimingModel || io.enabled || boost::degree(0, dg) != 0)
+            return false;
+        if (!io.counterTiming)
+        {
+            for (size_t k = 1; k < n; ++k)
+                if (dg[k].kind != NodeIdx::Kind::Unknown)
+                    return false;
+            return true; // Topology only; schema-v4 JSON still has to classify the endpoints.
+        }
+        const auto &counter = *io.counterTiming;
+        if (counter.clockName.empty() || counter.clockPort.empty() || counter.period <= 0.0 ||
+            counter.rise <= 0.0 || counter.rise >= counter.fall ||
+            counter.fall != counter.period || counter.clockTransition < 0.0 || counter.skew != 0.0 ||
+            counter.inputs.empty() || counter.outputs.empty() || io.setupUncertainty < 0.0 || io.holdUncertainty < 0.0 ||
+            !isfinite(io.dutyCycle) || fabs(io.dutyCycle - (counter.fall - counter.rise) / counter.period) > 1e-12)
+            return false;
+        for (double value : {counter.period, counter.rise, counter.fall, counter.skew,
+                             counter.clockTransition, io.setupUncertainty, io.holdUncertainty})
+            if (!isfinite(value))
+                return false;
+        size_t inputs = 0, outputs = 0, latches = 0;
+        set<string> names;
+        for (size_t k = 1; k < n; ++k)
+        {
+            const auto &node = dg[k];
+            if (node.name.empty() || node.name == counter.clockPort || !names.insert(node.name).second)
+                return false;
+            const bool input = node.kind == NodeIdx::Kind::Input;
+            if (input || node.kind == NodeIdx::Kind::Output)
+            {
+                input ? ++inputs : ++outputs;
+                const auto &ports = input ? counter.inputs : counter.outputs;
+                const auto found = ports.find(node.name);
+                if (found == ports.end() || node.reportedPulseWidth ||
+                    (input ? (boost::in_degree(k, dg) || !boost::out_degree(k, dg))
+                           : (!boost::in_degree(k, dg) || boost::out_degree(k, dg))))
+                    return false;
+                const auto &port = found->second;
+                for (double value : {port.minDelay, port.maxDelay, port.transition, port.load})
+                    if (!isfinite(value))
+                        return false;
+                if (port.minDelay > port.maxDelay || port.transition < 0.0 || port.load < 0.0)
+                    return false;
+            }
+            else if (node.kind == NodeIdx::Kind::Latch)
+            {
+                ++latches;
+                const pair<double, double> window = node.polarity == NodeIdx::Polarity::Negative
+                    ? make_pair(0.0, counter.rise / counter.period)
+                    : make_pair(counter.rise / counter.period, 1.0);
+                if (counter.inputs.count(node.name) || counter.outputs.count(node.name) ||
+                    !boost::in_degree(k, dg) || !boost::out_degree(k, dg) ||
+                    !isfinite(node.windowFraction.first) || !isfinite(node.windowFraction.second) ||
+                    fabs(node.windowFraction.first - window.first) > 1e-12 ||
+                    fabs(node.windowFraction.second - window.second) > 1e-12 ||
+                    !node.reportedPulseWidth || !isfinite(*node.reportedPulseWidth) || *node.reportedPulseWidth < 0.0)
+                    return false;
+            }
+            else
+                return false;
+        }
+        return latches > 0 && inputs == counter.inputs.size() && outputs == counter.outputs.size();
+    }
+    if (io.counterTiming)
+        return false;
     if (io.enabled)
     {
         if (io.inputPort.empty() || io.outputPort.empty() || io.inputPort == io.outputPort ||
@@ -229,9 +316,63 @@ bool validDelayGraph(const DelayGraph &dg, double tInitial)
     return true;
 }
 
+bool validCounterMcr(const DelayGraph &dg, double dutyCycle)
+{
+    const auto &io = dg[boost::graph_bundle];
+    if (io.timingModel != kCounterTimingModel || !io.counterTiming || io.optimizeSkew ||
+        !isfinite(dutyCycle) || fabs(dutyCycle - 0.5) > 1e-12 || fabs(io.dutyCycle - 0.5) > 1e-12 ||
+        !validDelayGraph(dg, 0.0))
+        return false;
+    const auto edges = boost::edges(dg);
+    for (auto e = edges.first; e != edges.second; ++e)
+    {
+        const auto &u = dg[boost::source(*e, dg)], &v = dg[boost::target(*e, dg)];
+        const bool input = u.kind == NodeIdx::Kind::Input;
+        const bool output = v.kind == NodeIdx::Kind::Output;
+        if (input ? (v.kind != NodeIdx::Kind::Latch || v.polarity != NodeIdx::Polarity::Negative)
+                  : (u.kind != NodeIdx::Kind::Latch || (output ? u.polarity != NodeIdx::Polarity::Positive
+                      : (v.kind != NodeIdx::Kind::Latch || u.polarity == v.polarity))))
+            return false;
+        const double response = input ? io.counterTiming->inputs.at(u.name).minDelay
+            : min(u.timing.tcqMin, u.timing.tdqMin);
+        const double required = output ? -io.counterTiming->outputs.at(v.name).minDelay : v.timing.thd;
+        // shortcut: certify hold from the opening-response lower bound; refine min propagation if this certificate fails.
+        if (!isfinite(response + dg[*e].minDelay) ||
+            response + dg[*e].minDelay < required + io.holdUncertainty)
+            return false;
+    }
+    return true;
+}
+
+double counterMinArrival(const DelayGraph &dg, size_t node)
+{
+    double earliest = numeric_limits<double>::infinity();
+    const auto &counter = *dg[boost::graph_bundle].counterTiming;
+    const auto edges = boost::in_edges(node, dg);
+    for (auto e = edges.first; e != edges.second; ++e)
+    {
+        const auto &u = dg[boost::source(*e, dg)];
+        const double response = u.kind == NodeIdx::Kind::Input ? counter.inputs.at(u.name).minDelay
+            : min(u.timing.tcqMin, u.timing.tdqMin);
+        earliest = min(earliest, response + dg[*e].minDelay);
+    }
+    return earliest;
+}
+
 double mcrPulsePeriodMin(const DelayGraph &dg, double dutyCycle)
 {
-    if (!validDelayGraph(dg, 0.0) || !isfinite(dutyCycle) || dutyCycle <= 0.0 || dutyCycle > 0.5)
+    if (!dg[boost::graph_bundle].timingModel.empty())
+    {
+        if (!validCounterMcr(dg, dutyCycle))
+            return numeric_limits<double>::infinity();
+        double minimum = 0.0;
+        for (size_t k = 1; k < boost::num_vertices(dg); ++k)
+            if (dg[k].kind == NodeIdx::Kind::Latch)
+                minimum = max(minimum, *dg[k].reportedPulseWidth / 0.5);
+        return minimum;
+    }
+    if (!validDelayGraph(dg, 0.0) ||
+        !isfinite(dutyCycle) || dutyCycle <= 0.0 || dutyCycle > 0.5)
         return numeric_limits<double>::infinity();
     double minimum = 0.0;
     for (size_t k = 1; k < boost::num_vertices(dg); ++k)
@@ -245,16 +386,130 @@ double mcrPulsePeriodMin(const DelayGraph &dg, double dutyCycle)
     return minimum;
 }
 
+static void readCounterTiming(const boost::property_tree::ptree &root, DelayGraph &dg)
+{
+    if (dg[boost::graph_bundle].timingModel != kCounterTimingModel ||
+        root.get<string>("timing_model") != kCounterTimingModel || root.get<string>("units.capacitance") != "pF")
+        throw invalid_argument("Counter schema 4 requires a matching TimingModel marker and ns/pF units");
+    DelayGraph candidate = dg;
+    auto &io = candidate[boost::graph_bundle];
+    const bool optimizeSkew = io.optimizeSkew;
+    io = IoConstraints{};
+    io.optimizeSkew = optimizeSkew;
+    io.timingModel = kCounterTimingModel;
+    io.counterTiming = IoConstraints::CounterTiming{
+        root.get<string>("clock.name"), root.get<string>("clock.port"),
+        root.get<double>("clock.period_ns"), root.get<double>("clock.rise_ns"), root.get<double>("clock.fall_ns"),
+        root.get<double>("clock_skew_ns"), root.get<double>("sta_conditions.clock_transition_ns"), {}, {}};
+    auto &counter = *io.counterTiming;
+    io.setupUncertainty = root.get<double>("io_constraints.uncertainty.setup_ns");
+    io.holdUncertainty = root.get<double>("io_constraints.uncertainty.hold_ns");
+    if (!isfinite(counter.period) || counter.period <= 0.0)
+        throw invalid_argument("Counter clock period must be finite and positive");
+    io.dutyCycle = (counter.fall - counter.rise) / counter.period;
+    map<string, size_t> endpoints;
+    for (size_t k = 1; k < boost::num_vertices(candidate); ++k)
+    {
+        const string name = candidate[k].name;
+        if (name.empty() || name == candidate[0].name || !endpoints.emplace(name, k).second)
+            throw invalid_argument("Counter endpoints require unique names");
+        candidate[k] = NodeIdx{k, {}, name};
+        candidate[k].kind = NodeIdx::Kind::Unknown;
+    }
+    set<string> assigned;
+    const auto assign = [&](const string &name, NodeIdx::Kind kind) -> NodeIdx & {
+        const auto found = endpoints.find(name);
+        if (found == endpoints.end() || !assigned.insert(name).second)
+            throw invalid_argument("Unknown or duplicate counter endpoint: " + name);
+        auto &node = candidate[found->second];
+        node.kind = kind;
+        return node;
+    };
+    const auto &nodes = root.get_child("nodes");
+    if (!nodes.data().empty() || nodes.empty())
+        throw invalid_argument("Counter nodes must be a nonempty array");
+    for (const auto &entry : nodes)
+    {
+        if (!entry.first.empty())
+            throw invalid_argument("Counter nodes must be an array");
+        const auto &value = entry.second;
+        auto &node = assign(value.get<string>("instance"), NodeIdx::Kind::Latch);
+        const string polarity = value.get<string>("polarity");
+        if (polarity != "positive" && polarity != "negative")
+            throw invalid_argument("Unsupported counter latch polarity");
+        node.polarity = polarity == "negative" ? NodeIdx::Polarity::Negative : NodeIdx::Polarity::Positive;
+        const auto &window = value.get_child("window_fraction");
+        if (!window.data().empty() || window.size() != 2)
+            throw invalid_argument("Counter transparency window requires two fractions");
+        for (const auto &fraction : window)
+            if (!fraction.first.empty() || !fraction.second.empty())
+                throw invalid_argument("Counter transparency window must be an array of numbers");
+        node.windowFraction = {window.front().second.get_value<double>(), window.back().second.get_value<double>()};
+        const auto &p = value.get_child("parameters_ns");
+        node.timing = LatchTiming{p.get<double>("tsu"), p.get<double>("thd"),
+            p.get<double>("tdqMin"), p.get<double>("tdqMax"), p.get<double>("tcqMin"), p.get<double>("tcqMax")};
+        if (value.get<string>("reported_pulse_check.level") != (polarity == "negative" ? "low" : "high"))
+            throw invalid_argument("Counter pulse check does not match latch polarity");
+        node.reportedPulseWidth = value.get<double>("reported_pulse_check.required_ns");
+    }
+    for (bool input : {true, false})
+    {
+        auto &ports = input ? counter.inputs : counter.outputs;
+        const auto &entries = root.get_child(input ? "io_constraints.inputs" : "io_constraints.outputs");
+        if (!entries.data().empty() || entries.empty())
+            throw invalid_argument("Counter IO constraints must be nonempty port objects");
+        for (const auto &entry : entries)
+        {
+            assign(entry.first, input ? NodeIdx::Kind::Input : NodeIdx::Kind::Output);
+            const auto &p = entry.second;
+            ports.emplace(entry.first, IoConstraints::CounterTiming::Port{
+                p.get<double>("min_delay_ns"), p.get<double>("max_delay_ns"),
+                input ? p.get<double>("transition_ns") : 0.0, input ? 0.0 : p.get<double>("load_pf")});
+        }
+    }
+    if (assigned.size() != endpoints.size())
+        throw invalid_argument("Counter JSON does not classify every path endpoint");
+    const auto &paths = root.get_child("edges");
+    if (!paths.data().empty() || paths.size() != boost::num_edges(candidate))
+        throw invalid_argument("Counter JSON paths do not match the delay graph");
+    set<pair<size_t, size_t>> seen;
+    for (const auto &entry : paths)
+    {
+        if (!entry.first.empty())
+            throw invalid_argument("Counter edges must be an array");
+        const auto &path = entry.second;
+        const string from = path.get<string>("source"), to = path.get<string>("target");
+        if (!endpoints.count(from) || !endpoints.count(to))
+            throw invalid_argument("Unknown counter JSON path endpoint");
+        const size_t u = endpoints.at(from), v = endpoints.at(to);
+        const auto edge = boost::edge(u, v, candidate);
+        const double lo = path.get<double>("min_delay_ns"), hi = path.get<double>("max_delay_ns");
+        if (!edge.second || !seen.emplace(u, v).second || !isfinite(lo) || !isfinite(hi) || lo < 0.0 || lo > hi ||
+            fabs(candidate[edge.first].minDelay - lo) > 1e-12 || fabs(candidate[edge.first].maxDelay - hi) > 1e-12)
+            throw invalid_argument("Counter JSON path delays do not match the delay graph");
+    }
+    if (!validDelayGraph(candidate, 0.0))
+        throw invalid_argument("Invalid counter clock, latch timing, transparency window, pulse check or IO topology/budget");
+    dg = std::move(candidate);
+}
+
 void readLatchTiming(const string &fileName, DelayGraph &dg)
 {
     using boost::property_tree::ptree;
     ptree root;
     boost::property_tree::read_json(fileName, root);
     const int schema = root.get<int>("schema_version");
-    if ((schema < 1 || schema > 3) || root.get<string>("units.time") != "ns")
-        throw invalid_argument("Latch timing requires schema_version 1, 2 or 3 and time unit ns");
+    if ((schema < 1 || schema > 4) || root.get<string>("units.time") != "ns")
+        throw invalid_argument("Latch timing requires schema_version 1, 2, 3 or 4 and time unit ns");
     if (!validDelayGraph(dg, 0.0))
         throw invalid_argument("Invalid delay graph for latch timing");
+    if (schema == 4)
+    {
+        readCounterTiming(root, dg);
+        return;
+    }
+    if (!dg[boost::graph_bundle].timingModel.empty())
+        throw invalid_argument("Marked counter inputs require matching schema-v4 timing JSON");
 
     DelayGraph candidate = dg;
     if (schema < 3 && (candidate[boost::graph_bundle].enabled || root.get_child_optional("io_constraints")))
@@ -430,6 +685,9 @@ void getMcrGraph(const string &fileName, Graph &g, double &tInitial, double duty
 void getMcrGraph(const DelayGraph &dg, Graph &g, double tInitial, double dutyCycle)
 {
     g.clear();
+    const bool counterModel = !dg[boost::graph_bundle].timingModel.empty();
+    if (counterModel && !validCounterMcr(dg, dutyCycle))
+        throw invalid_argument("Counter MCR requires loaded v4 JSON, --no-skew, 50% duty, opposite-phase paths and certified hold bounds");
     if (!validDelayGraph(dg, tInitial))
         throw invalid_argument("Invalid MCR delay graph or latch timing");
     if (!isfinite(dutyCycle) || dutyCycle <= 0.0 || dutyCycle > 0.5)
@@ -457,6 +715,39 @@ void getMcrGraph(const DelayGraph &dg, Graph &g, double tInitial, double dutyCyc
         const size_t d = mcrIndex(k, kMcrD), D = mcrIndex(k, kMcrLatestD);
         const size_t s = mcrIndex(k, kMcrSkew);
         const auto &t = dg[k].timing;
+        if (counterModel)
+        {
+            equal(io, s, 0.0, 0.0);
+            if (k == kIoNodeIdx)
+                for (const auto variable : {kMcrA, kMcrLatestA, kMcrD, kMcrLatestD})
+                    equal(io, mcrIndex(k, variable), 0.0, 0.0);
+            else if (dg[k].kind == NodeIdx::Kind::Input)
+            {
+                const auto &port = boundary.counterTiming->inputs.at(dg[k].name);
+                equal(io, a, port.minDelay, 0.5); equal(io, d, port.minDelay, 0.5);
+                equal(io, A, port.maxDelay, 0.5); equal(io, D, port.maxDelay, 0.5);
+            }
+            else
+            {
+                const bool output = dg[k].kind == NodeIdx::Kind::Output;
+                const double open = dg[k].polarity == NodeIdx::Polarity::Negative ? 0.0 : 0.5;
+                equal(io, a, counterMinArrival(dg, k), output ? 0.5 : open - 0.5);
+                if (output)
+                {
+                    equal(a, d, 0.0, 0.0); equal(A, D, 0.0, 0.0);
+                    constraint(io, A, -boundary.counterTiming->outputs.at(dg[k].name).maxDelay - boundary.setupUncertainty, 1.5);
+                }
+                else
+                {
+                    equal(io, d, min(t.tcqMin, t.tdqMin), open);
+                    constraint(io, A, -t.tsu - boundary.setupUncertainty, open + 0.5);
+                    constraint(D, A, -t.tdqMax, 0.0);
+                    constraint(D, io, -t.tcqMax, -open);
+                }
+                constraint(A, a, 0.0, 0.0); constraint(D, d, 0.0, 0.0);
+            }
+            continue;
+        }
         if (boundary.enabled && (k == kIoNodeIdx || dg[k].kind != NodeIdx::Kind::Latch))
         {
             if (k == kIoNodeIdx)
@@ -485,6 +776,8 @@ void getMcrGraph(const DelayGraph &dg, Graph &g, double tInitial, double dutyCyc
         if (k != kIoNodeIdx)
         {
             constraint(s, io, 0.0, 0.0);
+            if (!boundary.optimizeSkew)
+                constraint(io, s, 0.0, 0.0); // Together the two edges fix s_k = s_IO = 0.
             constraint(io, s, -kMcrSkewMargin, 1.0);
         }
         constraint(a, s, -t.thd - boundary.holdUncertainty, 0.0);
@@ -500,6 +793,13 @@ void getMcrGraph(const DelayGraph &dg, Graph &g, double tInitial, double dutyCyc
     for (auto e = range.first; e != range.second; ++e)
     {
         const size_t i = dg[boost::source(*e, dg)].idx, j = dg[boost::target(*e, dg)].idx;
+        if (counterModel)
+        {
+            const double cycles = dg[j].kind == NodeIdx::Kind::Latch &&
+                dg[j].polarity == NodeIdx::Polarity::Negative ? 1.0 : 0.0;
+            constraint(mcrIndex(j, kMcrLatestA), mcrIndex(i, kMcrLatestD), -dg[*e].maxDelay, cycles);
+            continue;
+        }
         const double shift = boundary.enabled ? 0.0 : 1.0;
         constraint(mcrIndex(i, kMcrD), mcrIndex(j, kMcrA), dg[*e].minDelay, -shift);
         constraint(mcrIndex(j, kMcrLatestA), mcrIndex(i, kMcrLatestD), -dg[*e].maxDelay, shift);
@@ -559,12 +859,65 @@ double mcrScheduleViolation(const DelayGraph &dg, double period, const vector<do
         violation = !isfinite(residual) ? numeric_limits<double>::infinity() : max(violation, residual);
     };
     const auto &boundary = dg[boost::graph_bundle];
+    if (!boundary.timingModel.empty())
+    {
+        if (!validCounterMcr(dg, dutyCycle))
+            return numeric_limits<double>::infinity();
+        for (size_t k = 0; k < boost::num_vertices(dg); ++k)
+        {
+            const double a = potential[mcrIndex(k, kMcrA)], A = potential[mcrIndex(k, kMcrLatestA)];
+            const double d = potential[mcrIndex(k, kMcrD)], D = potential[mcrIndex(k, kMcrLatestD)];
+            check(fabs(potential[mcrIndex(k, kMcrSkew)]));
+            if (k == kIoNodeIdx)
+            {
+                for (double value : {a, A, d, D}) check(fabs(value));
+                continue;
+            }
+            if (dg[k].kind == NodeIdx::Kind::Input)
+            {
+                const auto &port = boundary.counterTiming->inputs.at(dg[k].name);
+                check(fabs(a - (port.minDelay + 0.5 * period))); check(fabs(d - a));
+                check(fabs(A - (port.maxDelay + 0.5 * period))); check(fabs(D - A));
+            }
+            else
+            {
+                const auto &t = dg[k].timing;
+                const bool output = dg[k].kind == NodeIdx::Kind::Output;
+                const double open = dg[k].polarity == NodeIdx::Polarity::Negative ? 0.0 : 0.5;
+                check(fabs(a - (counterMinArrival(dg, k) + (output ? 0.5 : open - 0.5) * period)));
+                if (output)
+                {
+                    check(fabs(d - a)); check(fabs(D - A));
+                    check(A + boundary.counterTiming->outputs.at(dg[k].name).maxDelay + boundary.setupUncertainty - 1.5 * period);
+                }
+                else
+                {
+                    check(fabs(d - (open * period + min(t.tcqMin, t.tdqMin))));
+                    check(A + t.tsu + boundary.setupUncertainty - (open + 0.5) * period);
+                    check(A + t.tdqMax - D); check(open * period + t.tcqMax - D);
+                }
+                check(a - A); check(d - D);
+            }
+        }
+        const auto paths = boost::edges(dg);
+        for (auto e = paths.first; e != paths.second; ++e)
+        {
+            const size_t i = boost::source(*e, dg), j = boost::target(*e, dg);
+            const double cycles = dg[j].kind == NodeIdx::Kind::Latch &&
+                dg[j].polarity == NodeIdx::Polarity::Negative ? 1.0 : 0.0;
+            check(potential[mcrIndex(i, kMcrLatestD)] + dg[*e].maxDelay - cycles * period
+                  - potential[mcrIndex(j, kMcrLatestA)]);
+        }
+        return violation;
+    }
     for (size_t k = 0; k < boost::num_vertices(dg); ++k)
     {
         const double a = potential[mcrIndex(k, kMcrA)], A = potential[mcrIndex(k, kMcrLatestA)];
         const double d = potential[mcrIndex(k, kMcrD)], D = potential[mcrIndex(k, kMcrLatestD)];
         const double s = potential[mcrIndex(k, kMcrSkew)];
         const auto &t = dg[k].timing;
+        if (!boundary.optimizeSkew)
+            check(fabs(s));
         if (boundary.enabled && (k == kIoNodeIdx || dg[k].kind != NodeIdx::Kind::Latch))
         {
             check(fabs(s));
@@ -715,6 +1068,8 @@ void getEllGraph(const string &fileName, Graph &g, double &tInitial)
     g.clear();
     if (!readDelayGraph(fileName, dg, tInitial))
         throw runtime_error("Cannot read delay graph: " + fileName);
+    if (!dg[boost::graph_bundle].timingModel.empty())
+        throw invalid_argument("ELL does not support the counter timing model");
     size_t nVertices = boost::num_vertices(dg);
     vector<Vertex> vertices(nVertices);
     for (size_t i = 0; i < nVertices; ++i)

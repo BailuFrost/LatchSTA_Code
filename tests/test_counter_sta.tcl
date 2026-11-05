@@ -4,7 +4,7 @@ lassign $argv runner destination scenario
 namespace eval counter_mock {variable rows {}; variable calls {}; variable logging {}; variable log_open 0}
 for {set i 0} {$i < 8} {incr i} {
     set name [expr {$i < 4 ? "master_$i" : "slave_$i"}]
-    set cell [expr {$i < 4 ? "sky130_fd_sc_hd__dlrtn_1" : "sky130_fd_sc_hd__dlrtp_1"}]
+    set cell [expr {$i < 4 ? "sky130_fd_sc_hd__dlxtn_1" : "sky130_fd_sc_hd__dlxtp_1"}]
     dict set counter_mock::rows $name $cell
 }
 if {$scenario eq "wrong_cell"} {dict set counter_mock::rows master_0 unsupported_latch}
@@ -31,16 +31,17 @@ proc get_pins {name} {
     lassign [split $name /] instance port
     if {![dict exists $::counter_mock::rows $instance]} {return {}}
     set gate [expr {[string match master* $instance] ? "GATE_N" : "GATE"}]
-    if {$port in [list D Q RESET_B $gate]} {return [list $name]}
+    if {$port in [list D Q $gate]} {return [list $name]}
     return {}
 }
-proc get_clocks {name} {assert {$name eq "clk"}; return clk}
-proc get_nets {args} {return mock_net}
+proc get_clocks {name} {assert {$name in {clk *}}; return clk}
+proc get_nets {args} {return clk}
 proc read_liberty {path} {assert {[file isfile $path]}}
 proc read_verilog {path} {assert {[file isfile $path]}}
 proc link_design {name} {assert {$name eq "counter"}; return 1}
+proc write_sdc {path} {file copy [file join [file dirname $path] constraints.sdc] $path}
 proc create_clock {args} {set ::counter_mock::clock $args}
-foreach command {set_clock_transition set_clock_uncertainty set_input_delay set_input_transition set_output_delay set_load} {
+foreach command {set_clock_latency set_clock_transition set_clock_uncertainty set_input_delay set_input_transition set_output_delay set_load} {
     proc $command {args} {dict lappend ::counter_mock::calls [lindex [info level 0] 0] $args}
 }
 proc set_false_path {args} {error "Reset timing must not be hidden"}
@@ -64,23 +65,8 @@ foreach command {check_setup report_checks report_check_types report_instance re
     proc $command {args} {
         dict lappend ::counter_mock::calls [lindex [info level 0] 0] $args
         redirected {*}$args
+        return 1
     }
-}
-# Keep the real table writer but replace physical graph access for this control-flow test.
-rename source real_source
-proc source {path} {
-    set value [uplevel 1 [list real_source $path]]
-    if {[file tail $path] eq "export_pin_graph.tcl"} {
-        proc ::pin_graph::export {directory} {
-            file mkdir $directory/pin_graph
-            foreach name {pins vertices edges arc_delays slews boundary_paths boundary_edges manifest} {
-                set f [open $directory/pin_graph/$name.tsv w]
-                puts $f "MOCK ONLY; NOT STA EVIDENCE"; close $f
-            }
-            puts "MOCK graph export; NOT STA EVIDENCE"
-        }
-    }
-    return $value
 }
 set ::env(COUNTER_REPORT_DIR) [file normalize $destination]
 set status [catch {source [file normalize $runner]} message]
@@ -93,18 +79,18 @@ if {$scenario ne "normal"} {
     exit
 }
 if {$status} {error $message}
-assert {[llength [glob -directory $destination *.rpt]] == 82}
+assert {[llength [glob -directory $destination *.rpt]] == 68}
 assert {[file isfile [file join $destination latches.tsv]]}
 assert {!$::counter_mock::log_open}
 assert {[dict size $::counter_mock::rows] == 8}
 set clock $::counter_mock::clock
-assert {[lindex $clock [expr {[lsearch -exact $clock -waveform]+1}]] eq "0.0 5.0"}
-set cq 0; set reset 0
+assert {[lindex $clock [expr {[lsearch -exact $clock -waveform]+1}]] eq "5.0 10.0"}
+set cq 0; set dq 0
 foreach args [dict get $::counter_mock::calls dcalc] {
     set from [lindex $args [expr {[lsearch -exact $args -from]+1}]]
     if {[string match */GATE* $from]} {incr cq}
-    if {[string match */RESET_B $from]} {incr reset}
+    if {[string match */D $from]} {incr dq}
 }
-assert {$cq == 16 && $reset == 16}
+assert {$cq == 16 && $dq == 16}
 assert {[catch {source $runner} message] && [string match {*must be a new directory*} $message]}
-puts "Counter phases, reset reports and overwrite protection passed; no STA was executed"
+puts "Counter phases, synchronous reset reports and overwrite protection passed; no STA was executed"

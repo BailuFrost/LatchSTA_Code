@@ -107,14 +107,15 @@ validate physical clock implementation.
 python3 -m unittest discover -s tests -p test_counter_flow.py -v
 ```
 
-The counter tests run Tcl control-flow fixtures for both latch polarities, reset
-arcs, invalid pins/cells and output protection. With POSIX sh available, shell
+The counter tests run Tcl control-flow fixtures for both latch polarities, synchronous reset
+paths, invalid pins/cells and output protection. With POSIX sh available, shell
 tests use explicitly labeled mock Yosys/STA executables and real SHA-256 hashing
-to check staging, paths with spaces, reported violations, missing graph/reset
+to check staging, paths with spaces, reported violations, missing constraints/reset
 checks, tool failure, input mutation and preservation of earlier runs. Set
 `COUNTER_TEST_SH` if sh is not on PATH, and `TCLSH` if needed. No real synthesis,
 STA, functional simulation or optimizer validation is performed by these tests.
-The counter flow intentionally records optimization as unsupported by MCR v3.
+The synthesis/STA wrapper records optimization as `not_run`. The independent
+schema 4 solver and its C++/Tcl checks are documented in the [counter case](../examples/counter/README.md).
 
 ## Complete pin graph export
 

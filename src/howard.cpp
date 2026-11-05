@@ -114,6 +114,35 @@ bool Howard::initPolicy()
         if (inActiveScc(i) && !_suValid[i])
             return false;
     }
+    // Affine equalities can trap the cheapest-edge policy in zero-transit cycles.
+    if (std::get<1>(findRatio()) == graph_traits<Graph>::null_vertex())
+        for (tie(ei, eiend) = edges(_g); ei != eiend; ++ei)
+        {
+            const size_t root = source(*ei, _g);
+            if (root != target(*ei, _g) || !inActiveScc(root) || _g[*ei].delay <= _transitEps)
+                continue;
+            std::vector<char> reached(_n, 0);
+            std::queue<size_t> ready;
+            _su[root] = *ei;
+            reached[root] = 1;
+            ready.push(root);
+            while (!ready.empty())
+            {
+                const size_t v = ready.front(); ready.pop();
+                auto incoming = in_edges(v, _g);
+                for (auto edge = incoming.first; edge != incoming.second; ++edge)
+                {
+                    const size_t u = source(*edge, _g);
+                    if (inActiveScc(u) && !reached[u])
+                    {
+                        reached[u] = 1;
+                        _su[u] = *edge;
+                        ready.push(u);
+                    }
+                }
+            }
+            break;
+        }
     return true;
 }
 

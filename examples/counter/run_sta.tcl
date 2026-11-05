@@ -1,4 +1,8 @@
-# Fixed SKY130 HD TT, ideal clocks, no SPEF. Both latch polarities and reset are retained.
+# Synchronous-reset counter: SKY130 HD TT, ideal zero-skew clock, no SPEF.
+
+# COUNTER_SDC and COUNTER_REPORT_DIR must be set,such as:
+# COUNTER_SDC="$PWD/counter_opt.sdc" COUNTER_REPORT_DIR="$PWD/reports_169" sta -no_init -no_splash -exit run_sta.tcl
+
 set case_dir [file dirname [file normalize [info script]]]
 set report_dir [file join $case_dir reports]
 if {[info exists ::env(COUNTER_REPORT_DIR)]} {
@@ -8,22 +12,17 @@ if {[info exists ::env(COUNTER_REPORT_DIR)]} {
 if {[file exists [file join $report_dir units.rpt]] || [file exists [file join $report_dir pin_graph]]} {
     error "Existing STA reports are protected; set COUNTER_REPORT_DIR to a new directory"
 }
-set graph_exporter {}
-foreach path [list [file join $case_dir export_pin_graph.tcl] \
-                  [file join $case_dir .. tiny_3_latch_circuit export_pin_graph.tcl] \
-                  [file join $case_dir .. tiny_sky130 export_pin_graph.tcl]] {
-    if {[file isfile $path]} {set graph_exporter $path; break}
-}
+set sdc_file [file join $case_dir counter.sdc]
+if {[info exists ::env(COUNTER_SDC)]} {set sdc_file [file normalize $::env(COUNTER_SDC)]}
 cd $case_dir
 set liberty ../../sky130_pdk/sky130_fd_sc_hd__tt_025C_1v80.lib
-foreach path [list $liberty counter_mapped.v counter.sdc $graph_exporter] {
-    if {$path eq "" || ![file isfile $path]} {error "Missing counter STA input/exporter: $path"}
+foreach path [list $liberty counter_mapped.v $sdc_file] {
+    if {![file isfile $path]} {error "Missing counter STA input: $path"}
 }
-source $graph_exporter
 read_liberty $liberty
 read_verilog counter_mapped.v
 if {![link_design counter]} {error "Cannot link counter"}
-foreach cell {sky130_fd_sc_hd__dlrtn_1 sky130_fd_sc_hd__dlrtp_1} {
+foreach cell {sky130_fd_sc_hd__dlxtn_1 sky130_fd_sc_hd__dlxtp_1} {
     if {[llength [get_lib_cells */$cell]] != 1} {error "Missing or ambiguous library cell: $cell"}
 }
 foreach port {clk rst_n en} {
@@ -42,47 +41,60 @@ foreach instance $latches {
     }
     set cell [get_property $instance ref_name]
     switch -- $cell {
-        sky130_fd_sc_hd__dlrtn_1 {set gate GATE_N; incr negative}
-        sky130_fd_sc_hd__dlrtp_1 {set gate GATE; incr positive}
+        sky130_fd_sc_hd__dlxtn_1 {set gate GATE_N; incr negative}
+        sky130_fd_sc_hd__dlxtp_1 {set gate GATE; incr positive}
         default {error "Unsupported counter latch cell: $cell"}
     }
-    foreach port [list D Q $gate RESET_B] {
+    foreach port [list D Q $gate] {
         if {[llength [get_pins $name/$port]] != 1} {error "Missing or ambiguous pin: $name/$port"}
     }
-    lappend latch_rows [list $name $cell $name/$gate $name/D $name/Q $name/RESET_B]
+    set gate_net [get_full_name [get_nets -of_objects [get_pins $name/$gate]]]
+    if {$gate_net ne "clk"} {error "Expected direct shared clk at $name/$gate, found $gate_net"}
+    lappend latch_rows [list $name $cell $name/$gate $name/D $name/Q]
 }
-if {$negative != 4 || $positive != 4} {error "Expected four negative and four positive resettable latches"}
-read_sdc counter.sdc
+if {$negative != 4 || $positive != 4} {error "Expected four master dlxtn and four slave dlxtp latches"}
+read_sdc $sdc_file
+if {[llength [get_clocks *]] != 1 || [llength [get_clocks clk]] != 1} {error "Expected one shared clock clk"}
 file mkdir $report_dir
-file copy counter.sdc [file join $report_dir constraints.sdc]
-pin_graph::table $report_dir latches {instance cell gate_pin data_pin output_pin reset_pin} $latch_rows
+file copy $sdc_file [file join $report_dir constraints.sdc]
+set mapping [open [file join $report_dir latches.tsv] w]
+puts $mapping "instance\tcell\tgate_pin\tdata_pin\toutput_pin"
+foreach row $latch_rows {puts $mapping [join $row \t]}
+close $mapping
+# Archive the evaluated period too: constraints.sdc alone does not record environment overrides.
+write_sdc [file join $report_dir effective.sdc]
 log_begin $report_dir/units.rpt
 report_units
 log_end
 log_begin $report_dir/clocks.rpt
 report_clock_properties [get_clocks clk]
 log_end
-check_setup -verbose > $report_dir/check_setup.rpt
+set constraints_ok [check_setup -verbose > $report_dir/check_setup.rpt]
 foreach analysis {max min} kind {setup hold} {
     report_checks -path_delay $analysis -format full_clock_expanded \
         -fields {slew capacitance input_pin net} -group_path_count 1000 \
         -endpoint_path_count 1000 -digits 6 > $report_dir/$kind.rpt
 }
-foreach kind {recovery removal min_pulse_width} name {recovery removal pulse_width} {
-    report_check_types -$kind -format end -max_count 1000 -digits 6 > $report_dir/$name.rpt
+foreach port {en rst_n} {
+    foreach analysis {max min} kind {setup hold} {
+        report_checks -from [get_ports $port] -path_delay $analysis -format full_clock_expanded \
+            -fields {slew capacitance input_pin net} -group_path_count 1000 \
+            -endpoint_path_count 1000 -digits 6 > $report_dir/${port}_${kind}.rpt
+    }
 }
-set checks {-max_delay -min_delay -recovery -removal -min_pulse_width -min_period -max_slew -max_capacitance -max_fanout}
+report_check_types -min_pulse_width -format end -max_count 1000 -digits 6 > $report_dir/pulse_width.rpt
+set checks {-max_delay -min_delay -min_pulse_width -min_period -max_slew -max_capacitance -max_fanout}
 report_check_types {*}$checks -format end -max_count 1000 -digits 6 > $report_dir/checks.rpt
 report_check_types {*}$checks -violators -format end -max_count 1000 -digits 6 > $report_dir/violations.rpt
 foreach row $latch_rows {
-    lassign $row name cell gate data output reset
+    lassign $row name cell gate data output
     report_instance $name > $report_dir/${name}_instance.rpt
     log_begin $report_dir/${name}_arrival.rpt
     report_arrival -digits 6 [get_pins $data]
     log_end
     report_net -digits 6 [get_full_name [get_nets -of_objects [get_pins $output]]] \
         > $report_dir/${name}_load.rpt
-    foreach from [list $data $gate $reset] label {dq cq reset_q} {
+    foreach from [list $data $gate] label {dq cq} {
         foreach analysis {min max} {
             log_begin $report_dir/${name}_${label}_${analysis}.rpt
             report_dcalc -from [get_pins $from] -to [get_pins $output] -$analysis -digits 6
@@ -90,6 +102,6 @@ foreach row $latch_rows {
         }
     }
 }
-pin_graph::export $report_dir
-puts "Counter reports written to $report_dir; inspect setup/hold, recovery/removal, pulse widths and clock phases"
-puts "Optimization unsupported: current MCR v3 does not model this mixed-polarity resettable feedback circuit with multiple IOs"
+puts "Counter reports written to $report_dir; inspect setup/hold, synchronous reset paths, pulse widths and clock phases"
+puts "Analysis only: ideal zero skew; the requested clock period is not a maximum-frequency certificate"
+if {!$constraints_ok} {error "Incomplete timing constraints or invalid structure; see $report_dir/check_setup.rpt"}

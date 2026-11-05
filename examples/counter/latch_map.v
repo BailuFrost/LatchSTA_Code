@@ -1,28 +1,17 @@
-// Yosys technology mapping only; keep the internal-cell port names unchanged.
-module \$_DLATCH_NN0_ (E, R, D, Q);
-    input E;
-    input R;
-    input D;
+module \$_DLATCH_N_ (E, D, Q);
+    input E, D;
     output Q;
 
-    sky130_fd_sc_hd__dlrtn_1 _TECHMAP_REPLACE_ (
-        .GATE_N(E),
-        .RESET_B(R),
-        .D(D),
-        .Q(Q)
+    sky130_fd_sc_hd__dlxtn_1 _TECHMAP_REPLACE_ (
+        .GATE_N(E), .D(D), .Q(Q)
     );
 endmodule
 
-module \$_DLATCH_PN0_ (E, R, D, Q);
-    input E;
-    input R;
-    input D;
+module \$_DLATCH_P_ (E, D, Q);
+    input E, D;
     output Q;
 
-    sky130_fd_sc_hd__dlrtp_1 _TECHMAP_REPLACE_ (
-        .GATE(E),
-        .RESET_B(R),
-        .D(D),
-        .Q(Q)
+    sky130_fd_sc_hd__dlxtp_1 _TECHMAP_REPLACE_ (
+        .GATE(E), .D(D), .Q(Q)
     );
 endmodule

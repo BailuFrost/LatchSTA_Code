@@ -55,7 +55,7 @@ make -j8
 程序编译完成后生成 `main` 可执行文件，运行格式如下：
 
 ```bash
-./main <input_file> <iterations> <ellipsoid_radius> [latch_timing.json] [--duty-cycle fraction] [--export-sdc new_file.sdc]
+./main <input_file> <iterations> <ellipsoid_radius> [latch_timing.json] [--read-only] [--no-skew] [--duty-cycle fraction] [--export-sdc new_file.sdc]
 ```
 
 参数说明：
@@ -69,6 +69,36 @@ ELL 使用独立旧模型；加载 v3 真实 IO 时跳过 ELL。
 每次运行固定一个占空比，透明窗口为 [s_k+(1-duty)*T, s_k+T]。
 JSON 加载真实 latch 的六项参数、v2 起的脉宽检查及 v3 的 IO 约束；端口与零参考点的六参数为零。
 此选项同时用于 Howard、YTO、LP 和原式验证；ELL 不使用该占空比。
+
+`--no-skew` 暂停时钟偏斜优化，在 MCR 约束图、独立 LP 和原式验证中固定所有
+`s_k=0`；保留固定占空比、setup/hold、脉宽及已加载的 IO 约束。
+程序输出该模型的最小周期和最高频率 `1000/T(ns)` MHz，不打印偏斜调度；
+跳过不支持零偏斜约束的独立 ELL 模型。省略此开关仍执行原有偏斜优化。
+可与 `--export-sdc` 合用，导出的 latch latency 为零并标注零偏斜模式。
+
+```bash
+./main <supported_input.out> 1 100 <latch_timing.json> --no-skew
+```
+
+counter 通过专门的 schema 4 模型支持双极性反馈、独立 IO 和零偏斜求解；
+必须保留 TimingModel 标记及配套 JSON，不可按统一正极性 v3 无环输入处理。
+
+counter 的 schema 4 时序交换文件现已支持读取：保留正负极性、窗口、反馈边及
+独立 IO 预算。先调用 `readDelayGraph` 读取带 `TimingModel` 标记的 `.blif.out`，
+再调用 `readLatchTiming` 加载配套 JSON。`--read-only` 加载后打印图规模并退出，
+可用于检查 counter 输入；此模式不求频率，也不导出 SDC。求解时使用 `--no-skew`，
+保持 50% 占空比，并通过逐边保守 hold 检查。当前数据得到模型最小周期 1.584538 ns、
+最高频率 631.098780843 MHz。`--export-sdc` 支持此模式，恢复 GATE/GATE_N 及独立 IO，
+所有 latency 为零。也提供仅依赖 Boost 头文件、GLPK 的 `counter_solver` 入口。
+构建、导出、模型定义、回归及 OpenSTA 候选复核命令见 `examples/counter/README.md`。
+
+零偏斜回归（人工参数，非 counter 表征数据）：
+
+```bash
+g++ -std=c++17 -Iinclude tests/test_mcr_no_skew.cpp src/timing_graph.cpp \
+  src/howard.cpp src/LP.cpp -lglpk -o test_mcr_no_skew
+./test_mcr_no_skew
+```
 
 逐实例 JSON v2 还包含 `clock_checks_ns.min_pulse_width_high/low`，单位 ns。
 数值表示库要求，`null` 表示已检查该库弧但没有对应检查；v2 必须显式提供两项。
@@ -111,5 +141,5 @@ cmake/: 包含 CMake 构建系统的相关配置文件。
 
 - [当日推进记录与验证边界](docs/progress/2026-10-25.md)。
 - [三锁存器全流程、完整引脚图与绘图](examples/tiny_3_latch_circuit/README.md)，真实运行归档见 [run_tiny_02](run_tiny_02/)。
-- [主从 latch 计数器综合与 STA](examples/counter/README.md)：已有真实失败记录，平行时序边导出问题待修复；当前不支持该计数器优化。
+- [同步复位 counter 案例](examples/counter/README.md)：零偏斜求解、OpenROAD 布局布线和 1.80 ns 后仿真验证。
 - [回归测试说明](tests/README.md)。
