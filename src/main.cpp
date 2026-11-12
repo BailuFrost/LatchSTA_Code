@@ -239,7 +239,8 @@ int main(int argc, char *const argv[])
             cout << "Counter v4: opposite-phase feedback, master->slave cycles=0, slave/input->master cycles=1; "
                  << "independent IO budgets, 50% duty, zero skew; conservative min-delay hold certificate." << endl;
         if (io.enabled)
-            cout << "SDC IO: " << io.inputPort << " min/max=" << io.inputMin << "/" << io.inputMax
+            cout << "SDC IO: " << io.inputPort << " (physical input ports="
+                 << (io.inputPorts.empty() ? 1 : io.inputPorts.size()) << ") min/max=" << io.inputMin << "/" << io.inputMax
                  << " ns; " << io.outputPort << " min/max=" << io.outputMin << "/" << io.outputMax
                  << " ns; setup/hold uncertainty=" << io.setupUncertainty << "/" << io.holdUncertainty
                  << " ns; output setup/hold capture cycles=1/0; path cycle shift=0. Conservative hold guards enabled." << endl;

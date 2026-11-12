@@ -52,6 +52,7 @@ struct IoConstraints
     double dutyCycle = 0.5;
     std::optional<StaConditions> staConditions;
     // Physical ports sharing the input node's clock, delay budgets and slew.
+    vector<string> inputPorts;
     bool optimizeSkew = true;
     string timingModel{};
     struct CounterTiming

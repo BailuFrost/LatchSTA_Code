@@ -1,0 +1,17 @@
+OpenROAD 26Q4-1499-gf3d27840b6 
+Features included (+) or not (-): -GPU +GUI
+This program is licensed under the BSD-3 license. See the LICENSE file for details.
+Components of this program may be licensed under more restrictive licenses which must be honored.
+[INFO ORD-0030] Using 2 thread(s).
+read_liberty /home/bailufrost/eda/OpenROAD-flow-scripts-live/flow/platforms/sky130hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+read_db /mnt/hgfs/LatchSTA_Code/code/examples/picorv32/picorv32_latch/orfs/results/sky130hd/picorv32_latch/holdfix30ps/5_2_route.odb
+read_sdc /mnt/hgfs/LatchSTA_Code/code/examples/picorv32/picorv32_latch/orfs/results/sky130hd/picorv32_latch/holdfix30ps/5_1_grt.sdc
+source /home/bailufrost/eda/OpenROAD-flow-scripts-live/flow/platforms/sky130hd/setRC.tcl
+filler_placement "sky130_fd_sc_hd__fill_1 sky130_fd_sc_hd__fill_2 sky130_fd_sc_hd__fill_4 sky130_fd_sc_hd__fill_8"
+[INFO DPL-0001] Placed 18197 filler instances.
+Design area 90940 um^2 45% utilization.
+write_db /mnt/hgfs/LatchSTA_Code/code/examples/picorv32/picorv32_latch/orfs/results/sky130hd/picorv32_latch/holdfix30ps/5_3_fillcell.odb
+Elapsed time: 0:00.90[h:]min:sec. CPU time: user 0.54 sys 0.22 (84%). Peak memory: 162744KB.
+Log                    Ext     Elapsed      CPU     CPU/ Peak Mem sha1sum
+                                     s        s  Elapsed       MB [0:10)
+5_3_fillcell           .odb          0        1     0.84      158 a28a08dbad

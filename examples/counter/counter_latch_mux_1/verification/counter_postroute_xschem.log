@@ -1,0 +1,43 @@
+
+   X server connection failed, although DISPLAY shell variable is set.
+   A possible reason is that the X server is not running or DISPLAY shell variable
+   is incorrectly set.
+   Starting Xschem in text only mode.
+
+Using run time directory XSCHEM_SHAREDIR = /home/bailufrost/.local/opt/xschem-current/share/xschem
+Sourcing /home/bailufrost/.local/opt/xschem-current/share/xschem/xschemrc init file
+Sourcing /mnt/hgfs/LatchSTA_Code/code/examples/counter/counter_latch_mux_1/xschemrc init file
+open_pdks installation: using /home/bailufrost/eda/pdk
+SKYWATER_MODELS: /home/bailufrost/eda/pdk/sky130A/libs.tech/combined
+SKYWATER_STDCELLS: /home/bailufrost/eda/pdk/sky130A/libs.ref/sky130_fd_sc_hd/spice
+
+
+
+   X server connection failed, although DISPLAY shell variable is set.
+   A possible reason is that the X server is not running or DISPLAY shell variable
+   is incorrectly set.
+   Starting Xschem in text only mode.
+
+Using run time directory XSCHEM_SHAREDIR = /home/bailufrost/.local/opt/xschem-current/share/xschem
+Sourcing /home/bailufrost/.local/opt/xschem-current/share/xschem/xschemrc init file
+Sourcing /mnt/hgfs/LatchSTA_Code/code/examples/counter/counter_latch_mux_1/xschemrc init file
+open_pdks installation: using /home/bailufrost/eda/pdk
+SKYWATER_MODELS: /home/bailufrost/eda/pdk/sky130A/libs.tech/combined
+SKYWATER_STDCELLS: /home/bailufrost/eda/pdk/sky130A/libs.ref/sky130_fd_sc_hd/spice
+
+
+
+   X server connection failed, although DISPLAY shell variable is set.
+   A possible reason is that the X server is not running or DISPLAY shell variable
+   is incorrectly set.
+   Starting Xschem in text only mode.
+
+Using run time directory XSCHEM_SHAREDIR = /home/bailufrost/.local/opt/xschem-current/share/xschem
+Sourcing /home/bailufrost/.local/opt/xschem-current/share/xschem/xschemrc init file
+Sourcing /mnt/hgfs/LatchSTA_Code/code/examples/counter/counter_latch_mux_1/xschemrc init file
+open_pdks installation: using /home/bailufrost/eda/pdk
+SKYWATER_MODELS: /home/bailufrost/eda/pdk/sky130A/libs.tech/combined
+SKYWATER_STDCELLS: /home/bailufrost/eda/pdk/sky130A/libs.ref/sky130_fd_sc_hd/spice
+tcleval(): evaluation of script: tk scaling failed
+         : invalid command name "tk"
+

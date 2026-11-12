@@ -1,0 +1,3 @@
+VCD info: dumpfile /tmp/counter-power-xcbyq63a/hold_raw.vcd opened for output.
+PASS: scenario=0, 4096 measured cycles; routed and source counters match expected sequence
+/mnt/hgfs/LatchSTA_Code/code/examples/counter/counter_latch_mux_1/openroad/power/tb_power.sv:66: $finish called at 7120680001 (1fs)

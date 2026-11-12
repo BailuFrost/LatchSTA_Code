@@ -1,0 +1,70 @@
+OpenROAD 26Q4-1499-gf3d27840b6 
+Features included (+) or not (-): -GPU +GUI
+This program is licensed under the BSD-3 license. See the LICENSE file for details.
+Components of this program may be licensed under more restrictive licenses which must be honored.
+[INFO ORD-0030] Using 2 thread(s).
+read_liberty /home/bailufrost/eda/OpenROAD-flow-scripts-live/flow/platforms/sky130hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+read_db ./results/sky130hd/picorv32_dff/base/6_1_fill.odb
+read_sdc ./results/sky130hd/picorv32_dff/base/6_1_fill.sdc
+source /home/bailufrost/eda/OpenROAD-flow-scripts-live/flow/platforms/sky130hd/setRC.tcl
+write_db ./results/sky130hd/picorv32_dff/base/6_final.odb
+write_sdc -no_timestamp ./results/sky130hd/picorv32_dff/base/6_final.sdc
+Deleted 0 routing obstructions
+Warning: master sky130_ef_sc_hd__decap_12 has signal pins but no liberty cell
+[INFO RCX-0431] Defined process_corner X with ext_model_index 0
+[INFO RCX-0029] Defined extraction corner X
+[INFO RCX-0435] Reading extraction model file /home/bailufrost/eda/OpenROAD-flow-scripts-live/flow/platforms/sky130hd/rcx_patterns.rules ...
+[INFO RCX-0436] RC segment generation picorv32 (max_merge_res 50.0) ...
+[INFO RCX-0040] Final 34874 rc segments
+[INFO RCX-0439] Coupling Cap extraction picorv32 ...
+[INFO RCX-0440] Coupling threshhold is 0.1000 fF, coupling capacitance less than 0.1000 fF will be grounded.
+[INFO RCX-0442] 56% of 73008 wires extracted
+[INFO RCX-0442] 100% of 73008 wires extracted
+[INFO RCX-0045] Extract 6963 nets, 41700 rsegs, 41700 caps, 78833 ccs
+[INFO RCX-0443] 6963 nets finished
+[INFO PSM-0040] All shapes on net VDD are connected.
+########## IR report #################
+Net              : VDD
+Corner           : default
+Total power      : 1.42e-02 W
+Supply voltage   : 1.80e+00 V
+Worstcase voltage: 1.80e+00 V
+Average voltage  : 1.80e+00 V
+Average IR drop  : 1.12e-05 V
+Worstcase IR drop: 1.83e-04 V
+Percentage drop  : 0.01 %
+######################################
+[INFO PSM-0040] All shapes on net VSS are connected.
+########## IR report #################
+Net              : VSS
+Corner           : default
+Total power      : 1.42e-02 W
+Supply voltage   : 0.00e+00 V
+Worstcase voltage: 2.37e-04 V
+Average voltage  : 1.11e-05 V
+Average IR drop  : 1.11e-05 V
+Worstcase IR drop: 2.37e-04 V
+Percentage drop  : 0.01 %
+######################################
+Cell type report:                       Count        Area
+  Fill cell                             22094   144654.99
+  Tap cell                               3185     3985.07
+  Antenna cell                              5       12.51
+  Clock buffer                            218     4630.69
+  Timing Repair Buffer                    460     2660.05
+  Inverter                                162      608.08
+  Clock inverter                          104     1208.66
+  Sequential cell                        1597    44792.96
+  Multi-Input combinational cell         4262    37527.24
+  Total                                 32087   240080.26
+Report metrics stage 6, finish...
+
+==========================================================================
+finish report_design_area
+--------------------------------------------------------------------------
+Design area 95425 um^2 40% utilization.
+[WARNING GUI-0076] Could not find the Qt platform plugin "wayland" in ""
+Elapsed time: 0:10.04[h:]min:sec. CPU time: user 9.03 sys 1.24 (102%). Peak memory: 356076KB.
+Log                    Ext     Elapsed      CPU     CPU/ Peak Mem sha1sum
+                                     s        s  Elapsed       MB [0:10)
+6_report                            10       10     1.02      347 N/A

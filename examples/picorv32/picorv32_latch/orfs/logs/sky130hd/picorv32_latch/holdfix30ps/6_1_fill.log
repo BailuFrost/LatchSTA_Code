@@ -1,0 +1,14 @@
+OpenROAD 26Q4-1499-gf3d27840b6 
+Features included (+) or not (-): -GPU +GUI
+This program is licensed under the BSD-3 license. See the LICENSE file for details.
+Components of this program may be licensed under more restrictive licenses which must be honored.
+[INFO ORD-0030] Using 2 thread(s).
+read_liberty /home/bailufrost/eda/OpenROAD-flow-scripts-live/flow/platforms/sky130hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+read_db /mnt/hgfs/LatchSTA_Code/code/examples/picorv32/picorv32_latch/orfs/results/sky130hd/picorv32_latch/holdfix30ps/5_route.odb
+read_sdc /mnt/hgfs/LatchSTA_Code/code/examples/picorv32/picorv32_latch/orfs/results/sky130hd/picorv32_latch/holdfix30ps/5_route.sdc
+source /home/bailufrost/eda/OpenROAD-flow-scripts-live/flow/platforms/sky130hd/setRC.tcl
+exec cp /mnt/hgfs/LatchSTA_Code/code/examples/picorv32/picorv32_latch/orfs/results/sky130hd/picorv32_latch/holdfix30ps/5_route.odb /mnt/hgfs/LatchSTA_Code/code/examples/picorv32/picorv32_latch/orfs/results/sky130hd/picorv32_latch/holdfix30ps/6_1_fill.odb
+Elapsed time: 0:00.61[h:]min:sec. CPU time: user 0.35 sys 0.15 (82%). Peak memory: 140644KB.
+Log                    Ext     Elapsed      CPU     CPU/ Peak Mem sha1sum
+                                     s        s  Elapsed       MB [0:10)
+6_1_fill               .odb          0        0     0.82      137 a28a08dbad

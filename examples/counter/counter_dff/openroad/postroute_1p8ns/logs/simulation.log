@@ -1,0 +1,3 @@
+VCD info: dumpfile inputs/counter_counting.vcd opened for output.
+PASS: 272 counting checks; VCD records 256 cycles at 1.8 ns (460.8 ns).
+/tmp/counter_dff_sta_1p8ns_1g34fdpm/scripts/counter_power_tb.v:38: $finish called at 490500 (1ps)

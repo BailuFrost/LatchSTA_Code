@@ -273,6 +273,14 @@ bool validDelayGraph(const DelayGraph &dg, double tInitial)
                              io.setupUncertainty, io.holdUncertainty})
             if (!isfinite(value))
                 return false;
+        set<string> physicalInputs;
+        for (const auto &port : io.inputPorts)
+            if (port.empty() || port == io.outputPort ||
+                (io.staConditions && port == io.staConditions->clockPort) ||
+                !physicalInputs.insert(port).second)
+                return false;
+        if (!io.inputPorts.empty() && io.inputPorts.front() != io.inputPort)
+            return false;
         size_t inputs = 0, outputs = 0;
         vector<size_t> incoming(n);
         queue<size_t> ready;
@@ -579,7 +587,24 @@ void readLatchTiming(const string &fileName, DelayGraph &dg)
             throw invalid_argument("SDC IO requires rise in [T/2,T) and fall at T");
         IoConstraints io;
         io.enabled = true;
-        io.inputPort = input.get<string>("input.port");
+        const auto &inputGroup = input.get_child("input");
+        if (const auto ports = inputGroup.get_child_optional("ports"))
+        {
+            if (!ports->data().empty() || ports->empty() || inputGroup.count("port"))
+                throw invalid_argument("Input ports must be a nonempty array sharing one timing budget");
+            for (const auto &port : *ports)
+            {
+                if (!port.first.empty() || !port.second.empty())
+                    throw invalid_argument("Input ports must be an array of names");
+                io.inputPorts.push_back(port.second.get_value<string>());
+            }
+            io.inputPort = io.inputPorts.front();
+        }
+        else
+        {
+            io.inputPort = inputGroup.get<string>("port");
+            io.inputPorts = {io.inputPort};
+        }
         io.outputPort = input.get<string>("output.port");
         io.inputMin = input.get<double>("input.min_delay_ns");
         io.inputMax = input.get<double>("input.max_delay_ns");

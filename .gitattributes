@@ -1,4 +1,5 @@
-# Preserve original bytes used by archived timing/input SHA-256 manifests.
+# Keep conversion scripts usable in Linux and preserve archived data bytes.
+trans/*.sh text eol=lf
+trans/*.ys text eol=lf
 examples/** -text
-sky130_pdk/** -text
-run_tiny_02/** -text
+pdk/sky130_pdk/** -text

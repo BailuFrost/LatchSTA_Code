@@ -1,0 +1,25 @@
+OpenROAD 26Q2-1164-g08f67ee5ec 
+Features included (+) or not (-): +GPU +GUI +Python
+This program is licensed under the BSD-3 license. See the LICENSE file for details.
+Components of this program may be licensed under more restrictive licenses which must be honored.
+[INFO ODB-0227] LEF file: /home/bailufrost/eda/OpenROAD-flow-scripts/flow/platforms/sky130hd/lef/sky130_fd_sc_hd.tlef, created 13 layers, 25 vias
+[INFO ODB-0227] LEF file: /home/bailufrost/eda/OpenROAD-flow-scripts/flow/platforms/sky130hd/lef/sky130_fd_sc_hd_merged.lef, created 441 library cells
+[INFO ODB-0127] Reading DEF file: /tmp/counter_dff_openroad_v5h1vhyu/results/counter_routed.def
+[INFO ODB-0128] Design: counter
+[INFO ODB-0130]     Created 9 pins.
+[INFO ODB-0131]     Created 227 components and 875 component-terminals.
+[INFO ODB-0132]     Created 2 special nets and 820 connections.
+[INFO ODB-0133]     Created 20 nets and 55 connections.
+[INFO ODB-0134] Finished DEF file: /tmp/counter_dff_openroad_v5h1vhyu/results/counter_routed.def
+[INFO RCX-0431] Defined process_corner typical with ext_model_index 0
+[INFO RCX-0029] Defined extraction corner typical
+[INFO RCX-0435] Reading extraction model file /home/bailufrost/eda/OpenROAD-flow-scripts/flow/platforms/sky130hd/rcx_patterns.rules ...
+[INFO RCX-0436] RC segment generation counter (max_merge_res 50.0) ...
+[INFO RCX-0040] Final 65 rc segments
+[INFO RCX-0439] Coupling Cap extraction counter ...
+[INFO RCX-0440] Coupling threshhold is 0.1000 fF, coupling capacitance less than 0.1000 fF will be grounded.
+[INFO RCX-0442] 75% of 265 wires extracted
+[INFO RCX-0442] 100% of 265 wires extracted
+[INFO RCX-0045] Extract 20 nets, 85 rsegs, 85 caps, 79 ccs
+[INFO RCX-0443] 20 nets finished
+EXTRACTION_COMPLETE

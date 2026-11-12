@@ -1,0 +1,114 @@
+OpenROAD 26Q4-1499-gf3d27840b6 
+Features included (+) or not (-): -GPU +GUI
+This program is licensed under the BSD-3 license. See the LICENSE file for details.
+Components of this program may be licensed under more restrictive licenses which must be honored.
+[INFO ORD-0030] Using 2 thread(s).
+read_liberty /home/bailufrost/eda/OpenROAD-flow-scripts-live/flow/platforms/sky130hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+read_db ./results/sky130hd/picorv32_dff/base/3_place.odb
+read_sdc ./results/sky130hd/picorv32_dff/base/3_place.sdc
+source /home/bailufrost/eda/OpenROAD-flow-scripts-live/flow/platforms/sky130hd/setRC.tcl
+clock_tree_synthesis -sink_clustering_enable -repair_clock_nets
+[INFO CTS-0050] Root buffer is sky130_fd_sc_hd__clkbuf_16.
+[INFO CTS-0051] Sink buffer is sky130_fd_sc_hd__clkbuf_16.
+[INFO CTS-0052] The following clock buffers will be used for CTS:
+                    sky130_fd_sc_hd__clkbuf_16
+[INFO CTS-0049] Characterization buffer is sky130_fd_sc_hd__clkbuf_16.
+[INFO CTS-0007] Net "clk" found for clock "clk".
+[INFO CTS-0010]  Clock net "clk" has 1597 sinks.
+[INFO CTS-0008] TritonCTS found 1 clock nets.
+[INFO CTS-0097] Characterization used 1 buffer(s) types.
+[INFO CTS-0201] 0 blockages from hard placement blockages and placed macros will be used.
+[INFO CTS-0027] Generating H-Tree topology for net clk.
+[INFO CTS-0028]  Total number of sinks: 1597.
+[INFO CTS-0090]  Sinks will be clustered based on buffer max cap.
+[INFO CTS-0030]  Number of static layers: 0.
+[INFO CTS-0020]  Wire segment unit: 13600  dbu (13 um).
+[INFO CTS-0206] Best clustering solution was found from max clustering size of 14 and max clustering diameter of 138.
+[INFO CTS-0019]  Total number of sinks after clustering: 157.
+[INFO CTS-0024]  Normalized sink region: [(4.31544, 1.62607), (35.6924, 35.92)].
+[INFO CTS-0025]     Width:  31.3770.
+[INFO CTS-0026]     Height: 34.2939.
+ Level 1
+    Direction: Vertical
+    Sinks per sub-region: 79
+    Sub-region size: 31.3770 X 17.1470
+[INFO CTS-0034]     Segment length (rounded): 8.
+ Level 2
+    Direction: Horizontal
+    Sinks per sub-region: 40
+    Sub-region size: 15.6885 X 17.1470
+[INFO CTS-0034]     Segment length (rounded): 8.
+ Level 3
+    Direction: Vertical
+    Sinks per sub-region: 20
+    Sub-region size: 15.6885 X 8.5735
+[INFO CTS-0034]     Segment length (rounded): 4.
+ Level 4
+    Direction: Horizontal
+    Sinks per sub-region: 10
+    Sub-region size: 7.8442 X 8.5735
+[INFO CTS-0034]     Segment length (rounded): 4.
+[INFO CTS-0038]  Stop criterion found. Sink region hpwl is smaller than max wirelength (1911.535 um) and max number of sinks is 15.
+[INFO CTS-0035]  Number of sinks covered: 157.
+[INFO CTS-0018]     Created 174 clock buffers.
+[INFO CTS-0012]     Minimum number of buffers in the clock path: 3.
+[INFO CTS-0013]     Maximum number of buffers in the clock path: 3.
+[INFO CTS-0015]     Created 174 clock nets.
+[INFO CTS-0016]     Fanout distribution for the current clock = 2:1, 5:3, 6:6, 7:6, 8:13, 9:25, 10:43, 11:35, 12:23, 13:15, 14:2, 16:1..
+[INFO CTS-0017]     Max level of the clock tree: 4.
+[INFO CTS-0098] Clock net "clk"
+[INFO CTS-0099]  Sinks 1745
+[INFO CTS-0100]  Leaf buffers 157
+[INFO CTS-0101]  Average sink wire length 773.98 um
+[INFO CTS-0102]  Path depth 2 - 3
+[INFO CTS-0207]  Dummy loads inserted 148
+[INFO CTS-0500] Runtime: 0.65s
+estimate_parasitics -placement
+detailed_placement -quiet
+[INFO DPL-0009] Utilization: 39.6%
+[INFO DPL-0501] Legalized with 4855 moves: displacement total 7447.7 u, max 19.2 u; HPWL 244283.4 -> 248173.7 u (+1.6 %).
+[INFO DPL-0500] Runtime: 0.09s
+estimate_parasitics -placement
+repair_timing -setup_margin 0 -hold_margin 0 -repair_tns 100 -match_cell_footprint -verbose
+[INFO RSZ-0100] Repair move sequence: UnbufferMove SizeUpMove SwapPinsMove BufferMove CloneMove SplitLoadMove 
+[INFO RSZ-0098] No setup violations found
+[INFO RSZ-0505] Runtime: 0.26s
+[INFO RSZ-0046] Found 133 endpoints with hold violations.
+Iteration | Resized | Buffers | Cloned Gates |   Area   |   WNS   |   TNS   | Endpoint
+--------------------------------------------------------------------------------------
+        0 |       0 |       0 |            0 |    +0.0% |  -0.598 | -31.564 | mem_rdata_q[12]$_DFFE_PP_/D
+       10 |       0 |       9 |            0 |    +0.1% |  -0.468 | -24.763 | mem_rdata_q[10]$_DFFE_PP_/D
+       20 |       0 |      17 |            0 |    +0.2% |  -0.397 | -17.349 | cpu_state[1]$_DFF_P_/D
+       30 |       0 |      24 |            0 |    +0.3% |  -0.342 |  -6.167 | mem_rdata_q[23]$_DFFE_PP_/D
+       40 |       0 |      30 |            0 |    +0.3% |  -0.292 |  -2.618 | mem_rdata_q[9]$_DFFE_PP_/D
+       50 |       0 |      33 |            0 |    +0.3% |  -0.253 |  -1.017 | mem_rdata_q[31]$_DFFE_PP_/D
+       60 |       0 |      33 |            0 |    +0.3% |  -0.253 |  -1.017 | mem_rdata_q[31]$_DFFE_PP_/D
+       70 |       0 |      35 |            0 |    +0.4% |   0.027 |   0.000 | mem_rdata_q[12]$_DFFE_PP_/D
+       80 |       0 |      35 |            0 |    +0.4% |   0.027 |   0.000 | mem_rdata_q[12]$_DFFE_PP_/D
+       90 |       0 |      35 |            0 |    +0.4% |   0.027 |   0.000 | mem_rdata_q[12]$_DFFE_PP_/D
+      100 |       0 |      35 |            0 |    +0.4% |   0.027 |   0.000 | mem_rdata_q[12]$_DFFE_PP_/D
+      110 |       0 |      35 |            0 |    +0.4% |   0.027 |   0.000 | mem_rdata_q[12]$_DFFE_PP_/D
+      120 |       0 |      35 |            0 |    +0.4% |   0.027 |   0.000 | mem_rdata_q[12]$_DFFE_PP_/D
+      130 |       0 |      35 |            0 |    +0.4% |   0.027 |   0.000 | mem_rdata_q[12]$_DFFE_PP_/D
+    final |       0 |      35 |            0 |    +0.4% |   0.027 |   0.000 | mem_rdata_q[12]$_DFFE_PP_/D
+--------------------------------------------------------------------------------------
+[INFO RSZ-0032] Inserted 35 hold buffers.
+[INFO RSZ-0506] Runtime: 0.17s
+detailed_placement -quiet
+[INFO DPL-0009] Utilization: 39.7%
+[INFO DPL-0501] Legalized with 178 moves: displacement total 106.6 u, max 6.0 u; HPWL 248267.2 -> 248331.3 u (+0.0 %).
+[INFO DPL-0500] Runtime: 0.06s
+check_placement -placeable -verbose
+estimate_parasitics -placement
+Report metrics stage 4, cts final...
+
+==========================================================================
+cts final report_design_area
+--------------------------------------------------------------------------
+Design area 95413 um^2 40% utilization.
+write_db ./results/sky130hd/picorv32_dff/base/4_1_cts.odb
+write_sdc -no_timestamp ./results/sky130hd/picorv32_dff/base/4_cts.sdc
+Elapsed time: 0:04.07[h:]min:sec. CPU time: user 4.51 sys 0.39 (120%). Peak memory: 295452KB.
+Log                    Ext     Elapsed      CPU     CPU/ Peak Mem sha1sum
+                                     s        s  Elapsed       MB [0:10)
+4_1_cts                .odb          4        5     1.20      288 022e1722fc

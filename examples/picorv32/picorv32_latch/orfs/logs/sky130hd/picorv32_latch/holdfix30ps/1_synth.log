@@ -1,0 +1,21 @@
+OpenROAD 26Q4-1499-gf3d27840b6 
+Features included (+) or not (-): -GPU +GUI
+This program is licensed under the BSD-3 license. See the LICENSE file for details.
+Components of this program may be licensed under more restrictive licenses which must be honored.
+[INFO ORD-0030] Using 2 thread(s).
+read_liberty /home/bailufrost/eda/OpenROAD-flow-scripts-live/flow/platforms/sky130hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+[INFO ODB-0227] LEF file: /home/bailufrost/eda/OpenROAD-flow-scripts-live/flow/platforms/sky130hd/lef/sky130_fd_sc_hd.tlef, created 13 layers, 25 vias
+[INFO ODB-0227] LEF file: /home/bailufrost/eda/OpenROAD-flow-scripts-live/flow/platforms/sky130hd/lef/sky130_fd_sc_hd_merged.lef, created 441 library cells
+link_design picorv32
+read_sdc /mnt/hgfs/LatchSTA_Code/code/examples/picorv32/picorv32_latch/orfs/results/sky130hd/picorv32_latch/holdfix30ps/1_2_yosys.sdc
+source /home/bailufrost/eda/OpenROAD-flow-scripts-live/flow/platforms/sky130hd/setRC.tcl
+eliminate_dead_logic
+Removed 0 unused instances and 0 unused nets.
+Design area 70860 um^2 100% utilization.
+write_db /mnt/hgfs/LatchSTA_Code/code/examples/picorv32/picorv32_latch/orfs/results/sky130hd/picorv32_latch/holdfix30ps/1_synth.odb
+write_sdc -no_timestamp /mnt/hgfs/LatchSTA_Code/code/examples/picorv32/picorv32_latch/orfs/results/sky130hd/picorv32_latch/holdfix30ps/1_synth.sdc
+Elapsed time: 0:00.89[h:]min:sec. CPU time: user 0.48 sys 0.37 (95%). Peak memory: 126296KB.
+Log                    Ext     Elapsed      CPU     CPU/ Peak Mem sha1sum
+                                     s        s  Elapsed       MB [0:10)
+1_synth                .odb          0        1     0.96      123 e2862eb6b6
+1_synth                .sdc                                       8b91616709

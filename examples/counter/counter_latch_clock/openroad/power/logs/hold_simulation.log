@@ -1,0 +1,3 @@
+VCD info: dumpfile /tmp/counter-clock-power-nbhtyy0f/hold.vcd opened for output.
+PASS: scenario=0, 4096 cycles, source/routed/expected counts match
+/mnt/hgfs/LatchSTA_Code/code/examples/counter/counter_latch_clock/openroad/power/tb_power.sv:59: $finish called at 7120680001 (1fs)

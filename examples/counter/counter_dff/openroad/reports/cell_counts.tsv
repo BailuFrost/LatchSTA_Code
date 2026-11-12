@@ -1,0 +1,12 @@
+master	count
+sky130_fd_sc_hd__mux2_1	4
+sky130_fd_sc_hd__and2_1	2
+sky130_fd_sc_hd__xor2_1	3
+sky130_fd_sc_hd__inv_1	1
+sky130_fd_sc_hd__dfrtp_1	4
+sky130_fd_sc_hd__tapvpwrvgnd_1	44
+sky130_fd_sc_hd__clkbuf_4	3
+sky130_fd_sc_hd__fill_8	107
+sky130_fd_sc_hd__fill_4	21
+sky130_fd_sc_hd__fill_1	24
+sky130_fd_sc_hd__fill_2	14

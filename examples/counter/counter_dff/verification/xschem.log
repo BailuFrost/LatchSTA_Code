@@ -1,0 +1,4 @@
+Using run time directory XSCHEM_SHAREDIR = /home/bailufrost/.local/opt/xschem-current/share/xschem
+Sourcing /home/bailufrost/.local/opt/xschem-current/share/xschem/xschemrc init file
+Sourcing /mnt/hgfs/LatchSTA_Code/code/examples/counter/counter_retiming/xschemrc init file
+

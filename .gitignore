@@ -18,3 +18,15 @@ Thumbs.db
 /test_real_io
 /test_real_io_lp
 /test_sdc_export
+
+# Conversion tool build products.
+/trans/build/
+
+# Generated CMake files and editor settings.
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+.vscode/
+/src/Makefile
+/src/main

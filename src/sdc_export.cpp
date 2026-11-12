@@ -91,7 +91,8 @@ void exportHowardSdc(const std::string &output, const DelayGraph &dg, double ini
     {
         const auto &sta = *io.staConditions;
         const auto clock = name(sta.clockName), port = name(sta.clockPort);
-        const auto input = name(io.inputPort), outputPort = name(io.outputPort);
+        const auto inputs = io.inputPorts.empty() ? std::vector<std::string>{io.inputPort} : io.inputPorts;
+        const auto outputPort = name(io.outputPort);
         for (double value : {sta.clockTransition, sta.inputTransition, sta.outputLoad})
             if (!std::isfinite(value) || value < 0.0)
                 throw std::invalid_argument("Invalid STA operating condition");
@@ -103,7 +104,8 @@ void exportHowardSdc(const std::string &output, const DelayGraph &dg, double ini
             << " LP_period_ns=" << lp.period << "\n";
         for (const auto &object : {port, outputPort})
             sdc << "if {[llength [get_ports " << object << "]] != 1} {error {Missing candidate port}}\n";
-        sdc << "if {[llength [get_ports " << input << "]] != 1} {error {Missing candidate input port}}\n";
+        for (const auto &input : inputs)
+            sdc << "if {[llength [get_ports " << name(input) << "]] != 1} {error {Missing candidate input port}}\n";
         size_t latches = 0;
         for (size_t k = 1; k < boost::num_vertices(dg); ++k)
             latches += dg[k].kind == NodeIdx::Kind::Latch;
@@ -117,9 +119,10 @@ void exportHowardSdc(const std::string &output, const DelayGraph &dg, double ini
             << "set_load " << sta.outputLoad << " [get_ports " << outputPort << "]\n"
             << "set_clock_uncertainty -setup " << io.setupUncertainty << " [get_clocks " << clock << "]\n"
             << "set_clock_uncertainty -hold " << io.holdUncertainty << " [get_clocks " << clock << "]\n";
-        sdc << "set_input_delay -clock " << clock << " -min " << io.inputMin << " [get_ports " << input << "]\n"
-                << "set_input_delay -clock " << clock << " -max " << io.inputMax << " [get_ports " << input << "]\n"
-                << "set_input_transition " << sta.inputTransition << " [get_ports " << input << "]\n";
+        for (const auto &input : inputs)
+            sdc << "set_input_delay -clock " << clock << " -min " << io.inputMin << " [get_ports " << name(input) << "]\n"
+                << "set_input_delay -clock " << clock << " -max " << io.inputMax << " [get_ports " << name(input) << "]\n"
+                << "set_input_transition " << sta.inputTransition << " [get_ports " << name(input) << "]\n";
         for (size_t k = 1; k < boost::num_vertices(dg); ++k)
             if (dg[k].kind == NodeIdx::Kind::Latch)
             {

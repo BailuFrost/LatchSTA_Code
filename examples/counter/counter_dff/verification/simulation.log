@@ -1,0 +1,2 @@
+PASS: 316 checks covering count, hold, overflow and asynchronous reset.
+verification/counter_tb.v:57: $finish called at 733000 (1ps)

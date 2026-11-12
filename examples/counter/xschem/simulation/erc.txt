@@ -1,7 +1,0 @@
-spice ERC:
------------/mnt/hgfs/LatchSTA_Code/code/examples/counter/xschem/counter.sch
------------/mnt/hgfs/LatchSTA_Code/code/examples/counter/xschem/counter.sch
-verilog ERC:
------------/mnt/hgfs/LatchSTA_Code/code/examples/counter/xschem/counter.sch
------------/mnt/hgfs/LatchSTA_Code/code/examples/counter/xschem/counter.sch
-

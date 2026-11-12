@@ -1,0 +1,630 @@
+
+-- Executing script file `verification/equivalence.ys' --
+
+1. Executing Verilog-2005 frontend: counter.v
+Parsing Verilog input from `counter.v' to AST representation.
+Generating RTLIL representation for module `\counter'.
+Successfully finished Verilog frontend.
+
+2. Executing PREP pass.
+
+2.1. Executing HIERARCHY pass (managing design hierarchy).
+
+2.1.1. Analyzing design hierarchy..
+Top module:  \counter
+
+2.1.2. Analyzing design hierarchy..
+Top module:  \counter
+Removed 0 unused modules.
+
+2.2. Executing PROC pass (convert processes to netlists).
+
+2.2.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+2.2.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Marked 1 switch rules as full_case in process $proc$counter.v:13$1 in module counter.
+Removed a total of 0 dead cases.
+
+2.2.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 0 redundant assignments.
+Promoted 0 assignments to connections.
+
+2.2.4. Executing PROC_INIT pass (extract init attributes).
+
+2.2.5. Executing PROC_ARST pass (detect async resets in processes).
+Found async reset \rst_n in `\counter.$proc$counter.v:13$1'.
+
+2.2.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 0 switches.
+<suppressed ~1 debug messages>
+
+2.2.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+Creating decoders for process `\counter.$proc$counter.v:13$1'.
+     1/1: $0\count_o[3:0]
+
+2.2.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+
+2.2.9. Executing PROC_DFF pass (convert process syncs to FFs).
+Creating register for signal `\counter.\count_o' using process `\counter.$proc$counter.v:13$1'.
+  created $adff cell `$procdff$10' with positive edge clock and positive level reset.
+
+2.2.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+2.2.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Found and cleaned up 1 empty switch in `\counter.$proc$counter.v:13$1'.
+Removing empty process `counter.$proc$counter.v:13$1'.
+Cleaned up 1 empty switch.
+
+2.2.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module counter.
+<suppressed ~2 debug messages>
+
+2.3. Executing FUTURE pass.
+
+2.4. Executing OPT_EXPR pass (perform const folding).
+Optimizing module counter.
+
+2.5. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \counter..
+Removed 2 unused cells and 5 unused wires.
+<suppressed ~3 debug messages>
+
+2.6. Executing CHECK pass (checking for obvious problems).
+Checking module counter...
+Found and reported 0 problems.
+
+2.7. Executing OPT pass (performing simple optimizations).
+
+2.7.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module counter.
+
+2.7.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\counter'.
+Computing hashes of 3 cells of `\counter'.
+Finding duplicate cells in `\counter'.
+Removed a total of 0 cells.
+
+2.7.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \counter..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~2 debug messages>
+
+2.7.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \counter.
+Performed a total of 0 changes.
+
+2.7.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\counter'.
+Computing hashes of 3 cells of `\counter'.
+Finding duplicate cells in `\counter'.
+Removed a total of 0 cells.
+
+2.7.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \counter..
+
+2.7.7. Executing OPT_EXPR pass (perform const folding).
+Optimizing module counter.
+
+2.7.8. Finished fast OPT passes. (There is nothing left to do.)
+
+2.8. Executing WREDUCE pass (reducing word size of cells).
+Removed top 3 bits (of 4) from port B of cell counter.$add$counter.v:17$3 ($add).
+
+2.9. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \counter..
+
+2.10. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+2.11. Executing OPT pass (performing simple optimizations).
+
+2.11.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module counter.
+
+2.11.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\counter'.
+Computing hashes of 3 cells of `\counter'.
+Finding duplicate cells in `\counter'.
+Removed a total of 0 cells.
+
+2.11.3. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \counter..
+
+2.11.4. Finished fast OPT passes.
+
+2.12. Executing SORT pass.
+
+2.13. Printing statistics.
+
+=== counter ===
+
+        +----------Local Count, excluding submodules.
+        | 
+        7 wires
+       19 wire bits
+        5 public wires
+       11 public wire bits
+        4 ports
+        7 port bits
+        3 cells
+        1   $add
+        1   $adff
+        1   $mux
+
+2.14. Executing CHECK pass (checking for obvious problems).
+Checking module counter...
+Found and reported 0 problems.
+
+3. Executing ASYNC2SYNC pass.
+Replacing counter.$procdff$10 ($adff): ARST=\rst_n, D=$0\count_o[3:0], Q=\count_o
+Renaming module \counter to \gold.
+
+4. Executing Verilog-2005 frontend: verification/cells.v
+Parsing Verilog input from `verification/cells.v' to AST representation.
+Generating RTLIL representation for module `\yosys_and'.
+Generating RTLIL representation for module `\yosys_xor'.
+Generating RTLIL representation for module `\yosys_not'.
+Generating RTLIL representation for module `\yosys_mux'.
+Generating RTLIL representation for module `\yosys_dff_pn0'.
+Successfully finished Verilog frontend.
+
+5. Executing Verilog-2005 frontend: verification/counter_from_schematic.v
+Parsing Verilog input from `verification/counter_from_schematic.v' to AST representation.
+Generating RTLIL representation for module `\counter'.
+Successfully finished Verilog frontend.
+
+6. Executing PREP pass.
+
+6.1. Executing HIERARCHY pass (managing design hierarchy).
+
+6.1.1. Analyzing design hierarchy..
+Top module:  \counter
+Used module:     \yosys_dff_pn0
+Used module:     \yosys_mux
+Used module:     \yosys_and
+Used module:     \yosys_xor
+Used module:     \yosys_not
+
+6.1.2. Analyzing design hierarchy..
+Top module:  \counter
+Used module:     \yosys_dff_pn0
+Used module:     \yosys_mux
+Used module:     \yosys_and
+Used module:     \yosys_xor
+Used module:     \yosys_not
+Removed 0 unused modules.
+
+6.2. Executing PROC pass (convert processes to netlists).
+
+6.2.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+6.2.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Marked 1 switch rules as full_case in process $proc$verification/cells.v:15$17 in module yosys_dff_pn0.
+Removed a total of 0 dead cases.
+
+6.2.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 1 redundant assignment.
+Promoted 0 assignments to connections.
+
+6.2.4. Executing PROC_INIT pass (extract init attributes).
+
+6.2.5. Executing PROC_ARST pass (detect async resets in processes).
+Found async reset \R in `\yosys_dff_pn0.$proc$verification/cells.v:15$17'.
+
+6.2.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 0 switches.
+
+6.2.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+Creating decoders for process `\yosys_dff_pn0.$proc$verification/cells.v:15$17'.
+     1/1: $0\Q[0:0]
+
+6.2.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+
+6.2.9. Executing PROC_DFF pass (convert process syncs to FFs).
+Creating register for signal `\yosys_dff_pn0.\Q' using process `\yosys_dff_pn0.$proc$verification/cells.v:15$17'.
+  created $adff cell `$procdff$23' with positive edge clock and positive level reset.
+
+6.2.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+6.2.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Removing empty process `yosys_dff_pn0.$proc$verification/cells.v:15$17'.
+Cleaned up 0 empty switches.
+
+6.2.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module counter.
+Optimizing module yosys_dff_pn0.
+<suppressed ~2 debug messages>
+Optimizing module yosys_mux.
+Optimizing module yosys_not.
+Optimizing module yosys_xor.
+Optimizing module yosys_and.
+
+6.3. Executing FUTURE pass.
+
+6.4. Executing OPT_EXPR pass (perform const folding).
+Optimizing module counter.
+Optimizing module yosys_dff_pn0.
+Optimizing module yosys_mux.
+Optimizing module yosys_not.
+Optimizing module yosys_xor.
+Optimizing module yosys_and.
+
+6.5. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \counter..
+Finding unused cells or wires in module \yosys_dff_pn0..
+Finding unused cells or wires in module \yosys_mux..
+Finding unused cells or wires in module \yosys_not..
+Finding unused cells or wires in module \yosys_xor..
+Finding unused cells or wires in module \yosys_and..
+Removed 2 unused cells and 8 unused wires.
+<suppressed ~7 debug messages>
+
+6.6. Executing CHECK pass (checking for obvious problems).
+Checking module counter...
+Checking module yosys_dff_pn0...
+Checking module yosys_mux...
+Checking module yosys_not...
+Checking module yosys_xor...
+Checking module yosys_and...
+Found and reported 0 problems.
+
+6.7. Executing OPT pass (performing simple optimizations).
+
+6.7.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module counter.
+Optimizing module yosys_dff_pn0.
+Optimizing module yosys_mux.
+Optimizing module yosys_not.
+Optimizing module yosys_xor.
+Optimizing module yosys_and.
+
+6.7.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\counter'.
+Computing hashes of 14 cells of `\counter'.
+Finding duplicate cells in `\counter'.
+Finding identical cells in module `\yosys_dff_pn0'.
+Computing hashes of 1 cells of `\yosys_dff_pn0'.
+Finding duplicate cells in `\yosys_dff_pn0'.
+Finding identical cells in module `\yosys_mux'.
+Computing hashes of 1 cells of `\yosys_mux'.
+Finding duplicate cells in `\yosys_mux'.
+Finding identical cells in module `\yosys_not'.
+Computing hashes of 1 cells of `\yosys_not'.
+Finding duplicate cells in `\yosys_not'.
+Finding identical cells in module `\yosys_xor'.
+Computing hashes of 1 cells of `\yosys_xor'.
+Finding duplicate cells in `\yosys_xor'.
+Finding identical cells in module `\yosys_and'.
+Computing hashes of 1 cells of `\yosys_and'.
+Finding duplicate cells in `\yosys_and'.
+Removed a total of 0 cells.
+
+6.7.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \counter..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Running muxtree optimizer on module \yosys_dff_pn0..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Running muxtree optimizer on module \yosys_mux..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Running muxtree optimizer on module \yosys_not..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Running muxtree optimizer on module \yosys_xor..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Running muxtree optimizer on module \yosys_and..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+<suppressed ~2 debug messages>
+
+6.7.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \counter.
+  Optimizing cells in module \yosys_dff_pn0.
+  Optimizing cells in module \yosys_mux.
+  Optimizing cells in module \yosys_not.
+  Optimizing cells in module \yosys_xor.
+  Optimizing cells in module \yosys_and.
+Performed a total of 0 changes.
+
+6.7.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\counter'.
+Computing hashes of 14 cells of `\counter'.
+Finding duplicate cells in `\counter'.
+Finding identical cells in module `\yosys_dff_pn0'.
+Computing hashes of 1 cells of `\yosys_dff_pn0'.
+Finding duplicate cells in `\yosys_dff_pn0'.
+Finding identical cells in module `\yosys_mux'.
+Computing hashes of 1 cells of `\yosys_mux'.
+Finding duplicate cells in `\yosys_mux'.
+Finding identical cells in module `\yosys_not'.
+Computing hashes of 1 cells of `\yosys_not'.
+Finding duplicate cells in `\yosys_not'.
+Finding identical cells in module `\yosys_xor'.
+Computing hashes of 1 cells of `\yosys_xor'.
+Finding duplicate cells in `\yosys_xor'.
+Finding identical cells in module `\yosys_and'.
+Computing hashes of 1 cells of `\yosys_and'.
+Finding duplicate cells in `\yosys_and'.
+Removed a total of 0 cells.
+
+6.7.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \counter..
+Finding unused cells or wires in module \yosys_dff_pn0..
+Finding unused cells or wires in module \yosys_mux..
+Finding unused cells or wires in module \yosys_not..
+Finding unused cells or wires in module \yosys_xor..
+Finding unused cells or wires in module \yosys_and..
+
+6.7.7. Executing OPT_EXPR pass (perform const folding).
+Optimizing module counter.
+Optimizing module yosys_dff_pn0.
+Optimizing module yosys_mux.
+Optimizing module yosys_not.
+Optimizing module yosys_xor.
+Optimizing module yosys_and.
+
+6.7.8. Finished fast OPT passes. (There is nothing left to do.)
+
+6.8. Executing WREDUCE pass (reducing word size of cells).
+
+6.9. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \counter..
+Finding unused cells or wires in module \yosys_dff_pn0..
+Finding unused cells or wires in module \yosys_mux..
+Finding unused cells or wires in module \yosys_not..
+Finding unused cells or wires in module \yosys_xor..
+Finding unused cells or wires in module \yosys_and..
+
+6.10. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+6.11. Executing OPT pass (performing simple optimizations).
+
+6.11.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module counter.
+Optimizing module yosys_dff_pn0.
+Optimizing module yosys_mux.
+Optimizing module yosys_not.
+Optimizing module yosys_xor.
+Optimizing module yosys_and.
+
+6.11.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\counter'.
+Computing hashes of 14 cells of `\counter'.
+Finding duplicate cells in `\counter'.
+Finding identical cells in module `\yosys_dff_pn0'.
+Computing hashes of 1 cells of `\yosys_dff_pn0'.
+Finding duplicate cells in `\yosys_dff_pn0'.
+Finding identical cells in module `\yosys_mux'.
+Computing hashes of 1 cells of `\yosys_mux'.
+Finding duplicate cells in `\yosys_mux'.
+Finding identical cells in module `\yosys_not'.
+Computing hashes of 1 cells of `\yosys_not'.
+Finding duplicate cells in `\yosys_not'.
+Finding identical cells in module `\yosys_xor'.
+Computing hashes of 1 cells of `\yosys_xor'.
+Finding duplicate cells in `\yosys_xor'.
+Finding identical cells in module `\yosys_and'.
+Computing hashes of 1 cells of `\yosys_and'.
+Finding duplicate cells in `\yosys_and'.
+Removed a total of 0 cells.
+
+6.11.3. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \counter..
+Finding unused cells or wires in module \yosys_dff_pn0..
+Finding unused cells or wires in module \yosys_mux..
+Finding unused cells or wires in module \yosys_not..
+Finding unused cells or wires in module \yosys_xor..
+Finding unused cells or wires in module \yosys_and..
+
+6.11.4. Finished fast OPT passes.
+
+6.12. Executing SORT pass.
+
+6.13. Printing statistics.
+
+=== counter ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       11 wires
+       17 wire bits
+       11 public wires
+       17 public wire bits
+        4 ports
+        7 port bits
+       14 submodules
+        2   yosys_and
+        4   yosys_dff_pn0
+        4   yosys_mux
+        1   yosys_not
+        3   yosys_xor
+
+=== yosys_and ===
+
+        +----------Local Count, excluding submodules.
+        | 
+        3 wires
+        3 wire bits
+        3 public wires
+        3 public wire bits
+        3 ports
+        3 port bits
+        1 cells
+        1   $and
+
+=== yosys_dff_pn0 ===
+
+        +----------Local Count, excluding submodules.
+        | 
+        4 wires
+        4 wire bits
+        4 public wires
+        4 public wire bits
+        4 ports
+        4 port bits
+        1 cells
+        1   $adff
+
+=== yosys_mux ===
+
+        +----------Local Count, excluding submodules.
+        | 
+        4 wires
+        4 wire bits
+        4 public wires
+        4 public wire bits
+        4 ports
+        4 port bits
+        1 cells
+        1   $mux
+
+=== yosys_not ===
+
+        +----------Local Count, excluding submodules.
+        | 
+        2 wires
+        2 wire bits
+        2 public wires
+        2 public wire bits
+        2 ports
+        2 port bits
+        1 cells
+        1   $not
+
+=== yosys_xor ===
+
+        +----------Local Count, excluding submodules.
+        | 
+        3 wires
+        3 wire bits
+        3 public wires
+        3 public wire bits
+        3 ports
+        3 port bits
+        1 cells
+        1   $xor
+
+=== design hierarchy ===
+
+        +----------Count including submodules.
+        | 
+       14 counter
+        1 yosys_and
+        1 yosys_dff_pn0
+        1 yosys_mux
+        1 yosys_not
+        1 yosys_xor
+
+        +----------Count including submodules.
+        | 
+       60 wires
+       66 wire bits
+       60 public wires
+       66 public wire bits
+       53 ports
+       56 port bits
+        - memories
+        - memory bits
+        - processes
+       14 cells
+        4   $adff
+        2   $and
+        4   $mux
+        1   $not
+        3   $xor
+       14 submodules
+        2   yosys_and
+        4   yosys_dff_pn0
+        4   yosys_mux
+        1   yosys_not
+        3   yosys_xor
+
+6.14. Executing CHECK pass (checking for obvious problems).
+Checking module counter...
+Checking module yosys_and...
+Checking module yosys_dff_pn0...
+Checking module yosys_mux...
+Checking module yosys_not...
+Checking module yosys_xor...
+Found and reported 0 problems.
+
+7. Executing FLATTEN pass (flatten design).
+Deleting now unused module yosys_and.
+Deleting now unused module yosys_dff_pn0.
+Deleting now unused module yosys_mux.
+Deleting now unused module yosys_not.
+Deleting now unused module yosys_xor.
+<suppressed ~14 debug messages>
+
+8. Executing ASYNC2SYNC pass.
+Replacing counter.$flatten\U10.$procdff$23 ($adff): ARST=\U10.R, D=\U10.D, Q=\U10.Q
+Replacing counter.$flatten\U7.$procdff$23 ($adff): ARST=\U7.R, D=\U7.D, Q=\U7.Q
+Replacing counter.$flatten\U8.$procdff$23 ($adff): ARST=\U8.R, D=\U8.D, Q=\U8.Q
+Replacing counter.$flatten\U9.$procdff$23 ($adff): ARST=\U9.R, D=\U9.D, Q=\U9.Q
+Renaming module \counter to \gate.
+
+9. Executing EQUIV_MAKE pass (creating equiv checking module).
+Presumably equivalent wires: clk_gold (\clk_gold), clk_gate (\clk_gate) -> clk
+Presumably equivalent wires: count_gold (\count_o_gold), count_gate ({ \U10.Q_gate \U9.Q_gate \U8.Q_gate \U7.Q_gate }) -> count
+Presumably equivalent wires: en_gold (\en_gold), en_gate (\en_gate) -> en
+Presumably equivalent wires: rst_n_gold (\rst_n_gold), rst_n_gate (\rst_n_gate) -> rst_n
+Changing input A of cell $flatten\U11.$ternary$verification/cells.v:12$16_gate ($mux): \U8.Q_gate -> \count [1]
+Changing input A of cell $flatten\U12.$ternary$verification/cells.v:12$16_gate ($mux): \U7.Q_gate -> \count [0]
+Changing input A of cell $flatten\U13.$ternary$verification/cells.v:12$16_gate ($mux): \U9.Q_gate -> \count [2]
+Changing input A of cell $flatten\U14.$ternary$verification/cells.v:12$16_gate ($mux): \U10.Q_gate -> \count [3]
+Changing input A of cell $flatten\U15.$and$verification/cells.v:3$13_gate ($and): \U9.Q_gate -> \count [2]
+Changing input A of cell $flatten\U16.$and$verification/cells.v:3$13_gate ($and): \U8.Q_gate -> \count [1]
+Changing input B of cell $flatten\U16.$and$verification/cells.v:3$13_gate ($and): \U7.Q_gate -> \count [0]
+Changing input A of cell $flatten\U17.$xor$verification/cells.v:6$14_gate ($xor): \U8.Q_gate -> \count [1]
+Changing input B of cell $flatten\U17.$xor$verification/cells.v:6$14_gate ($xor): \U7.Q_gate -> \count [0]
+Changing input A of cell $flatten\U18.$xor$verification/cells.v:6$14_gate ($xor): \U9.Q_gate -> \count [2]
+Changing input A of cell $flatten\U19.$xor$verification/cells.v:6$14_gate ($xor): \U10.Q_gate -> \count [3]
+Changing input A of cell $flatten\U20.$not$verification/cells.v:9$15_gate ($not): \U7.Q_gate -> \count [0]
+Changing input A of cell $add$counter.v:17$3_gold ($add): \count_o_gold -> \count
+Changing input A of cell $procmux$4_gold ($mux): \count_o_gold -> \count
+
+10. Executing HIERARCHY pass (managing design hierarchy).
+
+10.1. Analyzing design hierarchy..
+Top module:  \equiv
+
+10.2. Analyzing design hierarchy..
+Top module:  \equiv
+Removing unused module `\gate'.
+Removing unused module `\gold'.
+Removed 2 unused modules.
+
+11. Executing EQUIV_SIMPLE pass.
+Found 4 unproven $equiv cells (1 groups) in equiv:
+ Grouping SAT models for \count:
+  Trying to prove $equiv for \count [0]:ezsat
+ezsat
+ success!
+  Trying to prove $equiv for \count [1]:ezsat
+ezsat
+ success!
+  Trying to prove $equiv for \count [2]:ezsat
+ezsat
+ success!
+  Trying to prove $equiv for \count [3]:ezsat
+ezsat
+ success!
+Proved 4 previously unproven $equiv cells.
+
+12. Executing EQUIV_INDUCT pass.
+No selected unproven $equiv cells found in equiv.
+Proved 0 previously unproven $equiv cells.
+
+13. Executing EQUIV_STATUS pass.
+Found 4 $equiv cells in equiv:
+  Of those cells 4 are proven and 0 are unproven.
+  Equivalence successfully proven!

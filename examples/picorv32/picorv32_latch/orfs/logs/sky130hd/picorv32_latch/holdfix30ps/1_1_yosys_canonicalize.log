@@ -1,0 +1,7 @@
+Yosys 0.68 (git sha1 38e001a6f, Release, GNU /home/bailufrost/miniconda3/bin/c++ 16.2.0)
+exec cp /mnt/hgfs/LatchSTA_Code/code/examples/picorv32/picorv32_latch/picorv32_sky130.v /mnt/hgfs/LatchSTA_Code/code/examples/picorv32/picorv32_latch/orfs/results/sky130hd/picorv32_latch/holdfix30ps/1_2_yosys.v
+exec touch -r /mnt/hgfs/LatchSTA_Code/code/examples/picorv32/picorv32_latch/picorv32_sky130.v /mnt/hgfs/LatchSTA_Code/code/examples/picorv32/picorv32_latch/orfs/results/sky130hd/picorv32_latch/holdfix30ps/1_2_yosys.v
+Elapsed time: 0:00.08[h:]min:sec. CPU time: user 0.04 sys 0.02 (75%). Peak memory: 26388KB.
+Log                    Ext     Elapsed      CPU     CPU/ Peak Mem sha1sum
+                                     s        s  Elapsed       MB [0:10)
+1_1_yosys_canonicalize               0        0     0.75       25 N/A

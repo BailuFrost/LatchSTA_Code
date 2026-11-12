@@ -1,0 +1,161 @@
+
+Note: Compatibility modes selected: hs a
+
+
+Circuit: transistor postlayout counter: nominal; tt 25c 1.8v; full interconnect rc
+
+option SCALE: Scale is set to 1e-06 for instance and model parameters
+Doing analysis at TEMP = 25.000000 and TNOM = 27.000000
+
+Using KLU as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+vdd                                        1.8
+clk_1                                        0
+clk_2                                        0
+rst_n                                        0
+en                                         1.8
+xdut.n0002                                 1.8
+xdut.n0000                         2.67658e-09
+xdut.n0001                         2.67658e-09
+xdut.n0003                         2.67658e-09
+xdut.n0006                                 1.8
+xdut.n0004                         2.67658e-09
+xdut.n0005                                 1.8
+xdut.n0007                                 1.8
+xdut.n0010                         2.67658e-09
+xdut.n0008                         2.67658e-09
+xdut.n0009                         2.67658e-09
+xdut.n0011                         2.67658e-09
+xdut.n0014                                 1.8
+xdut.n0012                         2.67658e-09
+xdut.n0013                         2.67658e-09
+xdut.n0015                         2.67658e-09
+xdut.n0016                         2.67658e-09
+xdut.n0017                         2.67658e-09
+xdut.n0018                         2.67658e-09
+xdut.n0019                         2.67658e-09
+xdut.n0020                         2.67658e-09
+xdut.n0021                         2.67658e-09
+xdut.n0022                         2.67658e-09
+xdut.n0023                         2.67658e-09
+xdut.n0024                         2.67658e-09
+xdut.n0025                         2.67658e-09
+xdut.n0026                                 1.8
+xdut.n0028                         2.67658e-09
+xdut.n0027                                 1.8
+xdut.n0029                         2.67658e-09
+xdut.n0033                         4.90093e-09
+xdut.n0032                                   0
+xdut.n0035                         4.90093e-09
+xdut.n0034                                   0
+xdut.n0037                         4.90093e-09
+xdut.n0036                         4.90093e-09
+xdut.n0039                         4.90093e-09
+xdut.n0038                         4.90093e-09
+xdut.n0041                         4.90093e-09
+xdut.n0040                         4.90093e-09
+xdut.n0043                         4.90093e-09
+xdut.n0042                         4.90093e-09
+xdut.n0073                         2.57049e-09
+xdut.n0072                                   0
+xdut.n0088                         2.57049e-09
+xdut.n0085                                 1.8
+xdut.n0087                         2.67658e-09
+xdut.n0086                         4.90093e-09
+xdut.n0092                         2.57049e-09
+xdut.n0089                         2.67658e-09
+xdut.n0091                         2.67658e-09
+xdut.n0090                         4.90093e-09
+xdut.n0096                         2.57049e-09
+xdut.n0093                         2.67658e-09
+xdut.n0095                         2.67658e-09
+xdut.n0094                         4.90093e-09
+xdut.n0100                         2.57049e-09
+xdut.n0097                         2.67658e-09
+xdut.n0099                         2.67658e-09
+xdut.n0098                         4.90093e-09
+xdut.n0104                         2.57049e-09
+xdut.n0101                         2.67658e-09
+xdut.n0103                         2.67658e-09
+xdut.n0102                         4.90093e-09
+xdut.n0108                         2.57049e-09
+xdut.n0105                         2.67658e-09
+xdut.n0107                         2.67658e-09
+xdut.n0106                         4.90093e-09
+xdut.n0111                         2.67658e-09
+xdut.n0112                         2.57049e-09
+xdut.n0109                         2.67658e-09
+xdut.n0110                         4.90093e-09
+xdut.n0115                         2.67658e-09
+xdut.n0116                         2.57049e-09
+xdut.n0113                         2.67658e-09
+xdut.n0114                         4.90093e-09
+xdut.n0120                         2.57049e-09
+xdut.n0119                         2.67658e-09
+xdut.n0117                         2.67658e-09
+xdut.n0118                         4.90093e-09
+xdut.n0124                         2.57049e-09
+xdut.n0123                         2.67658e-09
+xdut.n0121                         2.67658e-09
+xdut.n0122                         4.90093e-09
+xdut.n0030                                   0
+xdut.n0031                                   0
+xdut.n0047                         4.90093e-09
+xdut.n0044                         4.90093e-09
+xdut.n0045                         4.90093e-09
+xdut.n0046                         4.90093e-09
+xdut.n0051                         4.90093e-09
+xdut.n0048                         4.90093e-09
+xdut.n0049                         4.90093e-09
+xdut.n0050                         4.90093e-09
+xdut.n0053                         4.90093e-09
+xdut.n0052                         4.90093e-09
+xdut.n0054                         4.90093e-09
+xdut.n0056                         4.90093e-09
+xdut.n0055                         4.90093e-09
+xdut.n0057                         4.90093e-09
+xdut.n0060                         2.67658e-09
+xdut.n0058                         2.67658e-09
+xdut.n0059                         2.67658e-09
+xdut.n0061                         2.67658e-09
+xdut.n0062                         2.67658e-09
+count0                             2.67658e-09
+xdut.n0065                         2.67658e-09
+xdut.n0063                         2.67658e-09
+count1                             2.67658e-09
+xdut.n0064                         2.67658e-09
+xdut.n0066                         2.67658e-09
+xdut.n0067                         2.67658e-09
+count2                             2.67658e-09
+xdut.n0068                         2.67658e-09
+count3                             2.67658e-09
+xdut.n0069                                 1.8
+xdut.n0070                                 1.8
+xdut.n0071                                 1.8
+xdut.n0074                                   0
+xdut.n0075                                   0
+xdut.n0076                         2.57049e-09
+xdut.n0077                         2.57049e-09
+xdut.n0078                         2.57049e-09
+xdut.n0079                         2.57049e-09
+xdut.n0080                         2.57049e-09
+xdut.n0081                         2.57049e-09
+xdut.n0082                         2.57049e-09
+xdut.n0083                         2.57049e-09
+xdut.n0084                         2.57049e-09
+ven#branch                        -9.71445e-17
+vrst#branch                                  0
+vclk2#branch                                 0
+vclk1#branch                                 0
+vdd#branch                        -3.55204e-10
+
+ Reference value :  0.00000e+00 Reference value :  1.22012e-09 Reference value :  2.42012e-09 Reference value :  3.69250e-09 Reference value :  4.81675e-09 Reference value :  5.66625e-09 Reference value :  6.64125e-09 Reference value :  7.55375e-09 Reference value :  8.48125e-09 Reference value :  9.30925e-09 Reference value :  1.02513e-08 Reference value :  1.12163e-08 Reference value :  1.21363e-08 Reference value :  1.30513e-08 Reference value :  1.40063e-08 Reference value :  1.49463e-08 Reference value :  1.59412e-08 Reference value :  1.67912e-08 Reference value :  1.77162e-08 Reference value :  1.87012e-08 Reference value :  1.96112e-08 Reference value :  2.05963e-08 Reference value :  2.15602e-08 Reference value :  2.25862e-08 Reference value :  2.34962e-08 Reference value :  2.44362e-08 Reference value :  2.53762e-08 Reference value :  2.63862e-08 Reference value :  2.73412e-08 Reference value :  2.82512e-08 Reference value :  2.92762e-08 Reference value :  3.01362e-08 Reference value :  3.10512e-08 Reference value :  3.19588e-08 Reference value :  3.28762e-08 Reference value :  3.37947e-08 Reference value :  3.47762e-08 Reference value :  3.57062e-08 Reference value :  3.66762e-08 Reference value :  3.75862e-08 Reference value :  3.85212e-08 Reference value :  3.92862e-08 Reference value :  4.02262e-08 Reference value :  4.11362e-08 Reference value :  4.21312e-08 Reference value :  4.29762e-08 Reference value :  4.39212e-08 Reference value :  4.47262e-08 Reference value :  4.54812e-08 Reference value :  4.60622e-08 Reference value :  4.68512e-08 Reference value :  4.77912e-08 Reference value :  4.87762e-08 Reference value :  4.98062e-08 Reference value :  5.09262e-08 Reference value :  5.19262e-08 Reference value :  5.29537e-08 Reference value :  5.39762e-08 Reference value :  5.50312e-08 Reference value :  5.60962e-08 Reference value :  5.72112e-08 Reference value :  5.82262e-08 Reference value :  5.92762e-08 Reference value :  6.01613e-08 Reference value :  6.11413e-08 Reference value :  6.20263e-08 Reference value :  6.30063e-08 Reference value :  6.39363e-08 Reference value :  6.48763e-08 Reference value :  6.57113e-08 Reference value :  6.66463e-08 Reference value :  6.75963e-08 Reference value :  6.84863e-08 Reference value :  6.94463e-08 Reference value :  7.03513e-08 Reference value :  7.12863e-08 Reference value :  7.21263e-08 Reference value :  7.30463e-08 Reference value :  7.39362e-08 Reference value :  7.48913e-08 Reference value :  7.57863e-08 Reference value :  7.67063e-08 Reference value :  7.76063e-08 Reference value :  7.85413e-08 Reference value :  7.94213e-08 Reference value :  8.03663e-08 Reference value :  8.12813e-08 Reference value :  8.22413e-08 Reference value :  8.31163e-08 Reference value :  8.40713e-08 Reference value :  8.50313e-08 Reference value :  8.59763e-08 Reference value :  8.68063e-08 Reference value :  8.77162e-08 Reference value :  8.86263e-08 Reference value :  8.95613e-08 Reference value :  9.05843e-08 Reference value :  9.14713e-08 Reference value :  9.24013e-08 Reference value :  9.32813e-08 Reference value :  9.42263e-08 Reference value :  9.51663e-08 Reference value :  9.61063e-08 Reference value :  9.67313e-08 Reference value :  9.75463e-08 Reference value :  9.83613e-08 Reference value :  9.93198e-08 Reference value :  1.00141e-07 Reference value :  1.01066e-07 Reference value :  1.01926e-07 Reference value :  1.02746e-07 Reference value :  1.03491e-07 Reference value :  1.04191e-07 Reference value :  1.04976e-07 Reference value :  1.05736e-07 Reference value :  1.06551e-07 Reference value :  1.07299e-07 Reference value :  1.08179e-07 Reference value :  1.09006e-07 Reference value :  1.09911e-07 Reference value :  1.10736e-07 Reference value :  1.11591e-07 Reference value :  1.12443e-07 Reference value :  1.13351e-07 Reference value :  1.14151e-07 Reference value :  1.15084e-07 Reference value :  1.15851e-07 Reference value :  1.16721e-07 Reference value :  1.17541e-07 Reference value :  1.18331e-07 Reference value :  1.19241e-07
+No. of Data Rows : 25313
+binary raw file "results/nominal.raw"
+pwr_current_avg     =  -2.298726e-04 from=  1.100000e-08 to=  3.900125e-08
+ngspice-45.2 done

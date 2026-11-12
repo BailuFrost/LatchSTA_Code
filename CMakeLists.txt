@@ -18,6 +18,10 @@ endif()
 
 project(EllCpp LANGUAGES CXX)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -84,7 +88,3 @@ target_link_libraries(main
     ${OPENBLAS_LIB}
     ${GFORTRAN_LIB}
     ${M_LIB})
-
-add_executable(counter_solver examples/counter/solve_counter.cpp
-    src/timing_graph.cpp src/howard.cpp src/LP.cpp src/sdc_export.cpp)
-target_link_libraries(counter_solver Threads::Threads ${GLPK_LIB})

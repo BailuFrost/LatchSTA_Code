@@ -1,3 +1,0 @@
-/home/bailufrost/LatchSTA_Code/LatchSTA_Code/code/build/CMakeFiles/main.dir
-/home/bailufrost/LatchSTA_Code/LatchSTA_Code/code/build/CMakeFiles/edit_cache.dir
-/home/bailufrost/LatchSTA_Code/LatchSTA_Code/code/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,7 @@
+# Match counter_latch_mux_1/openroad/results/counter_routed.v.
+# The reference netlist is snapshotted as mux_reference_counter_routed.v.
+# instance target_master
+state_phi2_bit0 sky130_fd_sc_hd__dlrtp_4
+state_phi2_bit1 sky130_fd_sc_hd__dlrtp_4
+state_phi2_bit2 sky130_fd_sc_hd__dlrtp_2
+state_phi2_bit3 sky130_fd_sc_hd__dlrtp_2
