@@ -1,0 +1,1121 @@
+
+ /----------------------------------------------------------------------------\
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |  Copyright (C) 2012 - 2026  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |  Distributed under an ISC-like license, type "license" to see terms        |
+ \----------------------------------------------------------------------------/
+ Yosys 0.68 (git sha1 38e001a6f, Release, GNU /home/bailufrost/miniconda3/bin/c++ 16.2.0)
+
+-- Executing script file `equivalence/rtl_yosys_10/gold.ys' --
+
+1. Executing Verilog-2005 frontend: picorv32.v
+Parsing Verilog input from `picorv32.v' to AST representation.
+Generating RTLIL representation for module `\picorv32'.
+Generating RTLIL representation for module `\picorv32_regs'.
+Generating RTLIL representation for module `\picorv32_pcpi_mul'.
+Generating RTLIL representation for module `\picorv32_pcpi_fast_mul'.
+Generating RTLIL representation for module `\picorv32_pcpi_div'.
+Generating RTLIL representation for module `\picorv32_axi'.
+Generating RTLIL representation for module `\picorv32_axi_adapter'.
+Generating RTLIL representation for module `\picorv32_wb'.
+Successfully finished Verilog frontend.
+
+2. Executing PREP pass.
+
+2.1. Executing HIERARCHY pass (managing design hierarchy).
+
+2.1.1. Analyzing design hierarchy..
+Top module:  \picorv32
+
+2.1.2. Analyzing design hierarchy..
+Top module:  \picorv32
+Removing unused module `\picorv32_wb'.
+Removing unused module `\picorv32_axi_adapter'.
+Removing unused module `\picorv32_axi'.
+Removing unused module `\picorv32_pcpi_div'.
+Removing unused module `\picorv32_pcpi_fast_mul'.
+Removing unused module `\picorv32_pcpi_mul'.
+Removing unused module `\picorv32_regs'.
+Removed 7 unused modules.
+
+2.2. Executing PROC pass (convert processes to netlists).
+
+2.2.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Found and cleaned up 1 empty switch in `\picorv32.$proc$picorv32.v:206$688'.
+Removing empty process `picorv32.$proc$picorv32.v:206$688'.
+Found and cleaned up 17 empty switches in `\picorv32.$proc$picorv32.v:1402$509'.
+Found and cleaned up 1 empty switch in `\picorv32.$proc$picorv32.v:1348$493'.
+Found and cleaned up 6 empty switches in `\picorv32.$proc$picorv32.v:546$129'.
+Removing empty process `picorv32.$proc$picorv32.v:546$129'.
+Cleaned up 25 empty switches.
+
+2.2.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Marked 34 switch rules as full_case in process $proc$picorv32.v:1402$509 in module picorv32.
+Marked 1 switch rules as full_case in process $proc$picorv32.v:1337$484 in module picorv32.
+Marked 2 switch rules as full_case in process $proc$picorv32.v:1309$472 in module picorv32.
+Marked 2 switch rules as full_case in process $proc$picorv32.v:1295$467 in module picorv32.
+Marked 8 switch rules as full_case in process $proc$picorv32.v:1186$432 in module picorv32.
+Marked 3 switch rules as full_case in process $proc$picorv32.v:858$169 in module picorv32.
+Marked 3 switch rules as full_case in process $proc$picorv32.v:809$167 in module picorv32.
+Marked 2 switch rules as full_case in process $proc$picorv32.v:778$163 in module picorv32.
+Marked 48 switch rules as full_case in process $proc$picorv32.v:701$162 in module picorv32.
+Marked 4 switch rules as full_case in process $proc$picorv32.v:565$138 in module picorv32.
+Marked 1 switch rules as full_case in process $proc$picorv32.v:430$100 in module picorv32.
+Removed 2 dead cases from process $proc$picorv32.v:401$97 in module picorv32.
+Marked 2 switch rules as full_case in process $proc$picorv32.v:401$97 in module picorv32.
+Marked 1 switch rules as full_case in process $proc$picorv32.v:390$92 in module picorv32.
+Marked 1 switch rules as full_case in process $proc$picorv32.v:325$18 in module picorv32.
+Removed a total of 2 dead cases.
+
+2.2.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 3 redundant assignments.
+Promoted 57 assignments to connections.
+
+2.2.4. Executing PROC_INIT pass (extract init attributes).
+
+2.2.5. Executing PROC_ARST pass (detect async resets in processes).
+
+2.2.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 0 switches.
+<suppressed ~187 debug messages>
+
+2.2.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+Creating decoders for process `\picorv32.$proc$picorv32.v:1402$509'.
+     1/78: $17\next_irq_pending[2:2]
+     2/78: $16\next_irq_pending[2:2]
+     3/78: $15\next_irq_pending[2:2]
+     4/78: $14\next_irq_pending[2:2]
+     5/78: $13\next_irq_pending[2:2]
+     6/78: $12\next_irq_pending[2:2]
+     7/78: $11\next_irq_pending[2:2]
+     8/78: $2\next_irq_pending[31:0] [31:2]
+     9/78: $3\set_mem_do_rdata[0:0]
+    10/78: $2\next_irq_pending[31:0] [1]
+    11/78: $3\set_mem_do_wdata[0:0]
+    12/78: $2\next_irq_pending[31:0] [0]
+    13/78: $4\set_mem_do_rinst[0:0]
+    14/78: $3\set_mem_do_rinst[0:0]
+    15/78: $4\set_mem_do_wdata[0:0]
+    16/78: $9\next_irq_pending[1:1]
+    17/78: $8\next_irq_pending[1:1]
+    18/78: $7\next_irq_pending[1:1]
+    19/78: $4\set_mem_do_rdata[0:0]
+    20/78: $5\next_irq_pending[1:1]
+    21/78: $4\next_irq_pending[1:1]
+    22/78: $10\next_irq_pending[1:1]
+    23/78: $5\set_mem_do_rinst[0:0]
+    24/78: $6\next_irq_pending[1:1]
+    25/78: $3\next_irq_pending[31:0]
+    26/78: $3\current_pc[31:0]
+    27/78: $2\current_pc[31:0]
+    28/78: $2\set_mem_do_wdata[0:0]
+    29/78: $2\set_mem_do_rdata[0:0]
+    30/78: $2\set_mem_do_rinst[0:0]
+    31/78: $1\next_irq_pending[31:0]
+    32/78: $1\current_pc[31:0]
+    33/78: $1\set_mem_do_wdata[0:0]
+    34/78: $1\set_mem_do_rdata[0:0]
+    35/78: $1\set_mem_do_rinst[0:0]
+    36/78: $0\trace_data[35:0]
+    37/78: $0\count_cycle[63:0]
+    38/78: $0\trace_valid[0:0]
+    39/78: $0\do_waitirq[0:0]
+    40/78: $0\decoder_pseudo_trigger[0:0]
+    41/78: $0\decoder_trigger[0:0]
+    42/78: $0\alu_wait_2[0:0]
+    43/78: $0\alu_wait[0:0]
+    44/78: $0\reg_out[31:0]
+    45/78: $0\reg_sh[4:0]
+    46/78: $0\trap[0:0]
+    47/78: $0\pcpi_timeout[0:0]
+    48/78: $0\latched_rd[4:0]
+    49/78: $0\latched_is_lb[0:0]
+    50/78: $0\latched_is_lh[0:0]
+    51/78: $0\latched_is_lu[0:0]
+    52/78: $0\latched_trace[0:0]
+    53/78: $0\latched_compr[0:0]
+    54/78: $0\latched_branch[0:0]
+    55/78: $0\latched_stalu[0:0]
+    56/78: $0\latched_store[0:0]
+    57/78: $0\irq_state[1:0]
+    58/78: $0\cpu_state[7:0]
+    59/78: $0\dbg_rs2val_valid[0:0]
+    60/78: $0\dbg_rs1val_valid[0:0]
+    61/78: $0\dbg_rs2val[31:0]
+    62/78: $0\dbg_rs1val[31:0]
+    63/78: $0\mem_do_wdata[0:0]
+    64/78: $0\mem_do_rdata[0:0]
+    65/78: $0\mem_do_rinst[0:0]
+    66/78: $0\mem_do_prefetch[0:0]
+    67/78: $0\mem_wordsize[1:0]
+    68/78: $0\timer[31:0]
+    69/78: $0\irq_mask[31:0]
+    70/78: $0\irq_active[0:0]
+    71/78: $0\irq_delay[0:0]
+    72/78: $0\reg_op2[31:0]
+    73/78: $0\reg_op1[31:0]
+    74/78: $0\reg_next_pc[31:0]
+    75/78: $0\reg_pc[31:0]
+    76/78: $0\count_instr[63:0]
+    77/78: $0\eoi[31:0]
+    78/78: $0\pcpi_valid[0:0]
+Creating decoders for process `\picorv32.$proc$picorv32.v:1348$493'.
+Creating decoders for process `\picorv32.$proc$picorv32.v:1337$484'.
+     1/3: $1$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$492
+     2/3: $1$memwr$\cpuregs$picorv32.v:1344$17_DATA[31:0]$491
+     3/3: $1$memwr$\cpuregs$picorv32.v:1344$17_ADDR[4:0]$490
+Creating decoders for process `\picorv32.$proc$picorv32.v:1309$472'.
+     1/4: $2\cpuregs_write[0:0]
+     2/4: $2\cpuregs_wrdata[31:0]
+     3/4: $1\cpuregs_wrdata[31:0]
+     4/4: $1\cpuregs_write[0:0]
+Creating decoders for process `\picorv32.$proc$picorv32.v:1295$467'.
+     1/2: $2\clear_prefetched_high_word[0:0]
+     2/2: $1\clear_prefetched_high_word[0:0]
+Creating decoders for process `\picorv32.$proc$picorv32.v:1293$466'.
+Creating decoders for process `\picorv32.$proc$picorv32.v:1249$444'.
+     1/2: $1\alu_out[31:0]
+     2/2: $1\alu_out_0[0:0]
+Creating decoders for process `\picorv32.$proc$picorv32.v:1186$432'.
+     1/8: $8\dbg_ascii_state[127:0]
+     2/8: $7\dbg_ascii_state[127:0]
+     3/8: $6\dbg_ascii_state[127:0]
+     4/8: $5\dbg_ascii_state[127:0]
+     5/8: $4\dbg_ascii_state[127:0]
+     6/8: $3\dbg_ascii_state[127:0]
+     7/8: $2\dbg_ascii_state[127:0]
+     8/8: $1\dbg_ascii_state[127:0]
+Creating decoders for process `\picorv32.$proc$picorv32.v:858$169'.
+     1/77: $0\decoded_rs1[4:0] [4]
+     2/77: $0\decoded_imm_j[31:0] [10]
+     3/77: $0\decoded_imm_j[31:0] [7]
+     4/77: $0\decoded_imm_j[31:0] [6]
+     5/77: $0\decoded_imm_j[31:0] [3:1]
+     6/77: $0\decoded_imm_j[31:0] [5]
+     7/77: $0\decoded_imm_j[31:0] [9:8]
+     8/77: $0\decoded_imm_j[31:0] [31:20]
+     9/77: $0\decoded_imm_j[31:0] [4]
+    10/77: $0\decoded_imm_j[31:0] [11]
+    11/77: $0\decoded_imm_j[31:0] [0]
+    12/77: $0\decoded_rs1[4:0] [3:0]
+    13/77: $0\is_lui_auipc_jal_jalr_addi_add_sub[0:0]
+    14/77: $0\is_alu_reg_reg[0:0]
+    15/77: $0\is_alu_reg_imm[0:0]
+    16/77: $0\is_beq_bne_blt_bge_bltu_bgeu[0:0]
+    17/77: $0\is_sll_srl_sra[0:0]
+    18/77: $0\is_sb_sh_sw[0:0]
+    19/77: $0\is_jalr_addi_slti_sltiu_xori_ori_andi[0:0]
+    20/77: $0\is_slli_srli_srai[0:0]
+    21/77: $0\is_lb_lh_lw_lbu_lhu[0:0]
+    22/77: $0\compressed_instr[0:0]
+    23/77: $0\is_compare[0:0]
+    24/77: $0\decoded_imm[31:0]
+    25/77: $0\decoded_rs2[4:0]
+    26/77: $0\decoded_imm_j[31:0] [19:12]
+    27/77: $0\decoded_rd[4:0]
+    28/77: $0\instr_timer[0:0]
+    29/77: $0\instr_waitirq[0:0]
+    30/77: $0\instr_maskirq[0:0]
+    31/77: $0\instr_retirq[0:0]
+    32/77: $0\instr_setq[0:0]
+    33/77: $0\instr_getq[0:0]
+    34/77: $0\instr_fence[0:0]
+    35/77: $0\instr_ecall_ebreak[0:0]
+    36/77: $0\instr_rdinstrh[0:0]
+    37/77: $0\instr_rdinstr[0:0]
+    38/77: $0\instr_rdcycleh[0:0]
+    39/77: $0\instr_rdcycle[0:0]
+    40/77: $0\instr_and[0:0]
+    41/77: $0\instr_or[0:0]
+    42/77: $0\instr_sra[0:0]
+    43/77: $0\instr_srl[0:0]
+    44/77: $0\instr_xor[0:0]
+    45/77: $0\instr_sltu[0:0]
+    46/77: $0\instr_slt[0:0]
+    47/77: $0\instr_sll[0:0]
+    48/77: $0\instr_sub[0:0]
+    49/77: $0\instr_add[0:0]
+    50/77: $0\instr_srai[0:0]
+    51/77: $0\instr_srli[0:0]
+    52/77: $0\instr_slli[0:0]
+    53/77: $0\instr_andi[0:0]
+    54/77: $0\instr_ori[0:0]
+    55/77: $0\instr_xori[0:0]
+    56/77: $0\instr_sltiu[0:0]
+    57/77: $0\instr_slti[0:0]
+    58/77: $0\instr_addi[0:0]
+    59/77: $0\instr_sw[0:0]
+    60/77: $0\instr_sh[0:0]
+    61/77: $0\instr_sb[0:0]
+    62/77: $0\instr_lhu[0:0]
+    63/77: $0\instr_lbu[0:0]
+    64/77: $0\instr_lw[0:0]
+    65/77: $0\instr_lh[0:0]
+    66/77: $0\instr_lb[0:0]
+    67/77: $0\instr_bgeu[0:0]
+    68/77: $0\instr_bltu[0:0]
+    69/77: $0\instr_bge[0:0]
+    70/77: $0\instr_blt[0:0]
+    71/77: $0\instr_bne[0:0]
+    72/77: $0\instr_beq[0:0]
+    73/77: $0\instr_jalr[0:0]
+    74/77: $0\instr_jal[0:0]
+    75/77: $0\instr_auipc[0:0]
+    76/77: $0\instr_lui[0:0]
+    77/77: $0\pcpi_insn[31:0]
+Creating decoders for process `\picorv32.$proc$picorv32.v:809$167'.
+     1/13: $3\dbg_insn_opcode[31:0]
+     2/13: $2\dbg_insn_rd[4:0]
+     3/13: $2\dbg_insn_rs2[4:0]
+     4/13: $2\dbg_insn_rs1[4:0]
+     5/13: $2\dbg_insn_opcode[31:0]
+     6/13: $2\dbg_insn_imm[31:0]
+     7/13: $2\dbg_ascii_instr[63:0]
+     8/13: $1\dbg_insn_rd[4:0]
+     9/13: $1\dbg_insn_rs2[4:0]
+    10/13: $1\dbg_insn_rs1[4:0]
+    11/13: $1\dbg_insn_imm[31:0]
+    12/13: $1\dbg_ascii_instr[63:0]
+    13/13: $1\dbg_insn_opcode[31:0]
+Creating decoders for process `\picorv32.$proc$picorv32.v:778$163'.
+     1/8: $0\cached_insn_rd[4:0]
+     2/8: $0\cached_insn_rs2[4:0]
+     3/8: $0\cached_insn_rs1[4:0]
+     4/8: $0\cached_insn_opcode[31:0]
+     5/8: $0\cached_insn_imm[31:0]
+     6/8: $0\cached_ascii_instr[63:0]
+     7/8: $0\dbg_valid_insn[0:0]
+     8/8: $0\dbg_insn_addr[31:0]
+Creating decoders for process `\picorv32.$proc$picorv32.v:701$162'.
+     1/48: $48\new_ascii_instr[63:0]
+     2/48: $47\new_ascii_instr[63:0]
+     3/48: $46\new_ascii_instr[63:0]
+     4/48: $45\new_ascii_instr[63:0]
+     5/48: $44\new_ascii_instr[63:0]
+     6/48: $43\new_ascii_instr[63:0]
+     7/48: $42\new_ascii_instr[63:0]
+     8/48: $41\new_ascii_instr[63:0]
+     9/48: $40\new_ascii_instr[63:0]
+    10/48: $39\new_ascii_instr[63:0]
+    11/48: $38\new_ascii_instr[63:0]
+    12/48: $37\new_ascii_instr[63:0]
+    13/48: $36\new_ascii_instr[63:0]
+    14/48: $35\new_ascii_instr[63:0]
+    15/48: $34\new_ascii_instr[63:0]
+    16/48: $33\new_ascii_instr[63:0]
+    17/48: $32\new_ascii_instr[63:0]
+    18/48: $31\new_ascii_instr[63:0]
+    19/48: $30\new_ascii_instr[63:0]
+    20/48: $29\new_ascii_instr[63:0]
+    21/48: $28\new_ascii_instr[63:0]
+    22/48: $27\new_ascii_instr[63:0]
+    23/48: $26\new_ascii_instr[63:0]
+    24/48: $25\new_ascii_instr[63:0]
+    25/48: $24\new_ascii_instr[63:0]
+    26/48: $23\new_ascii_instr[63:0]
+    27/48: $22\new_ascii_instr[63:0]
+    28/48: $21\new_ascii_instr[63:0]
+    29/48: $20\new_ascii_instr[63:0]
+    30/48: $19\new_ascii_instr[63:0]
+    31/48: $18\new_ascii_instr[63:0]
+    32/48: $17\new_ascii_instr[63:0]
+    33/48: $16\new_ascii_instr[63:0]
+    34/48: $15\new_ascii_instr[63:0]
+    35/48: $14\new_ascii_instr[63:0]
+    36/48: $13\new_ascii_instr[63:0]
+    37/48: $12\new_ascii_instr[63:0]
+    38/48: $11\new_ascii_instr[63:0]
+    39/48: $10\new_ascii_instr[63:0]
+    40/48: $9\new_ascii_instr[63:0]
+    41/48: $8\new_ascii_instr[63:0]
+    42/48: $7\new_ascii_instr[63:0]
+    43/48: $6\new_ascii_instr[63:0]
+    44/48: $5\new_ascii_instr[63:0]
+    45/48: $4\new_ascii_instr[63:0]
+    46/48: $3\new_ascii_instr[63:0]
+    47/48: $2\new_ascii_instr[63:0]
+    48/48: $1\new_ascii_instr[63:0]
+Creating decoders for process `\picorv32.$proc$picorv32.v:565$138'.
+     1/9: $0\mem_16bit_buffer[15:0]
+     2/9: $0\prefetched_high_word[0:0]
+     3/9: $0\mem_la_secondword[0:0]
+     4/9: $0\mem_state[1:0]
+     5/9: $0\mem_wstrb[3:0]
+     6/9: $0\mem_wdata[31:0]
+     7/9: $0\mem_addr[31:0]
+     8/9: $0\mem_instr[0:0]
+     9/9: $0\mem_valid[0:0]
+Creating decoders for process `\picorv32.$proc$picorv32.v:1239$677'.
+Creating decoders for process `\picorv32.$proc$picorv32.v:430$100'.
+     1/9: $0\mem_rdata_q[31:0] [31]
+     2/9: $0\mem_rdata_q[31:0] [7]
+     3/9: $0\mem_rdata_q[31:0] [24:20]
+     4/9: $0\mem_rdata_q[31:0] [19:15]
+     5/9: $0\mem_rdata_q[31:0] [6:0]
+     6/9: $0\mem_rdata_q[31:0] [14:12]
+     7/9: $0\mem_rdata_q[31:0] [11:8]
+     8/9: $0\mem_rdata_q[31:0] [30:25]
+     9/9: $0\next_insn_opcode[31:0]
+Creating decoders for process `\picorv32.$proc$picorv32.v:401$97'.
+     1/5: $3\mem_rdata_word[31:0]
+     2/5: $2\mem_rdata_word[31:0]
+     3/5: $1\mem_rdata_word[31:0]
+     4/5: $1\mem_la_wstrb[3:0]
+     5/5: $1\mem_la_wdata[31:0]
+Creating decoders for process `\picorv32.$proc$picorv32.v:390$92'.
+     1/2: $0\last_mem_valid[0:0]
+     2/2: $0\mem_la_firstword_reg[0:0]
+Creating decoders for process `\picorv32.$proc$picorv32.v:325$18'.
+     1/2: $1\pcpi_int_rd[31:0]
+     2/2: $1\pcpi_int_wr[0:0]
+
+2.2.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+No latch inferred for signal `\picorv32.\cpuregs_rs1' from process `\picorv32.$proc$picorv32.v:1348$493'.
+No latch inferred for signal `\picorv32.\cpuregs_rs2' from process `\picorv32.$proc$picorv32.v:1348$493'.
+No latch inferred for signal `\picorv32.\decoded_rs' from process `\picorv32.$proc$picorv32.v:1348$493'.
+No latch inferred for signal `\picorv32.\cpuregs_write' from process `\picorv32.$proc$picorv32.v:1309$472'.
+No latch inferred for signal `\picorv32.\cpuregs_wrdata' from process `\picorv32.$proc$picorv32.v:1309$472'.
+No latch inferred for signal `\picorv32.\clear_prefetched_high_word' from process `\picorv32.$proc$picorv32.v:1295$467'.
+No latch inferred for signal `\picorv32.\alu_out' from process `\picorv32.$proc$picorv32.v:1249$444'.
+No latch inferred for signal `\picorv32.\alu_out_0' from process `\picorv32.$proc$picorv32.v:1249$444'.
+No latch inferred for signal `\picorv32.\dbg_ascii_state' from process `\picorv32.$proc$picorv32.v:1186$432'.
+No latch inferred for signal `\picorv32.\dbg_insn_opcode' from process `\picorv32.$proc$picorv32.v:809$167'.
+No latch inferred for signal `\picorv32.\dbg_ascii_instr' from process `\picorv32.$proc$picorv32.v:809$167'.
+No latch inferred for signal `\picorv32.\dbg_insn_imm' from process `\picorv32.$proc$picorv32.v:809$167'.
+No latch inferred for signal `\picorv32.\dbg_insn_rs1' from process `\picorv32.$proc$picorv32.v:809$167'.
+No latch inferred for signal `\picorv32.\dbg_insn_rs2' from process `\picorv32.$proc$picorv32.v:809$167'.
+No latch inferred for signal `\picorv32.\dbg_insn_rd' from process `\picorv32.$proc$picorv32.v:809$167'.
+No latch inferred for signal `\picorv32.\new_ascii_instr' from process `\picorv32.$proc$picorv32.v:701$162'.
+No latch inferred for signal `\picorv32.\alu_add_sub' from process `\picorv32.$proc$picorv32.v:1239$677'.
+No latch inferred for signal `\picorv32.\alu_shl' from process `\picorv32.$proc$picorv32.v:1239$677'.
+No latch inferred for signal `\picorv32.\alu_shr' from process `\picorv32.$proc$picorv32.v:1239$677'.
+No latch inferred for signal `\picorv32.\alu_eq' from process `\picorv32.$proc$picorv32.v:1239$677'.
+No latch inferred for signal `\picorv32.\alu_ltu' from process `\picorv32.$proc$picorv32.v:1239$677'.
+No latch inferred for signal `\picorv32.\alu_lts' from process `\picorv32.$proc$picorv32.v:1239$677'.
+No latch inferred for signal `\picorv32.\mem_la_wdata' from process `\picorv32.$proc$picorv32.v:401$97'.
+No latch inferred for signal `\picorv32.\mem_la_wstrb' from process `\picorv32.$proc$picorv32.v:401$97'.
+No latch inferred for signal `\picorv32.\mem_rdata_word' from process `\picorv32.$proc$picorv32.v:401$97'.
+No latch inferred for signal `\picorv32.\pcpi_int_wr' from process `\picorv32.$proc$picorv32.v:325$18'.
+No latch inferred for signal `\picorv32.\pcpi_int_rd' from process `\picorv32.$proc$picorv32.v:325$18'.
+No latch inferred for signal `\picorv32.\pcpi_int_wait' from process `\picorv32.$proc$picorv32.v:325$18'.
+No latch inferred for signal `\picorv32.\pcpi_int_ready' from process `\picorv32.$proc$picorv32.v:325$18'.
+
+2.2.9. Executing PROC_DFF pass (convert process syncs to FFs).
+Creating register for signal `\picorv32.\trap' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3582' with positive edge clock.
+Creating register for signal `\picorv32.\pcpi_valid' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3583' with positive edge clock.
+Creating register for signal `\picorv32.\eoi' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3584' with positive edge clock.
+Creating register for signal `\picorv32.\trace_valid' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3585' with positive edge clock.
+Creating register for signal `\picorv32.\trace_data' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3586' with positive edge clock.
+Creating register for signal `\picorv32.\count_cycle' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3587' with positive edge clock.
+Creating register for signal `\picorv32.\count_instr' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3588' with positive edge clock.
+Creating register for signal `\picorv32.\reg_pc' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3589' with positive edge clock.
+Creating register for signal `\picorv32.\reg_next_pc' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3590' with positive edge clock.
+Creating register for signal `\picorv32.\reg_op1' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3591' with positive edge clock.
+Creating register for signal `\picorv32.\reg_op2' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3592' with positive edge clock.
+Creating register for signal `\picorv32.\reg_out' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3593' with positive edge clock.
+Creating register for signal `\picorv32.\reg_sh' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3594' with positive edge clock.
+Creating register for signal `\picorv32.\irq_delay' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3595' with positive edge clock.
+Creating register for signal `\picorv32.\irq_active' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3596' with positive edge clock.
+Creating register for signal `\picorv32.\irq_mask' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3597' with positive edge clock.
+Creating register for signal `\picorv32.\irq_pending' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3598' with positive edge clock.
+Creating register for signal `\picorv32.\timer' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3599' with positive edge clock.
+Creating register for signal `\picorv32.\mem_wordsize' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3600' with positive edge clock.
+Creating register for signal `\picorv32.\mem_do_prefetch' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3601' with positive edge clock.
+Creating register for signal `\picorv32.\mem_do_rinst' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3602' with positive edge clock.
+Creating register for signal `\picorv32.\mem_do_rdata' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3603' with positive edge clock.
+Creating register for signal `\picorv32.\mem_do_wdata' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3604' with positive edge clock.
+Creating register for signal `\picorv32.\decoder_trigger' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3605' with positive edge clock.
+Creating register for signal `\picorv32.\decoder_trigger_q' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3606' with positive edge clock.
+Creating register for signal `\picorv32.\decoder_pseudo_trigger' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3607' with positive edge clock.
+Creating register for signal `\picorv32.\decoder_pseudo_trigger_q' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3608' with positive edge clock.
+Creating register for signal `\picorv32.\dbg_rs1val' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3609' with positive edge clock.
+Creating register for signal `\picorv32.\dbg_rs2val' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3610' with positive edge clock.
+Creating register for signal `\picorv32.\dbg_rs1val_valid' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3611' with positive edge clock.
+Creating register for signal `\picorv32.\dbg_rs2val_valid' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3612' with positive edge clock.
+Creating register for signal `\picorv32.\cpu_state' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3613' with positive edge clock.
+Creating register for signal `\picorv32.\irq_state' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3614' with positive edge clock.
+Creating register for signal `\picorv32.\set_mem_do_rinst' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3615' with positive edge clock.
+Creating register for signal `\picorv32.\set_mem_do_rdata' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3616' with positive edge clock.
+Creating register for signal `\picorv32.\set_mem_do_wdata' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3617' with positive edge clock.
+Creating register for signal `\picorv32.\latched_store' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3618' with positive edge clock.
+Creating register for signal `\picorv32.\latched_stalu' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3619' with positive edge clock.
+Creating register for signal `\picorv32.\latched_branch' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3620' with positive edge clock.
+Creating register for signal `\picorv32.\latched_compr' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3621' with positive edge clock.
+Creating register for signal `\picorv32.\latched_trace' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3622' with positive edge clock.
+Creating register for signal `\picorv32.\latched_is_lu' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3623' with positive edge clock.
+Creating register for signal `\picorv32.\latched_is_lh' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3624' with positive edge clock.
+Creating register for signal `\picorv32.\latched_is_lb' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3625' with positive edge clock.
+Creating register for signal `\picorv32.\latched_rd' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3626' with positive edge clock.
+Creating register for signal `\picorv32.\current_pc' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3627' with positive edge clock.
+Creating register for signal `\picorv32.\pcpi_timeout' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3628' with positive edge clock.
+Creating register for signal `\picorv32.\next_irq_pending' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3629' with positive edge clock.
+Creating register for signal `\picorv32.\do_waitirq' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3630' with positive edge clock.
+Creating register for signal `\picorv32.\alu_out_q' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3631' with positive edge clock.
+Creating register for signal `\picorv32.\alu_out_0_q' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3632' with positive edge clock.
+Creating register for signal `\picorv32.\alu_wait' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3633' with positive edge clock.
+Creating register for signal `\picorv32.\alu_wait_2' using process `\picorv32.$proc$picorv32.v:1402$509'.
+  created $dff cell `$procdff$3634' with positive edge clock.
+Creating register for signal `\picorv32.$memwr$\cpuregs$picorv32.v:1344$17_ADDR' using process `\picorv32.$proc$picorv32.v:1337$484'.
+  created $dff cell `$procdff$3635' with positive edge clock.
+Creating register for signal `\picorv32.$memwr$\cpuregs$picorv32.v:1344$17_DATA' using process `\picorv32.$proc$picorv32.v:1337$484'.
+  created $dff cell `$procdff$3636' with positive edge clock.
+Creating register for signal `\picorv32.$memwr$\cpuregs$picorv32.v:1344$17_EN' using process `\picorv32.$proc$picorv32.v:1337$484'.
+  created $dff cell `$procdff$3637' with positive edge clock.
+Creating register for signal `\picorv32.\clear_prefetched_high_word_q' using process `\picorv32.$proc$picorv32.v:1293$466'.
+  created $dff cell `$procdff$3638' with positive edge clock.
+Creating register for signal `\picorv32.\pcpi_insn' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3639' with positive edge clock.
+Creating register for signal `\picorv32.\instr_lui' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3640' with positive edge clock.
+Creating register for signal `\picorv32.\instr_auipc' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3641' with positive edge clock.
+Creating register for signal `\picorv32.\instr_jal' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3642' with positive edge clock.
+Creating register for signal `\picorv32.\instr_jalr' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3643' with positive edge clock.
+Creating register for signal `\picorv32.\instr_beq' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3644' with positive edge clock.
+Creating register for signal `\picorv32.\instr_bne' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3645' with positive edge clock.
+Creating register for signal `\picorv32.\instr_blt' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3646' with positive edge clock.
+Creating register for signal `\picorv32.\instr_bge' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3647' with positive edge clock.
+Creating register for signal `\picorv32.\instr_bltu' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3648' with positive edge clock.
+Creating register for signal `\picorv32.\instr_bgeu' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3649' with positive edge clock.
+Creating register for signal `\picorv32.\instr_lb' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3650' with positive edge clock.
+Creating register for signal `\picorv32.\instr_lh' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3651' with positive edge clock.
+Creating register for signal `\picorv32.\instr_lw' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3652' with positive edge clock.
+Creating register for signal `\picorv32.\instr_lbu' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3653' with positive edge clock.
+Creating register for signal `\picorv32.\instr_lhu' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3654' with positive edge clock.
+Creating register for signal `\picorv32.\instr_sb' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3655' with positive edge clock.
+Creating register for signal `\picorv32.\instr_sh' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3656' with positive edge clock.
+Creating register for signal `\picorv32.\instr_sw' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3657' with positive edge clock.
+Creating register for signal `\picorv32.\instr_addi' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3658' with positive edge clock.
+Creating register for signal `\picorv32.\instr_slti' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3659' with positive edge clock.
+Creating register for signal `\picorv32.\instr_sltiu' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3660' with positive edge clock.
+Creating register for signal `\picorv32.\instr_xori' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3661' with positive edge clock.
+Creating register for signal `\picorv32.\instr_ori' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3662' with positive edge clock.
+Creating register for signal `\picorv32.\instr_andi' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3663' with positive edge clock.
+Creating register for signal `\picorv32.\instr_slli' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3664' with positive edge clock.
+Creating register for signal `\picorv32.\instr_srli' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3665' with positive edge clock.
+Creating register for signal `\picorv32.\instr_srai' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3666' with positive edge clock.
+Creating register for signal `\picorv32.\instr_add' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3667' with positive edge clock.
+Creating register for signal `\picorv32.\instr_sub' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3668' with positive edge clock.
+Creating register for signal `\picorv32.\instr_sll' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3669' with positive edge clock.
+Creating register for signal `\picorv32.\instr_slt' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3670' with positive edge clock.
+Creating register for signal `\picorv32.\instr_sltu' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3671' with positive edge clock.
+Creating register for signal `\picorv32.\instr_xor' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3672' with positive edge clock.
+Creating register for signal `\picorv32.\instr_srl' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3673' with positive edge clock.
+Creating register for signal `\picorv32.\instr_sra' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3674' with positive edge clock.
+Creating register for signal `\picorv32.\instr_or' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3675' with positive edge clock.
+Creating register for signal `\picorv32.\instr_and' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3676' with positive edge clock.
+Creating register for signal `\picorv32.\instr_rdcycle' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3677' with positive edge clock.
+Creating register for signal `\picorv32.\instr_rdcycleh' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3678' with positive edge clock.
+Creating register for signal `\picorv32.\instr_rdinstr' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3679' with positive edge clock.
+Creating register for signal `\picorv32.\instr_rdinstrh' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3680' with positive edge clock.
+Creating register for signal `\picorv32.\instr_ecall_ebreak' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3681' with positive edge clock.
+Creating register for signal `\picorv32.\instr_fence' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3682' with positive edge clock.
+Creating register for signal `\picorv32.\instr_getq' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3683' with positive edge clock.
+Creating register for signal `\picorv32.\instr_setq' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3684' with positive edge clock.
+Creating register for signal `\picorv32.\instr_retirq' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3685' with positive edge clock.
+Creating register for signal `\picorv32.\instr_maskirq' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3686' with positive edge clock.
+Creating register for signal `\picorv32.\instr_waitirq' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3687' with positive edge clock.
+Creating register for signal `\picorv32.\instr_timer' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3688' with positive edge clock.
+Creating register for signal `\picorv32.\decoded_rd' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3689' with positive edge clock.
+Creating register for signal `\picorv32.\decoded_rs1' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3690' with positive edge clock.
+Creating register for signal `\picorv32.\decoded_rs2' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3691' with positive edge clock.
+Creating register for signal `\picorv32.\decoded_imm' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3692' with positive edge clock.
+Creating register for signal `\picorv32.\decoded_imm_j' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3693' with positive edge clock.
+Creating register for signal `\picorv32.\compressed_instr' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3694' with positive edge clock.
+Creating register for signal `\picorv32.\is_lui_auipc_jal' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3695' with positive edge clock.
+Creating register for signal `\picorv32.\is_lb_lh_lw_lbu_lhu' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3696' with positive edge clock.
+Creating register for signal `\picorv32.\is_slli_srli_srai' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3697' with positive edge clock.
+Creating register for signal `\picorv32.\is_jalr_addi_slti_sltiu_xori_ori_andi' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3698' with positive edge clock.
+Creating register for signal `\picorv32.\is_sb_sh_sw' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3699' with positive edge clock.
+Creating register for signal `\picorv32.\is_sll_srl_sra' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3700' with positive edge clock.
+Creating register for signal `\picorv32.\is_lui_auipc_jal_jalr_addi_add_sub' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3701' with positive edge clock.
+Creating register for signal `\picorv32.\is_slti_blt_slt' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3702' with positive edge clock.
+Creating register for signal `\picorv32.\is_sltiu_bltu_sltu' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3703' with positive edge clock.
+Creating register for signal `\picorv32.\is_beq_bne_blt_bge_bltu_bgeu' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3704' with positive edge clock.
+Creating register for signal `\picorv32.\is_lbu_lhu_lw' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3705' with positive edge clock.
+Creating register for signal `\picorv32.\is_alu_reg_imm' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3706' with positive edge clock.
+Creating register for signal `\picorv32.\is_alu_reg_reg' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3707' with positive edge clock.
+Creating register for signal `\picorv32.\is_compare' using process `\picorv32.$proc$picorv32.v:858$169'.
+  created $dff cell `$procdff$3708' with positive edge clock.
+Creating register for signal `\picorv32.\dbg_insn_addr' using process `\picorv32.$proc$picorv32.v:778$163'.
+  created $dff cell `$procdff$3709' with positive edge clock.
+Creating register for signal `\picorv32.\q_ascii_instr' using process `\picorv32.$proc$picorv32.v:778$163'.
+  created $dff cell `$procdff$3710' with positive edge clock.
+Creating register for signal `\picorv32.\q_insn_imm' using process `\picorv32.$proc$picorv32.v:778$163'.
+  created $dff cell `$procdff$3711' with positive edge clock.
+Creating register for signal `\picorv32.\q_insn_opcode' using process `\picorv32.$proc$picorv32.v:778$163'.
+  created $dff cell `$procdff$3712' with positive edge clock.
+Creating register for signal `\picorv32.\q_insn_rs1' using process `\picorv32.$proc$picorv32.v:778$163'.
+  created $dff cell `$procdff$3713' with positive edge clock.
+Creating register for signal `\picorv32.\q_insn_rs2' using process `\picorv32.$proc$picorv32.v:778$163'.
+  created $dff cell `$procdff$3714' with positive edge clock.
+Creating register for signal `\picorv32.\q_insn_rd' using process `\picorv32.$proc$picorv32.v:778$163'.
+  created $dff cell `$procdff$3715' with positive edge clock.
+Creating register for signal `\picorv32.\dbg_next' using process `\picorv32.$proc$picorv32.v:778$163'.
+  created $dff cell `$procdff$3716' with positive edge clock.
+Creating register for signal `\picorv32.\dbg_valid_insn' using process `\picorv32.$proc$picorv32.v:778$163'.
+  created $dff cell `$procdff$3717' with positive edge clock.
+Creating register for signal `\picorv32.\cached_ascii_instr' using process `\picorv32.$proc$picorv32.v:778$163'.
+  created $dff cell `$procdff$3718' with positive edge clock.
+Creating register for signal `\picorv32.\cached_insn_imm' using process `\picorv32.$proc$picorv32.v:778$163'.
+  created $dff cell `$procdff$3719' with positive edge clock.
+Creating register for signal `\picorv32.\cached_insn_opcode' using process `\picorv32.$proc$picorv32.v:778$163'.
+  created $dff cell `$procdff$3720' with positive edge clock.
+Creating register for signal `\picorv32.\cached_insn_rs1' using process `\picorv32.$proc$picorv32.v:778$163'.
+  created $dff cell `$procdff$3721' with positive edge clock.
+Creating register for signal `\picorv32.\cached_insn_rs2' using process `\picorv32.$proc$picorv32.v:778$163'.
+  created $dff cell `$procdff$3722' with positive edge clock.
+Creating register for signal `\picorv32.\cached_insn_rd' using process `\picorv32.$proc$picorv32.v:778$163'.
+  created $dff cell `$procdff$3723' with positive edge clock.
+Creating register for signal `\picorv32.\mem_valid' using process `\picorv32.$proc$picorv32.v:565$138'.
+  created $dff cell `$procdff$3724' with positive edge clock.
+Creating register for signal `\picorv32.\mem_instr' using process `\picorv32.$proc$picorv32.v:565$138'.
+  created $dff cell `$procdff$3725' with positive edge clock.
+Creating register for signal `\picorv32.\mem_addr' using process `\picorv32.$proc$picorv32.v:565$138'.
+  created $dff cell `$procdff$3726' with positive edge clock.
+Creating register for signal `\picorv32.\mem_wdata' using process `\picorv32.$proc$picorv32.v:565$138'.
+  created $dff cell `$procdff$3727' with positive edge clock.
+Creating register for signal `\picorv32.\mem_wstrb' using process `\picorv32.$proc$picorv32.v:565$138'.
+  created $dff cell `$procdff$3728' with positive edge clock.
+Creating register for signal `\picorv32.\mem_state' using process `\picorv32.$proc$picorv32.v:565$138'.
+  created $dff cell `$procdff$3729' with positive edge clock.
+Creating register for signal `\picorv32.\mem_la_secondword' using process `\picorv32.$proc$picorv32.v:565$138'.
+  created $dff cell `$procdff$3730' with positive edge clock.
+Creating register for signal `\picorv32.\prefetched_high_word' using process `\picorv32.$proc$picorv32.v:565$138'.
+  created $dff cell `$procdff$3731' with positive edge clock.
+Creating register for signal `\picorv32.\mem_16bit_buffer' using process `\picorv32.$proc$picorv32.v:565$138'.
+  created $dff cell `$procdff$3732' with positive edge clock.
+Creating register for signal `\picorv32.\next_insn_opcode' using process `\picorv32.$proc$picorv32.v:430$100'.
+  created $dff cell `$procdff$3733' with positive edge clock.
+Creating register for signal `\picorv32.\mem_rdata_q' using process `\picorv32.$proc$picorv32.v:430$100'.
+  created $dff cell `$procdff$3734' with positive edge clock.
+Creating register for signal `\picorv32.\mem_la_firstword_reg' using process `\picorv32.$proc$picorv32.v:390$92'.
+  created $dff cell `$procdff$3735' with positive edge clock.
+Creating register for signal `\picorv32.\last_mem_valid' using process `\picorv32.$proc$picorv32.v:390$92'.
+  created $dff cell `$procdff$3736' with positive edge clock.
+
+2.2.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+2.2.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Found and cleaned up 53 empty switches in `\picorv32.$proc$picorv32.v:1402$509'.
+Removing empty process `picorv32.$proc$picorv32.v:1402$509'.
+Removing empty process `picorv32.$proc$picorv32.v:1348$493'.
+Found and cleaned up 1 empty switch in `\picorv32.$proc$picorv32.v:1337$484'.
+Removing empty process `picorv32.$proc$picorv32.v:1337$484'.
+Found and cleaned up 2 empty switches in `\picorv32.$proc$picorv32.v:1309$472'.
+Removing empty process `picorv32.$proc$picorv32.v:1309$472'.
+Found and cleaned up 2 empty switches in `\picorv32.$proc$picorv32.v:1295$467'.
+Removing empty process `picorv32.$proc$picorv32.v:1295$467'.
+Removing empty process `picorv32.$proc$picorv32.v:1293$466'.
+Found and cleaned up 2 empty switches in `\picorv32.$proc$picorv32.v:1249$444'.
+Removing empty process `picorv32.$proc$picorv32.v:1249$444'.
+Found and cleaned up 8 empty switches in `\picorv32.$proc$picorv32.v:1186$432'.
+Removing empty process `picorv32.$proc$picorv32.v:1186$432'.
+Found and cleaned up 22 empty switches in `\picorv32.$proc$picorv32.v:858$169'.
+Removing empty process `picorv32.$proc$picorv32.v:858$169'.
+Found and cleaned up 3 empty switches in `\picorv32.$proc$picorv32.v:809$167'.
+Removing empty process `picorv32.$proc$picorv32.v:809$167'.
+Found and cleaned up 5 empty switches in `\picorv32.$proc$picorv32.v:778$163'.
+Removing empty process `picorv32.$proc$picorv32.v:778$163'.
+Found and cleaned up 48 empty switches in `\picorv32.$proc$picorv32.v:701$162'.
+Removing empty process `picorv32.$proc$picorv32.v:701$162'.
+Found and cleaned up 16 empty switches in `\picorv32.$proc$picorv32.v:565$138'.
+Removing empty process `picorv32.$proc$picorv32.v:565$138'.
+Removing empty process `picorv32.$proc$picorv32.v:1239$677'.
+Found and cleaned up 19 empty switches in `\picorv32.$proc$picorv32.v:430$100'.
+Removing empty process `picorv32.$proc$picorv32.v:430$100'.
+Found and cleaned up 3 empty switches in `\picorv32.$proc$picorv32.v:401$97'.
+Removing empty process `picorv32.$proc$picorv32.v:401$97'.
+Found and cleaned up 2 empty switches in `\picorv32.$proc$picorv32.v:390$92'.
+Removing empty process `picorv32.$proc$picorv32.v:390$92'.
+Found and cleaned up 1 empty switch in `\picorv32.$proc$picorv32.v:325$18'.
+Removing empty process `picorv32.$proc$picorv32.v:325$18'.
+Cleaned up 187 empty switches.
+
+2.2.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module picorv32.
+<suppressed ~827 debug messages>
+
+2.3. Executing FLATTEN pass (flatten design).
+
+2.4. Executing FUTURE pass.
+
+2.5. Executing OPT_EXPR pass (perform const folding).
+Optimizing module picorv32.
+
+2.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \picorv32..
+Removed 719 unused cells and 2198 unused wires.
+<suppressed ~774 debug messages>
+
+2.7. Executing CHECK pass (checking for obvious problems).
+Checking module picorv32...
+Found and reported 0 problems.
+
+2.8. Executing OPT pass (performing simple optimizations).
+
+2.8.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module picorv32.
+
+2.8.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\picorv32'.
+Computing hashes of 879 cells of `\picorv32'.
+Finding duplicate cells in `\picorv32'.
+Computing hashes of 695 cells of `\picorv32'.
+Finding duplicate cells in `\picorv32'.
+Computing hashes of 686 cells of `\picorv32'.
+Finding duplicate cells in `\picorv32'.
+Computing hashes of 685 cells of `\picorv32'.
+Finding duplicate cells in `\picorv32'.
+<suppressed ~582 debug messages>
+Removed a total of 194 cells.
+
+2.8.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \picorv32..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+    dead port 2/2 on $mux $procmux$3541.
+    dead port 2/2 on $mux $procmux$967.
+    dead port 2/2 on $mux $procmux$964.
+    dead port 2/2 on $mux $procmux$940.
+    dead port 2/2 on $mux $procmux$937.
+    dead port 2/2 on $mux $procmux$930.
+    dead port 2/2 on $mux $procmux$918.
+    dead port 2/2 on $mux $procmux$915.
+    dead port 1/5 on $pmux $procmux$2374.
+    dead port 2/5 on $pmux $procmux$2374.
+    dead port 2/2 on $mux $procmux$894.
+    dead port 2/2 on $mux $procmux$888.
+    dead port 2/2 on $mux $procmux$886.
+    dead port 2/2 on $mux $procmux$879.
+    dead port 2/2 on $mux $procmux$873.
+    dead port 2/2 on $mux $procmux$871.
+    dead port 2/2 on $mux $procmux$861.
+    dead port 3/4 on $pmux $procmux$1996.
+    dead port 1/7 on $pmux $procmux$1486.
+    dead port 2/7 on $pmux $procmux$1486.
+    dead port 3/7 on $pmux $procmux$1486.
+    dead port 4/7 on $pmux $procmux$1486.
+    dead port 5/7 on $pmux $procmux$1486.
+    dead port 1/9 on $pmux $procmux$2248.
+    dead port 2/9 on $pmux $procmux$2248.
+    dead port 3/9 on $pmux $procmux$2248.
+    dead port 4/9 on $pmux $procmux$2248.
+    dead port 5/9 on $pmux $procmux$2248.
+    dead port 2/2 on $mux $procmux$1259.
+    dead port 1/2 on $mux $procmux$1802.
+    dead port 2/2 on $mux $procmux$1802.
+    dead port 3/4 on $pmux $procmux$1795.
+    dead port 4/12 on $pmux $procmux$2195.
+    dead port 5/12 on $pmux $procmux$2195.
+    dead port 6/12 on $pmux $procmux$2195.
+    dead port 7/12 on $pmux $procmux$2195.
+    dead port 8/12 on $pmux $procmux$2195.
+    dead port 2/2 on $mux $procmux$1246.
+    dead port 4/12 on $pmux $procmux$1814.
+    dead port 5/12 on $pmux $procmux$1814.
+    dead port 6/12 on $pmux $procmux$1814.
+    dead port 7/12 on $pmux $procmux$1814.
+    dead port 8/12 on $pmux $procmux$1814.
+    dead port 2/2 on $mux $procmux$2388.
+    dead port 2/2 on $mux $procmux$2379.
+    dead port 2/2 on $mux $procmux$976.
+    dead port 2/2 on $mux $procmux$992.
+    dead port 2/2 on $mux $procmux$989.
+    dead port 1/8 on $pmux $procmux$2403.
+    dead port 2/8 on $pmux $procmux$2403.
+    dead port 2/2 on $mux $procmux$1233.
+    dead port 4/12 on $pmux $procmux$1526.
+    dead port 5/12 on $pmux $procmux$1526.
+    dead port 6/12 on $pmux $procmux$1526.
+    dead port 7/12 on $pmux $procmux$1526.
+    dead port 8/12 on $pmux $procmux$1526.
+    dead port 1/7 on $pmux $procmux$1731.
+    dead port 2/7 on $pmux $procmux$1731.
+    dead port 3/7 on $pmux $procmux$1731.
+    dead port 4/7 on $pmux $procmux$1731.
+    dead port 5/7 on $pmux $procmux$1731.
+    dead port 1/3 on $pmux $procmux$1201.
+    dead port 2/2 on $mux $procmux$987.
+    dead port 2/2 on $mux $procmux$1148.
+    dead port 2/2 on $mux $procmux$1145.
+    dead port 2/2 on $mux $procmux$1140.
+    dead port 1/5 on $pmux $procmux$2383.
+    dead port 2/5 on $pmux $procmux$2383.
+    dead port 2/2 on $mux $procmux$1058.
+    dead port 2/2 on $mux $procmux$1055.
+    dead port 2/2 on $mux $procmux$1053.
+    dead port 4/12 on $pmux $procmux$2012.
+    dead port 5/12 on $pmux $procmux$2012.
+    dead port 6/12 on $pmux $procmux$2012.
+    dead port 7/12 on $pmux $procmux$2012.
+    dead port 8/12 on $pmux $procmux$2012.
+    dead port 2/2 on $mux $procmux$979.
+    dead port 2/2 on $mux $procmux$3548.
+Removed 78 multiplexer ports.
+<suppressed ~586 debug messages>
+
+2.8.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \picorv32.
+    New ctrl vector for $pmux cell $procmux$2248: { \is_lui_auipc_jal $auto$opt_reduce.cc:137:opt_pmux$3739 }
+    New ctrl vector for $pmux cell $procmux$1249: { $auto$opt_reduce.cc:137:opt_pmux$3741 $procmux$1717_CMP }
+    New ctrl vector for $pmux cell $procmux$2195: { $auto$opt_reduce.cc:137:opt_pmux$3745 $auto$opt_reduce.cc:137:opt_pmux$3743 }
+    New ctrl vector for $pmux cell $procmux$1814: { $auto$opt_reduce.cc:137:opt_pmux$3747 \is_slli_srli_srai $logic_and$picorv32.v:1696$586_Y \is_rdcycle_rdcycleh_rdinstr_rdinstrh \instr_trap }
+    New ctrl vector for $pmux cell $procmux$1708: { $auto$opt_reduce.cc:137:opt_pmux$3749 $procmux$1717_CMP $procmux$1538_CMP $procmux$1596_CMP }
+    New ctrl vector for $pmux cell $procmux$2374: $auto$opt_reduce.cc:137:opt_pmux$3751
+    New ctrl vector for $pmux cell $procmux$1236: { $procmux$1709_CMP $auto$opt_reduce.cc:137:opt_pmux$3753 }
+    New ctrl vector for $pmux cell $procmux$1526: { $auto$opt_reduce.cc:137:opt_pmux$3755 \is_slli_srli_srai }
+    Consolidated identical input bits for $mux cell $procmux$2364:
+      Old ports: A=0, B=32'11111111111111111111111111111111, Y=$0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487
+      New ports: A=1'0, B=1'1, Y=$0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0]
+      New connections: $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [31:1] = { $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] $0$memwr$\cpuregs$picorv32.v:1344$17_EN[31:0]$487 [0] }
+    New ctrl vector for $pmux cell $procmux$1665: { $procmux$1717_CMP $procmux$1596_CMP }
+    New ctrl vector for $pmux cell $procmux$1223: { $auto$opt_reduce.cc:137:opt_pmux$3757 $procmux$1360_CMP }
+    New ctrl vector for $pmux cell $procmux$1986: { $procmux$1987_CMP $procmux$1524_CMP $procmux$1538_CMP $procmux$1596_CMP }
+    New ctrl vector for $pmux cell $procmux$2012: { $auto$opt_reduce.cc:137:opt_pmux$3761 $auto$opt_reduce.cc:137:opt_pmux$3759 $logic_and$picorv32.v:1696$586_Y }
+    New ctrl vector for $pmux cell $procmux$1466: { $procmux$1709_CMP $procmux$1987_CMP $procmux$1717_CMP $procmux$1538_CMP }
+    New ctrl vector for $pmux cell $procmux$1568: { $procmux$1717_CMP $procmux$1596_CMP }
+    New input vector for $reduce_or cell $auto$opt_reduce.cc:131:opt_pmux$3754: { $logic_and$picorv32.v:1696$586_Y \is_jalr_addi_slti_sltiu_xori_ori_andi \is_lui_auipc_jal \instr_trap \instr_rdinstrh \instr_rdinstr \instr_rdcycleh \instr_rdcycle }
+    New input vector for $reduce_or cell $auto$opt_reduce.cc:131:opt_pmux$3738: { \instr_trap \instr_rdinstrh \instr_rdinstr \instr_rdcycleh \instr_rdcycle }
+    New input vector for $reduce_or cell $auto$opt_reduce.cc:131:opt_pmux$3742: { $logic_and$picorv32.v:1696$586_Y \is_slli_srli_srai \instr_trap \instr_rdinstrh \instr_rdinstr \instr_rdcycleh \instr_rdcycle }
+    New input vector for $reduce_or cell $auto$opt_reduce.cc:131:opt_pmux$3758: { \is_slli_srli_srai \instr_trap \instr_rdinstrh \instr_rdinstr \instr_rdcycleh \instr_rdcycle }
+  Optimizing cells in module \picorv32.
+Performed a total of 25 changes.
+
+2.8.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\picorv32'.
+Computing hashes of 658 cells of `\picorv32'.
+Finding duplicate cells in `\picorv32'.
+Computing hashes of 648 cells of `\picorv32'.
+Finding duplicate cells in `\picorv32'.
+Computing hashes of 645 cells of `\picorv32'.
+Finding duplicate cells in `\picorv32'.
+<suppressed ~39 debug messages>
+Removed a total of 13 cells.
+
+2.8.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \picorv32..
+Removed 24 unused cells and 271 unused wires.
+<suppressed ~32 debug messages>
+
+2.8.7. Executing OPT_EXPR pass (perform const folding).
+Optimizing module picorv32.
+
+2.8.8. Rerunning OPT passes. (Maybe there is more to do..)
+
+2.8.9. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \picorv32..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~509 debug messages>
+
+2.8.10. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \picorv32.
+    New ctrl vector for $pmux cell $procmux$3300: { $auto$opt_reduce.cc:137:opt_pmux$3763 $logic_and$picorv32.v:380$67_Y }
+    New ctrl vector for $pmux cell $procmux$1773: { $auto$opt_reduce.cc:137:opt_pmux$3765 $procmux$1226_CMP $procmux$1146_CMP $procmux$1228_CMP $procmux$1229_CMP $eq$picorv32.v:1313$473_Y }
+    New ctrl vector for $pmux cell $procmux$1336: $auto$opt_reduce.cc:137:opt_pmux$3767
+    New ctrl vector for $pmux cell $procmux$1353: { $auto$opt_reduce.cc:137:opt_pmux$3769 $procmux$1146_CMP }
+  Optimizing cells in module \picorv32.
+Performed a total of 4 changes.
+
+2.8.11. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\picorv32'.
+Computing hashes of 625 cells of `\picorv32'.
+Finding duplicate cells in `\picorv32'.
+Computing hashes of 623 cells of `\picorv32'.
+Finding duplicate cells in `\picorv32'.
+<suppressed ~6 debug messages>
+Removed a total of 2 cells.
+
+2.8.12. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \picorv32..
+Removed 0 unused cells and 2 unused wires.
+<suppressed ~1 debug messages>
+
+2.8.13. Executing OPT_EXPR pass (perform const folding).
+Optimizing module picorv32.
+
+2.8.14. Rerunning OPT passes. (Maybe there is more to do..)
+
+2.8.15. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \picorv32..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~487 debug messages>
+
+2.8.16. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \picorv32.
+Performed a total of 0 changes.
+
+2.8.17. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\picorv32'.
+Computing hashes of 623 cells of `\picorv32'.
+Finding duplicate cells in `\picorv32'.
+Removed a total of 0 cells.
+
+2.8.18. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \picorv32..
+
+2.8.19. Executing OPT_EXPR pass (perform const folding).
+Optimizing module picorv32.
+
+2.8.20. Finished fast OPT passes. (There is nothing left to do.)
+
+2.9. Executing WREDUCE pass (reducing word size of cells).
+Removed top 3 bits (of 4) from port A of cell picorv32.$shl$picorv32.v:419$99 ($shl).
+Removed top 30 bits (of 32) from mux cell picorv32.$ternary$picorv32.v:617$158 ($mux).
+Removed top 1 bits (of 7) from port B of cell picorv32.$eq$picorv32.v:867$177 ($eq).
+Removed top 2 bits (of 7) from port B of cell picorv32.$eq$picorv32.v:868$178 ($eq).
+Removed top 5 bits (of 7) from port B of cell picorv32.$eq$picorv32.v:875$192 ($eq).
+Removed top 1 bits (of 7) from port B of cell picorv32.$eq$picorv32.v:876$193 ($eq).
+Removed top 2 bits (of 7) from port B of cell picorv32.$eq$picorv32.v:877$194 ($eq).
+Removed top 1 bits (of 7) from port B of cell picorv32.$eq$picorv32.v:878$195 ($eq).
+Removed top 3 bits (of 7) from port B of cell picorv32.$eq$picorv32.v:1088$375 ($eq).
+Removed top 1 bits (of 3) from port B of cell picorv32.$eq$picorv32.v:1104$411 ($eq).
+Removed top 1 bits (of 3) from port B of cell picorv32.$eq$picorv32.v:1103$412 ($eq).
+Removed top 1 bits (of 7) from port B of cell picorv32.$eq$picorv32.v:1113$418 ($eq).
+Removed top 2 bits (of 3) from port B of cell picorv32.$eq$picorv32.v:1111$423 ($eq).
+Removed top 29 bits (of 32) from mux cell picorv32.$ternary$picorv32.v:1317$474 ($mux).
+Removed top 29 bits (of 32) from port B of cell picorv32.$add$picorv32.v:1317$475 ($add).
+Removed top 31 bits (of 32) from port B of cell picorv32.$add$picorv32.v:1433$510 ($add).
+Removed top 29 bits (of 32) from mux cell picorv32.$ternary$picorv32.v:1560$561 ($mux).
+Removed top 29 bits (of 32) from port B of cell picorv32.$add$picorv32.v:1560$562 ($add).
+Removed top 31 bits (of 32) from port B of cell picorv32.$add$picorv32.v:1564$563 ($add).
+Removed top 29 bits (of 32) from port B of cell picorv32.$ge$picorv32.v:1835$615 ($ge).
+Removed top 29 bits (of 32) from port B of cell picorv32.$sub$picorv32.v:1842$623 ($sub).
+Removed top 27 bits (of 32) from port Y of cell picorv32.$sub$picorv32.v:1842$623 ($sub).
+Removed top 31 bits (of 32) from port B of cell picorv32.$sub$picorv32.v:1850$630 ($sub).
+Removed top 27 bits (of 32) from port Y of cell picorv32.$sub$picorv32.v:1850$630 ($sub).
+Removed top 6 bits (of 8) from port B of cell picorv32.$procmux$1360_CMP0 ($eq).
+Removed top 3 bits (of 8) from port B of cell picorv32.$procmux$1524_CMP0 ($eq).
+Removed top 2 bits (of 8) from port B of cell picorv32.$procmux$1538_CMP0 ($eq).
+Removed top 1 bits (of 8) from port B of cell picorv32.$procmux$1596_CMP0 ($eq).
+Removed top 7 bits (of 8) from port B of cell picorv32.$procmux$1709_CMP0 ($eq).
+Removed top 4 bits (of 8) from port B of cell picorv32.$procmux$1717_CMP0 ($eq).
+Removed top 4 bits (of 8) from mux cell picorv32.$procmux$1810 ($pmux).
+Removed top 5 bits (of 8) from port B of cell picorv32.$procmux$1987_CMP0 ($eq).
+Removed top 1 bits (of 2) from port B of cell picorv32.$procmux$3307_CMP0 ($eq).
+Removed top 1 bits (of 2) from port B of cell picorv32.$procmux$3539_CMP0 ($eq).
+Removed top 1 bits (of 2) from port B of cell picorv32.$procmux$3563_CMP0 ($eq).
+Removed top 27 bits (of 32) from wire picorv32.$sub$picorv32.v:1850$630_Y.
+Removed top 27 bits (of 32) from wire picorv32.$sub$picorv32.v:1842$623_Y.
+Removed top 4 bits (of 8) from wire picorv32.$procmux$1795_Y.
+Removed top 29 bits (of 32) from wire picorv32.$ternary$picorv32.v:1560$561_Y.
+Removed top 29 bits (of 32) from wire picorv32.$ternary$picorv32.v:1317$474_Y.
+
+2.10. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \picorv32..
+Removed 0 unused cells and 6 unused wires.
+<suppressed ~1 debug messages>
+
+2.11. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+2.12. Executing OPT pass (performing simple optimizations).
+
+2.12.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module picorv32.
+
+2.12.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\picorv32'.
+Computing hashes of 621 cells of `\picorv32'.
+Finding duplicate cells in `\picorv32'.
+Removed a total of 0 cells.
+
+2.12.3. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \picorv32..
+
+2.12.4. Finished fast OPT passes.
+
+2.13. Executing SORT pass.
+
+2.14. Printing statistics.
+
+=== picorv32 ===
+
+        +----------Local Count, excluding submodules.
+        | 
+      640 wires
+     4572 wire bits
+      164 public wires
+     1452 public wire bits
+       27 ports
+      409 port bits
+      621 cells
+        9   $add
+        2   $and
+      107   $dff
+       42   $eq
+        1   $ge
+       81   $logic_and
+       20   $logic_not
+       22   $logic_or
+        2   $lt
+        1   $mem_v2
+      256   $mux
+        1   $not
+        1   $or
+       42   $pmux
+        1   $reduce_and
+        3   $reduce_bool
+       25   $reduce_or
+        1   $shl
+        3   $sub
+        1   $xor
+
+2.15. Executing CHECK pass (checking for obvious problems).
+Checking module picorv32...
+Found and reported 0 problems.
+
+3. Executing MEMORY_MAP pass (converting memories to logic and flip-flops).
+Mapping memory \cpuregs in module \picorv32:
+  created 32 $dff cells and 0 static cells of width 32.
+  read interface: 0 $dff and 62 $mux cells.
+  write interface: 32 write mux blocks.
+
+4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \picorv32..
+Removed 0 unused cells and 96 unused wires.
+<suppressed ~1 debug messages>
+
+5. Executing CHECK pass (checking for obvious problems).
+Checking module picorv32...
+Found and reported 0 problems.
+
+6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \picorv32..
+
+7. Executing CHECK pass (checking for obvious problems).
+Checking module picorv32...
+Found and reported 0 problems.
+
+8. Executing SETUNDEF pass (replace undef values with defined constants).
+
+9. Executing RTLIL backend.
+Output filename: equivalence/rtl_yosys_10/gold.il
+
+End of script. Logfile hash: 231849c562, time: 0.31s, user: 0.25s, system: 0.03s, MEM: 32.38 MB peak
+Yosys 0.68 (git sha1 38e001a6f, Release, GNU /home/bailufrost/miniconda3/bin/c++ 16.2.0)
+Time spent: 25% 2x read_verilog (0 sec), 18% 8x opt_clean (0 sec), ...

@@ -1,0 +1,548 @@
+
+ /----------------------------------------------------------------------------\
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |  Copyright (C) 2012 - 2026  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |  Distributed under an ISC-like license, type "license" to see terms        |
+ \----------------------------------------------------------------------------/
+ Yosys 0.68 (git sha1 38e001a6f, Release, GNU /home/bailufrost/miniconda3/bin/c++ 16.2.0)
+
+-- Executing script file `equivalence/rtl_yosys_10/gate.ys' --
+
+1. Executing Verilog-2005 frontend: /home/bailufrost/.local/bin/../share/yosys/simcells.v
+Parsing Verilog input from `/home/bailufrost/.local/bin/../share/yosys/simcells.v' to AST representation.
+/home/bailufrost/.local/bin/../share/yosys/simcells.v:476: Warning: Yosys has only limited support for tri-state logic at the moment.
+Generating RTLIL representation for module `\$_BUF_'.
+Generating RTLIL representation for module `\$_NOT_'.
+Generating RTLIL representation for module `\$_AND_'.
+Generating RTLIL representation for module `\$_NAND_'.
+Generating RTLIL representation for module `\$_OR_'.
+Generating RTLIL representation for module `\$_NOR_'.
+Generating RTLIL representation for module `\$_XOR_'.
+Generating RTLIL representation for module `\$_XNOR_'.
+Generating RTLIL representation for module `\$_ANDNOT_'.
+Generating RTLIL representation for module `\$_ORNOT_'.
+Generating RTLIL representation for module `\$_MUX_'.
+Generating RTLIL representation for module `\$_NMUX_'.
+Generating RTLIL representation for module `\$_MUX4_'.
+Generating RTLIL representation for module `\$_MUX8_'.
+Generating RTLIL representation for module `\$_MUX16_'.
+Generating RTLIL representation for module `\$_AOI3_'.
+Generating RTLIL representation for module `\$_OAI3_'.
+Generating RTLIL representation for module `\$_AOI4_'.
+Generating RTLIL representation for module `\$_OAI4_'.
+Generating RTLIL representation for module `\$_TBUF_'.
+Generating RTLIL representation for module `\$_SR_NN_'.
+Generating RTLIL representation for module `\$_SR_NP_'.
+Generating RTLIL representation for module `\$_SR_PN_'.
+Generating RTLIL representation for module `\$_SR_PP_'.
+Generating RTLIL representation for module `\$_DFF_N_'.
+Generating RTLIL representation for module `\$_DFF_P_'.
+Generating RTLIL representation for module `\$_DFFE_NN_'.
+Generating RTLIL representation for module `\$_DFFE_NP_'.
+Generating RTLIL representation for module `\$_DFFE_PN_'.
+Generating RTLIL representation for module `\$_DFFE_PP_'.
+Generating RTLIL representation for module `\$_DFF_NN0_'.
+Generating RTLIL representation for module `\$_DFF_NN1_'.
+Generating RTLIL representation for module `\$_DFF_NP0_'.
+Generating RTLIL representation for module `\$_DFF_NP1_'.
+Generating RTLIL representation for module `\$_DFF_PN0_'.
+Generating RTLIL representation for module `\$_DFF_PN1_'.
+Generating RTLIL representation for module `\$_DFF_PP0_'.
+Generating RTLIL representation for module `\$_DFF_PP1_'.
+Generating RTLIL representation for module `\$_DFFE_NN0N_'.
+Generating RTLIL representation for module `\$_DFFE_NN0P_'.
+Generating RTLIL representation for module `\$_DFFE_NN1N_'.
+Generating RTLIL representation for module `\$_DFFE_NN1P_'.
+Generating RTLIL representation for module `\$_DFFE_NP0N_'.
+Generating RTLIL representation for module `\$_DFFE_NP0P_'.
+Generating RTLIL representation for module `\$_DFFE_NP1N_'.
+Generating RTLIL representation for module `\$_DFFE_NP1P_'.
+Generating RTLIL representation for module `\$_DFFE_PN0N_'.
+Generating RTLIL representation for module `\$_DFFE_PN0P_'.
+Generating RTLIL representation for module `\$_DFFE_PN1N_'.
+Generating RTLIL representation for module `\$_DFFE_PN1P_'.
+Generating RTLIL representation for module `\$_DFFE_PP0N_'.
+Generating RTLIL representation for module `\$_DFFE_PP0P_'.
+Generating RTLIL representation for module `\$_DFFE_PP1N_'.
+Generating RTLIL representation for module `\$_DFFE_PP1P_'.
+Generating RTLIL representation for module `\$_ALDFF_NN_'.
+Generating RTLIL representation for module `\$_ALDFF_NP_'.
+Generating RTLIL representation for module `\$_ALDFF_PN_'.
+Generating RTLIL representation for module `\$_ALDFF_PP_'.
+Generating RTLIL representation for module `\$_ALDFFE_NNN_'.
+Generating RTLIL representation for module `\$_ALDFFE_NNP_'.
+Generating RTLIL representation for module `\$_ALDFFE_NPN_'.
+Generating RTLIL representation for module `\$_ALDFFE_NPP_'.
+Generating RTLIL representation for module `\$_ALDFFE_PNN_'.
+Generating RTLIL representation for module `\$_ALDFFE_PNP_'.
+Generating RTLIL representation for module `\$_ALDFFE_PPN_'.
+Generating RTLIL representation for module `\$_ALDFFE_PPP_'.
+Generating RTLIL representation for module `\$_DFFSR_NNN_'.
+Generating RTLIL representation for module `\$_DFFSR_NNP_'.
+Generating RTLIL representation for module `\$_DFFSR_NPN_'.
+Generating RTLIL representation for module `\$_DFFSR_NPP_'.
+Generating RTLIL representation for module `\$_DFFSR_PNN_'.
+Generating RTLIL representation for module `\$_DFFSR_PNP_'.
+Generating RTLIL representation for module `\$_DFFSR_PPN_'.
+Generating RTLIL representation for module `\$_DFFSR_PPP_'.
+Generating RTLIL representation for module `\$_DFFSRE_NNNN_'.
+Generating RTLIL representation for module `\$_DFFSRE_NNNP_'.
+Generating RTLIL representation for module `\$_DFFSRE_NNPN_'.
+Generating RTLIL representation for module `\$_DFFSRE_NNPP_'.
+Generating RTLIL representation for module `\$_DFFSRE_NPNN_'.
+Generating RTLIL representation for module `\$_DFFSRE_NPNP_'.
+Generating RTLIL representation for module `\$_DFFSRE_NPPN_'.
+Generating RTLIL representation for module `\$_DFFSRE_NPPP_'.
+Generating RTLIL representation for module `\$_DFFSRE_PNNN_'.
+Generating RTLIL representation for module `\$_DFFSRE_PNNP_'.
+Generating RTLIL representation for module `\$_DFFSRE_PNPN_'.
+Generating RTLIL representation for module `\$_DFFSRE_PNPP_'.
+Generating RTLIL representation for module `\$_DFFSRE_PPNN_'.
+Generating RTLIL representation for module `\$_DFFSRE_PPNP_'.
+Generating RTLIL representation for module `\$_DFFSRE_PPPN_'.
+Generating RTLIL representation for module `\$_DFFSRE_PPPP_'.
+Generating RTLIL representation for module `\$_SDFF_NN0_'.
+Generating RTLIL representation for module `\$_SDFF_NN1_'.
+Generating RTLIL representation for module `\$_SDFF_NP0_'.
+Generating RTLIL representation for module `\$_SDFF_NP1_'.
+Generating RTLIL representation for module `\$_SDFF_PN0_'.
+Generating RTLIL representation for module `\$_SDFF_PN1_'.
+Generating RTLIL representation for module `\$_SDFF_PP0_'.
+Generating RTLIL representation for module `\$_SDFF_PP1_'.
+Generating RTLIL representation for module `\$_SDFFE_NN0N_'.
+Generating RTLIL representation for module `\$_SDFFE_NN0P_'.
+Generating RTLIL representation for module `\$_SDFFE_NN1N_'.
+Generating RTLIL representation for module `\$_SDFFE_NN1P_'.
+Generating RTLIL representation for module `\$_SDFFE_NP0N_'.
+Generating RTLIL representation for module `\$_SDFFE_NP0P_'.
+Generating RTLIL representation for module `\$_SDFFE_NP1N_'.
+Generating RTLIL representation for module `\$_SDFFE_NP1P_'.
+Generating RTLIL representation for module `\$_SDFFE_PN0N_'.
+Generating RTLIL representation for module `\$_SDFFE_PN0P_'.
+Generating RTLIL representation for module `\$_SDFFE_PN1N_'.
+Generating RTLIL representation for module `\$_SDFFE_PN1P_'.
+Generating RTLIL representation for module `\$_SDFFE_PP0N_'.
+Generating RTLIL representation for module `\$_SDFFE_PP0P_'.
+Generating RTLIL representation for module `\$_SDFFE_PP1N_'.
+Generating RTLIL representation for module `\$_SDFFE_PP1P_'.
+Generating RTLIL representation for module `\$_SDFFCE_NN0N_'.
+Generating RTLIL representation for module `\$_SDFFCE_NN0P_'.
+Generating RTLIL representation for module `\$_SDFFCE_NN1N_'.
+Generating RTLIL representation for module `\$_SDFFCE_NN1P_'.
+Generating RTLIL representation for module `\$_SDFFCE_NP0N_'.
+Generating RTLIL representation for module `\$_SDFFCE_NP0P_'.
+Generating RTLIL representation for module `\$_SDFFCE_NP1N_'.
+Generating RTLIL representation for module `\$_SDFFCE_NP1P_'.
+Generating RTLIL representation for module `\$_SDFFCE_PN0N_'.
+Generating RTLIL representation for module `\$_SDFFCE_PN0P_'.
+Generating RTLIL representation for module `\$_SDFFCE_PN1N_'.
+Generating RTLIL representation for module `\$_SDFFCE_PN1P_'.
+Generating RTLIL representation for module `\$_SDFFCE_PP0N_'.
+Generating RTLIL representation for module `\$_SDFFCE_PP0P_'.
+Generating RTLIL representation for module `\$_SDFFCE_PP1N_'.
+Generating RTLIL representation for module `\$_SDFFCE_PP1P_'.
+Generating RTLIL representation for module `\$_DLATCH_N_'.
+Generating RTLIL representation for module `\$_DLATCH_P_'.
+Generating RTLIL representation for module `\$_DLATCH_NN0_'.
+Generating RTLIL representation for module `\$_DLATCH_NN1_'.
+Generating RTLIL representation for module `\$_DLATCH_NP0_'.
+Generating RTLIL representation for module `\$_DLATCH_NP1_'.
+Generating RTLIL representation for module `\$_DLATCH_PN0_'.
+Generating RTLIL representation for module `\$_DLATCH_PN1_'.
+Generating RTLIL representation for module `\$_DLATCH_PP0_'.
+Generating RTLIL representation for module `\$_DLATCH_PP1_'.
+Generating RTLIL representation for module `\$_DLATCHSR_NNN_'.
+Generating RTLIL representation for module `\$_DLATCHSR_NNP_'.
+Generating RTLIL representation for module `\$_DLATCHSR_NPN_'.
+Generating RTLIL representation for module `\$_DLATCHSR_NPP_'.
+Generating RTLIL representation for module `\$_DLATCHSR_PNN_'.
+Generating RTLIL representation for module `\$_DLATCHSR_PNP_'.
+Generating RTLIL representation for module `\$_DLATCHSR_PPN_'.
+Generating RTLIL representation for module `\$_DLATCHSR_PPP_'.
+Successfully finished Verilog frontend.
+
+2. Executing Verilog-2005 frontend: picorv32_latch/picorv32_yosys.v
+Parsing Verilog input from `picorv32_latch/picorv32_yosys.v' to AST representation.
+Generating RTLIL representation for module `\picorv32'.
+Successfully finished Verilog frontend.
+
+3. Executing PREP pass.
+
+3.1. Executing HIERARCHY pass (managing design hierarchy).
+
+3.1.1. Analyzing design hierarchy..
+Top module:  \picorv32
+Used module:     \$_MUX_
+Used module:     \$_NOT_
+Used module:     \$_AND_
+Used module:     \$_OR_
+Used module:     \$_XOR_
+Used module:     \$_DFF_P_
+Used module:     \$_DFFE_PP_
+
+3.1.2. Analyzing design hierarchy..
+Top module:  \picorv32
+Used module:     \$_MUX_
+Used module:     \$_NOT_
+Used module:     \$_AND_
+Used module:     \$_OR_
+Used module:     \$_XOR_
+Used module:     \$_DFF_P_
+Used module:     \$_DFFE_PP_
+Removing unused module `\$_DLATCHSR_PPP_'.
+Removing unused module `\$_DLATCHSR_PPN_'.
+Removing unused module `\$_DLATCHSR_PNP_'.
+Removing unused module `\$_DLATCHSR_PNN_'.
+Removing unused module `\$_DLATCHSR_NPP_'.
+Removing unused module `\$_DLATCHSR_NPN_'.
+Removing unused module `\$_DLATCHSR_NNP_'.
+Removing unused module `\$_DLATCHSR_NNN_'.
+Removing unused module `\$_DLATCH_PP1_'.
+Removing unused module `\$_DLATCH_PP0_'.
+Removing unused module `\$_DLATCH_PN1_'.
+Removing unused module `\$_DLATCH_PN0_'.
+Removing unused module `\$_DLATCH_NP1_'.
+Removing unused module `\$_DLATCH_NP0_'.
+Removing unused module `\$_DLATCH_NN1_'.
+Removing unused module `\$_DLATCH_NN0_'.
+Removing unused module `\$_DLATCH_P_'.
+Removing unused module `\$_DLATCH_N_'.
+Removing unused module `\$_SDFFCE_PP1P_'.
+Removing unused module `\$_SDFFCE_PP1N_'.
+Removing unused module `\$_SDFFCE_PP0P_'.
+Removing unused module `\$_SDFFCE_PP0N_'.
+Removing unused module `\$_SDFFCE_PN1P_'.
+Removing unused module `\$_SDFFCE_PN1N_'.
+Removing unused module `\$_SDFFCE_PN0P_'.
+Removing unused module `\$_SDFFCE_PN0N_'.
+Removing unused module `\$_SDFFCE_NP1P_'.
+Removing unused module `\$_SDFFCE_NP1N_'.
+Removing unused module `\$_SDFFCE_NP0P_'.
+Removing unused module `\$_SDFFCE_NP0N_'.
+Removing unused module `\$_SDFFCE_NN1P_'.
+Removing unused module `\$_SDFFCE_NN1N_'.
+Removing unused module `\$_SDFFCE_NN0P_'.
+Removing unused module `\$_SDFFCE_NN0N_'.
+Removing unused module `\$_SDFFE_PP1P_'.
+Removing unused module `\$_SDFFE_PP1N_'.
+Removing unused module `\$_SDFFE_PP0P_'.
+Removing unused module `\$_SDFFE_PP0N_'.
+Removing unused module `\$_SDFFE_PN1P_'.
+Removing unused module `\$_SDFFE_PN1N_'.
+Removing unused module `\$_SDFFE_PN0P_'.
+Removing unused module `\$_SDFFE_PN0N_'.
+Removing unused module `\$_SDFFE_NP1P_'.
+Removing unused module `\$_SDFFE_NP1N_'.
+Removing unused module `\$_SDFFE_NP0P_'.
+Removing unused module `\$_SDFFE_NP0N_'.
+Removing unused module `\$_SDFFE_NN1P_'.
+Removing unused module `\$_SDFFE_NN1N_'.
+Removing unused module `\$_SDFFE_NN0P_'.
+Removing unused module `\$_SDFFE_NN0N_'.
+Removing unused module `\$_SDFF_PP1_'.
+Removing unused module `\$_SDFF_PP0_'.
+Removing unused module `\$_SDFF_PN1_'.
+Removing unused module `\$_SDFF_PN0_'.
+Removing unused module `\$_SDFF_NP1_'.
+Removing unused module `\$_SDFF_NP0_'.
+Removing unused module `\$_SDFF_NN1_'.
+Removing unused module `\$_SDFF_NN0_'.
+Removing unused module `\$_DFFSRE_PPPP_'.
+Removing unused module `\$_DFFSRE_PPPN_'.
+Removing unused module `\$_DFFSRE_PPNP_'.
+Removing unused module `\$_DFFSRE_PPNN_'.
+Removing unused module `\$_DFFSRE_PNPP_'.
+Removing unused module `\$_DFFSRE_PNPN_'.
+Removing unused module `\$_DFFSRE_PNNP_'.
+Removing unused module `\$_DFFSRE_PNNN_'.
+Removing unused module `\$_DFFSRE_NPPP_'.
+Removing unused module `\$_DFFSRE_NPPN_'.
+Removing unused module `\$_DFFSRE_NPNP_'.
+Removing unused module `\$_DFFSRE_NPNN_'.
+Removing unused module `\$_DFFSRE_NNPP_'.
+Removing unused module `\$_DFFSRE_NNPN_'.
+Removing unused module `\$_DFFSRE_NNNP_'.
+Removing unused module `\$_DFFSRE_NNNN_'.
+Removing unused module `\$_DFFSR_PPP_'.
+Removing unused module `\$_DFFSR_PPN_'.
+Removing unused module `\$_DFFSR_PNP_'.
+Removing unused module `\$_DFFSR_PNN_'.
+Removing unused module `\$_DFFSR_NPP_'.
+Removing unused module `\$_DFFSR_NPN_'.
+Removing unused module `\$_DFFSR_NNP_'.
+Removing unused module `\$_DFFSR_NNN_'.
+Removing unused module `\$_ALDFFE_PPP_'.
+Removing unused module `\$_ALDFFE_PPN_'.
+Removing unused module `\$_ALDFFE_PNP_'.
+Removing unused module `\$_ALDFFE_PNN_'.
+Removing unused module `\$_ALDFFE_NPP_'.
+Removing unused module `\$_ALDFFE_NPN_'.
+Removing unused module `\$_ALDFFE_NNP_'.
+Removing unused module `\$_ALDFFE_NNN_'.
+Removing unused module `\$_ALDFF_PP_'.
+Removing unused module `\$_ALDFF_PN_'.
+Removing unused module `\$_ALDFF_NP_'.
+Removing unused module `\$_ALDFF_NN_'.
+Removing unused module `\$_DFFE_PP1P_'.
+Removing unused module `\$_DFFE_PP1N_'.
+Removing unused module `\$_DFFE_PP0P_'.
+Removing unused module `\$_DFFE_PP0N_'.
+Removing unused module `\$_DFFE_PN1P_'.
+Removing unused module `\$_DFFE_PN1N_'.
+Removing unused module `\$_DFFE_PN0P_'.
+Removing unused module `\$_DFFE_PN0N_'.
+Removing unused module `\$_DFFE_NP1P_'.
+Removing unused module `\$_DFFE_NP1N_'.
+Removing unused module `\$_DFFE_NP0P_'.
+Removing unused module `\$_DFFE_NP0N_'.
+Removing unused module `\$_DFFE_NN1P_'.
+Removing unused module `\$_DFFE_NN1N_'.
+Removing unused module `\$_DFFE_NN0P_'.
+Removing unused module `\$_DFFE_NN0N_'.
+Removing unused module `\$_DFF_PP1_'.
+Removing unused module `\$_DFF_PP0_'.
+Removing unused module `\$_DFF_PN1_'.
+Removing unused module `\$_DFF_PN0_'.
+Removing unused module `\$_DFF_NP1_'.
+Removing unused module `\$_DFF_NP0_'.
+Removing unused module `\$_DFF_NN1_'.
+Removing unused module `\$_DFF_NN0_'.
+Removing unused module `\$_DFFE_PN_'.
+Removing unused module `\$_DFFE_NP_'.
+Removing unused module `\$_DFFE_NN_'.
+Removing unused module `\$_DFF_N_'.
+Removing unused module `\$_SR_PP_'.
+Removing unused module `\$_SR_PN_'.
+Removing unused module `\$_SR_NP_'.
+Removing unused module `\$_SR_NN_'.
+Removing unused module `\$_TBUF_'.
+Removing unused module `\$_OAI4_'.
+Removing unused module `\$_AOI4_'.
+Removing unused module `\$_OAI3_'.
+Removing unused module `\$_AOI3_'.
+Removing unused module `\$_MUX16_'.
+Removing unused module `\$_MUX8_'.
+Removing unused module `\$_MUX4_'.
+Removing unused module `\$_NMUX_'.
+Removing unused module `\$_ORNOT_'.
+Removing unused module `\$_ANDNOT_'.
+Removing unused module `\$_XNOR_'.
+Removing unused module `\$_NOR_'.
+Removing unused module `\$_NAND_'.
+Removing unused module `\$_BUF_'.
+Removed 141 unused modules.
+
+3.2. Executing PROC pass (convert processes to netlists).
+
+3.2.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+3.2.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Removed a total of 0 dead cases.
+
+3.2.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 0 redundant assignments.
+Promoted 1 assignment to connection.
+
+3.2.4. Executing PROC_INIT pass (extract init attributes).
+
+3.2.5. Executing PROC_ARST pass (detect async resets in processes).
+
+3.2.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 0 switches.
+<suppressed ~1 debug messages>
+
+3.2.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+Creating decoders for process `\$_DFF_P_.$proc$/home/bailufrost/.local/bin/../share/yosys/simcells.v:633$72'.
+Creating decoders for process `\$_DFFE_PP_.$proc$/home/bailufrost/.local/bin/../share/yosys/simcells.v:713$78'.
+     1/1: $0\Q[0:0]
+
+3.2.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+
+3.2.9. Executing PROC_DFF pass (convert process syncs to FFs).
+Creating register for signal `\$_DFF_P_.\Q' using process `\$_DFF_P_.$proc$/home/bailufrost/.local/bin/../share/yosys/simcells.v:633$72'.
+  created $dff cell `$procdff$437' with positive edge clock.
+Creating register for signal `\$_DFFE_PP_.\Q' using process `\$_DFFE_PP_.$proc$/home/bailufrost/.local/bin/../share/yosys/simcells.v:713$78'.
+  created $dff cell `$procdff$438' with positive edge clock.
+
+3.2.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+3.2.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Removing empty process `\$_DFF_P_.$proc$/home/bailufrost/.local/bin/../share/yosys/simcells.v:633$72'.
+Found and cleaned up 1 empty switch in `\$_DFFE_PP_.$proc$/home/bailufrost/.local/bin/../share/yosys/simcells.v:713$78'.
+Removing empty process `\$_DFFE_PP_.$proc$/home/bailufrost/.local/bin/../share/yosys/simcells.v:713$78'.
+Cleaned up 1 empty switch.
+
+3.2.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module picorv32.
+Optimizing module \$_XOR_.
+Optimizing module \$_MUX_.
+Optimizing module \$_OR_.
+Optimizing module \$_DFF_P_.
+Optimizing module \$_AND_.
+Optimizing module \$_NOT_.
+Optimizing module \$_DFFE_PP_.
+
+3.3. Executing FLATTEN pass (flatten design).
+Deleting now unused module \$_XOR_.
+Deleting now unused module \$_MUX_.
+Deleting now unused module \$_OR_.
+Deleting now unused module \$_DFF_P_.
+Deleting now unused module \$_AND_.
+Deleting now unused module \$_NOT_.
+Deleting now unused module \$_DFFE_PP_.
+<suppressed ~8573 debug messages>
+
+3.4. Executing FUTURE pass.
+
+3.5. Executing OPT_EXPR pass (perform const folding).
+Optimizing module picorv32.
+<suppressed ~4 debug messages>
+
+3.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \picorv32..
+Removed 4 unused cells and 12783 unused wires.
+<suppressed ~13 debug messages>
+
+3.7. Executing CHECK pass (checking for obvious problems).
+Checking module picorv32...
+Found and reported 0 problems.
+
+3.8. Executing OPT pass (performing simple optimizations).
+
+3.8.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module picorv32.
+
+3.8.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\picorv32'.
+Computing hashes of 18422 cells of `\picorv32'.
+Finding duplicate cells in `\picorv32'.
+Removed a total of 0 cells.
+
+3.8.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \picorv32..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~8882 debug messages>
+
+3.8.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \picorv32.
+Performed a total of 0 changes.
+
+3.8.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\picorv32'.
+Computing hashes of 18422 cells of `\picorv32'.
+Finding duplicate cells in `\picorv32'.
+Computing hashes of 18380 cells of `\picorv32'.
+Finding duplicate cells in `\picorv32'.
+<suppressed ~126 debug messages>
+Removed a total of 42 cells.
+
+3.8.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \picorv32..
+Removed 0 unused cells and 42 unused wires.
+<suppressed ~1 debug messages>
+
+3.8.7. Executing OPT_EXPR pass (perform const folding).
+Optimizing module picorv32.
+
+3.8.8. Rerunning OPT passes. (Maybe there is more to do..)
+
+3.8.9. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \picorv32..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~8790 debug messages>
+
+3.8.10. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \picorv32.
+Performed a total of 0 changes.
+
+3.8.11. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\picorv32'.
+Computing hashes of 18380 cells of `\picorv32'.
+Finding duplicate cells in `\picorv32'.
+Removed a total of 0 cells.
+
+3.8.12. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \picorv32..
+
+3.8.13. Executing OPT_EXPR pass (perform const folding).
+Optimizing module picorv32.
+
+3.8.14. Finished fast OPT passes. (There is nothing left to do.)
+
+3.9. Executing WREDUCE pass (reducing word size of cells).
+
+3.10. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \picorv32..
+
+3.11. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+3.12. Executing OPT pass (performing simple optimizations).
+
+3.12.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module picorv32.
+
+3.12.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\picorv32'.
+Computing hashes of 18380 cells of `\picorv32'.
+Finding duplicate cells in `\picorv32'.
+Removed a total of 0 cells.
+
+3.12.3. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \picorv32..
+
+3.12.4. Finished fast OPT passes.
+
+3.13. Executing SORT pass.
+
+3.14. Printing statistics.
+
+=== picorv32 ===
+
+        +----------Local Count, excluding submodules.
+        | 
+    31518 wires
+    33798 wire bits
+    30280 public wires
+    32560 public wire bits
+       27 ports
+      409 port bits
+    18380 cells
+     1749   $and
+     1597   $dff
+     4509   $mux
+      213   $not
+     1236   $or
+     8573   $scopeinfo
+      503   $xor
+
+3.15. Executing CHECK pass (checking for obvious problems).
+Checking module picorv32...
+Found and reported 0 problems.
+
+4. Executing CHECK pass (checking for obvious problems).
+Checking module picorv32...
+Found and reported 0 problems.
+
+5. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \picorv32..
+
+6. Executing CHECK pass (checking for obvious problems).
+Checking module picorv32...
+Found and reported 0 problems.
+
+7. Executing SETUNDEF pass (replace undef values with defined constants).
+
+8. Executing RTLIL backend.
+Output filename: equivalence/rtl_yosys_10/gate.il
+
+Warnings: 1 unique messages, 1 total
+End of script. Logfile hash: 4532549ed3, time: 3.36s, user: 2.82s, system: 0.26s, MEM: 123.16 MB peak
+Yosys 0.68 (git sha1 38e001a6f, Release, GNU /home/bailufrost/miniconda3/bin/c++ 16.2.0)
+Time spent: 34% 6x opt_clean (1 sec), 19% 4x read_verilog (0 sec), ...

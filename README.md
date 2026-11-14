@@ -36,7 +36,7 @@ bash trans/run_flow.sh
 
 可通过 `INPUT_FILE` 指定单个 RTL，或通过 `INPUT_DIR` 读取目录第一层的全部 `.v` 文件；设置实际的 `TOP`、`CLOCK` 和 `OUTPUT_DIR`。默认脚本示例名为 fetch，本仓库使用上面的显式参数运行 PicoRV32。完整参数、单步命令和支持的时序单元见 [转换说明](trans/README.md)。
 
-两相必须按 `clk_1`、`clk_2` 顺序提供不重叠的透明窗口。当前转换和后端结构/时序检查不能替代转换前后的功能等价验证。
+两相必须按 `clk_1`、`clk_2` 顺序提供不重叠的透明窗口。当前 PicoRV32 配置已通过 RTL→Yosys 网表、Yosys 网表→latch 相位边界模型两阶段 EQY 验证，配置、通过日志、网表版本及适用条件见 [PicoRV32 等价验证](examples/picorv32/equivalence/README.md)。该结论限定于记录的输入版本和两相协议，不包含 SKY130 单元映射或后端时序签核。
 
 ## 实例与后端结果
 
